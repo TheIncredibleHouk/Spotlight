@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -126,10 +127,13 @@ namespace Spotlight.Models
             TextTable["music"].Add(new KeyValuePair<string, string>("90", "Hilly"));
             TextTable["music"].Add(new KeyValuePair<string, string>("A0", "P-Switch"));
             TextTable["music"].Add(new KeyValuePair<string, string>("B0", "Bowser Fight"));
+
+            GameObjects = new GameObject[256];
         }
 
         public string Name { get; set; }
-        public string Path { get; set; }
+        public string DirectoryPath { get; set; }
+        public string RomFilePath { get; set; }
 
         public List<Palette> Palettes { get; set; }
         public List<WorldInfo> WorldInfo { get; set; }
@@ -137,9 +141,9 @@ namespace Spotlight.Models
         public List<TileInteraction> TileInteractions { get; set; }
         public List<TileState> TileStates { get; set; }
         public List<TileSet> TileSets { get; set; }
-        public List<GameObjectClass> ObjectClasses { get; set; }
-
+        public GameObject[] GameObjects { get; set; }
         public Dictionary<string, List<KeyValuePair<string, string>>> TextTable { get; set; }
+        public Color[] RgbPalette { get; set; }
     }
 
     [XmlRoot("project")]

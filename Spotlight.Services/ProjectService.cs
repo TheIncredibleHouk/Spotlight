@@ -8,16 +8,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Drawing;
 
 namespace Spotlight.Services
 {
     public class ProjectService
     {
         private ErrorService _errorService;
+        private Project _project;
 
         public ProjectService(ErrorService errorService)
         {
             _errorService = errorService;
+        }
+
+        public ProjectService(ErrorService errorService, Project project)
+        {
+            _errorService = errorService;
+            _project = project;
         }
 
         public LegacyProject GetLegacyProject(string fileName)
@@ -39,16 +47,30 @@ namespace Spotlight.Services
             }
         }
 
+        public Color[] GetLegacyPalette(string fileName)
+        {
+            var colors = new Color[0x40];
+            FileStream fStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            byte[] data = new byte[0x03 * 0x40];
+            fStream.Read(data, 0, 0x03 * 0x40);
+            fStream.Close();
+            for (var i = 0; i < 0x040; i++)
+            {
+                colors[i] = Color.FromArgb(data[i * 0x03], data[i * 0x03 + 1], data[i * 0x03 + 2]);
+            }
+
+            return colors;
+        }
+
         public Project ConvertProject(LegacyProject legacyProject)
         {
             return new Project()
             {
                 Name = legacyProject.name,
-                Path = legacyProject.romfile,
+                RomFilePath = legacyProject.romfile,
                 Palettes = legacyProject.paletteinfo.Select(s => new Palette()
                 {
-                    Id = Guid.Parse(s.guid),
-                    Colors = s.data.Split(',').Select(c => Int32.Parse(c, System.Globalization.NumberStyles.HexNumber)).ToList(),
+                    IndexedColors = s.data.Split(',').Select(c => Int32.Parse(c, System.Globalization.NumberStyles.HexNumber)).ToArray(),
                     Name = s.name
                 }).ToList(),
                 WorldInfo = legacyProject.worldinfo.Where(w => w.isnoworld == "false").Select(w => new WorldInfo()
@@ -71,7 +93,15 @@ namespace Spotlight.Services
                     Id = Guid.Parse(w.worldguid),
                     LastModified = DateTime.Parse(w.lastmodified),
                     Name = w.name,
-                    Number = Int32.Parse(w.ordinal)
+                    Number = Int32.Parse(w.ordinal),
+                    LevelsInfo = legacyProject.levelinfo.Where(l => l.worldguid == w.worldguid && l.bonusfor == Guid.Empty.ToString().ToLower()).Select(l => new LevelInfo()
+                    {
+                        Id = Guid.Parse(l.levelguid),
+                        LastModified = DateTime.Parse(l.lastmodified),
+                        Name = l.name,
+                        TileSet = Int32.Parse(l.leveltype),
+                        SublevelsInfo = GetBonusLevels(l.levelguid, legacyProject.levelinfo.Where(b => b.bonusfor != Guid.Empty.ToString().ToLower()).ToList())
+                    }).ToList()
                 }).First(),
 
             };
@@ -97,22 +127,43 @@ namespace Spotlight.Services
 
         public Project LoadProject(string path)
         {
+
+            Project project = JsonConvert.DeserializeObject<Project>(File.ReadAllText(path));
+            project.DirectoryPath = new FileInfo(path).DirectoryName;
+            foreach (var palette in project.Palettes)
+            {
+                int colorPointer = 0;
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        palette.RgbColors[i][j] = project.RgbPalette[palette.IndexedColors[colorPointer++]];
+                    }
+                }
+            }
+            _project = project;
+
+            return project;
+
+        }
+
+        public void SaveProject(Project project, string basePath)
+        {
             try
             {
-                return JsonConvert.DeserializeObject<Project>(File.ReadAllText(path));
+                File.WriteAllText(string.Format(@"{0}\{1}.json", basePath, project.Name), JsonConvert.SerializeObject(project));
             }
             catch (Exception e)
             {
                 _errorService.LogError(e);
-                return null;
             }
         }
 
-        public void SaveProject(Project project)
+        public void SaveProject()
         {
             try
             {
-                File.WriteAllText(project.Path, JsonConvert.SerializeObject(project));
+                File.WriteAllText(string.Format(@"{0}\{1}.json", _project.DirectoryPath, _project.Name), JsonConvert.SerializeObject(_project));
             }
             catch (Exception e)
             {

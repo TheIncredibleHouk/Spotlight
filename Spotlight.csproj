@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BF854660-B87C-4815-8118-1486DD3AF647}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Reuben</RootNamespace>
-    <AssemblyName>Reuben</AssemblyName>
+    <RootNamespace>Spotlight</RootNamespace>
+    <AssemblyName>Spotlight</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -49,12 +51,51 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WriteableBitmapEx.1.6.3\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\InputWindow.xaml.cs">
+      <DependentUpon>InputWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\KeyValueTextbox.xaml.cs">
+      <DependentUpon>KeyValueTextbox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LevelPanel.xaml.cs">
+      <DependentUpon>LevelPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ProjectPanel.xaml.cs">
+      <DependentUpon>ProjectPanel.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Controls\InputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\KeyValueTextbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LevelPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ProjectPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TextPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\WorldPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -62,6 +103,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\TextPanel.xaml.cs">
+      <DependentUpon>TextPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WorldPanel.xaml.cs">
+      <DependentUpon>WorldPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -86,6 +133,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -93,6 +141,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="Spotlight.Models\Spotlight.Models.csproj">
+      <Project>{5c409beb-9a5f-494e-ae5d-f524e1e9499f}</Project>
+      <Name>Spotlight.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="Spotlight.Renders\Spotlight.Renderers.csproj">
+      <Project>{d3a1a2fd-8594-4473-8927-89d008c3cbaa}</Project>
+      <Name>Spotlight.Renderers</Name>
+    </ProjectReference>
+    <ProjectReference Include="Spotlight.Services\Spotlight.Services.csproj">
+      <Project>{f3b47112-f7fb-4534-9e2f-65bde77fc71e}</Project>
+      <Name>Spotlight.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

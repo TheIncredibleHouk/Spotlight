@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Spotlight.ProjectPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Spotlight"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Rectangle}">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Fill" Value="#FF3E3E3E" />
+        </Style>
+    </UserControl.Resources>
+    <StackPanel Orientation="Horizontal">
+        <Button x:Name="LoadProjectButton" Click="LoadProject">Load Project</Button>
+        <Button x:Name="SaveProjectButton" Click="SaveProjectButton_Click" IsEnabled="False">Save Project</Button>
+        <Rectangle />
+        <Button x:Name="NewWorldButton" Click="NewWorldButton_Click" IsEnabled="False">New World</Button>
+        <Button x:Name="NewLevelButton" Click="NewLevelButton_Click" IsEnabled="False">New Level</Button>
+        <Rectangle />
+        <Button x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">Save ROM</Button>
+        <Rectangle />
+        <Button x:Name="PaletteButton" Click="SaveRomButton_Click" IsEnabled="False">Palette Editor</Button>
+        <Button x:Name="TileSetButton" Click="SaveRomButton_Click" IsEnabled="False">Tile Set Editor</Button>
+        <Button x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">Text Editor</Button>
+    </StackPanel>
+</UserControl>

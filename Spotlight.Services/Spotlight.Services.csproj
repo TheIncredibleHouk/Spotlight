@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,11 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accessors\GraphicsAccessor.cs" />
+    <Compile Include="Accessors\LevelDataAccessor.cs" />
     <Compile Include="ErrorService.cs" />
     <Compile Include="GameObjectService.cs" />
+    <Compile Include="GraphicsService.cs" />
+    <Compile Include="LevelService.cs" />
     <Compile Include="ProjectService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextService.cs" />
     <Compile Include="TileService.cs" />
+    <Compile Include="WorldService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spotlight.Models\Spotlight.Models.csproj">

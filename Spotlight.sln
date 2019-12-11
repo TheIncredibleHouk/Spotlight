@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight", "Spotlight.csproj", "{BF854660-B87C-4815-8118-1486DD3AF647}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Components", "Spotlight.Components\Spotlight.Components.csproj", "{C9E7B97F-FCA2-463D-97E0-C003AC2F0EE4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Models", "Spotlight.Models\Spotlight.Models.csproj", "{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Services", "Spotlight.Services\Spotlight.Services.csproj", "{F3B47112-F7FB-4534-9E2F-65BDE77FC71E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Tests", "Spotlight.Tests\Spotlight.Tests.csproj", "{E5C30083-9CC6-4852-B8A1-B28C428CD1EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Renderers", "Spotlight.Renders\Spotlight.Renderers.csproj", "{D3A1A2FD-8594-4473-8927-89D008C3CBAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,6 @@ Global
 		{BF854660-B87C-4815-8118-1486DD3AF647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF854660-B87C-4815-8118-1486DD3AF647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF854660-B87C-4815-8118-1486DD3AF647}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9E7B97F-FCA2-463D-97E0-C003AC2F0EE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9E7B97F-FCA2-463D-97E0-C003AC2F0EE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9E7B97F-FCA2-463D-97E0-C003AC2F0EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9E7B97F-FCA2-463D-97E0-C003AC2F0EE4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{E5C30083-9CC6-4852-B8A1-B28C428CD1EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5C30083-9CC6-4852-B8A1-B28C428CD1EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5C30083-9CC6-4852-B8A1-B28C428CD1EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

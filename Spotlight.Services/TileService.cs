@@ -20,7 +20,7 @@ namespace Spotlight.Services
             _project = project;
         }
 
-        public string GetTileDescription(byte tileInteractionValue)
+        public string GetTileDescription(int tileInteractionValue)
         {
             string tileDescription = _project.TileInteractions.Where(t => t.Value == tileInteractionValue).Select(t => t.Name).FirstOrDefault();
             if (string.IsNullOrWhiteSpace(tileDescription))
@@ -32,6 +32,11 @@ namespace Spotlight.Services
             }
 
             return tileDescription ?? "";
+        }
+
+        public TileSet GetTileSet(int tileSetIndex)
+        {
+            return _project.TileSets[tileSetIndex];
         }
 
         public List<TileSet> ConvertLegacy(string fileName)
@@ -48,18 +53,19 @@ namespace Spotlight.Services
 
                     for (int j = 0; j < 256; j++)
                     {
-                        Tile tile = new Tile();
+                        TileBlock tile = new TileBlock();
 
                         tile.UpperLeft = data[bankOffset + j];
-                        tile.UpperRight = data[bankOffset + 0x100 + j];
-                        tile.LowerLeft = data[bankOffset + 0x200 + j];
+                        tile.LowerLeft = data[bankOffset + 0x100 + j];
+                        tile.UpperRight = data[bankOffset + 0x200 + j];
                         tile.LowerRight = data[bankOffset + 0x300 + j];
 
-                        tileSet.Tiles.Add(tile);
+                        tileSet.Tiles[j] = tile;
                     }
 
                     tileSets.Add(tileSet);
                 }
+
 
                 var propertyOffset = 0x4000;
                 for (int i = 0; i < 16; i++)
