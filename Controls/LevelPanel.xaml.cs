@@ -24,41 +24,48 @@ namespace Spotlight
     public partial class LevelPanel : UserControl
     {
         private Level _level;
+        private LevelService _levelService;
         private LevelRenderer _renderer;
         private TextService _textService;
         private GraphicsService _graphicsService;
         private TileService _tileService;
         private GraphicsAccessor _graphicsAccessor;
         private WriteableBitmap _bitmap;
-        public LevelPanel(GraphicsService graphicsService, TextService textService, TileService tileService, Level level)
+        public LevelPanel(GraphicsService graphicsService, TextService textService, TileService tileService, LevelService levelService, Level level)
         {
             InitializeComponent();
 
             _textService = textService;
             _graphicsService = graphicsService;
             _tileService = tileService;
+            _levelService = levelService;
             _level = level;
 
-            _graphicsAccessor = new GraphicsAccessor(_graphicsService.GetTileSection(level.StaticTileTableIndex), _graphicsService.GetTileSection(level.AnimationTileTableIndex), _graphicsService.GetGlobalTiles());
+            Tile[] staticSet = _graphicsService.GetTileSection(level.StaticTileTableIndex);
+            Tile[] animationSet = _graphicsService.GetTileSection(level.AnimationTileTableIndex);
+            _graphicsAccessor = new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles());
             _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, 96, 96, PixelFormats.Bgra32, null);
 
             _renderer = new LevelRenderer(_graphicsAccessor, new LevelDataAccessor(level));
-            _renderer.SetTileSet(_tileService.GetTileSet(level.TileSetIndex));
-            _renderer.SetPalette(_graphicsService.GetPalette(level.PaletteIndex));
+
+            TileSet tileSet = _tileService.GetTileSet(level.TileSetIndex);
+            _renderer.SetTileSet(tileSet);
+
+            Palette palette = _graphicsService.GetPalette(level.PaletteIndex);
+            _renderer.SetPalette(palette);
 
             LevelRenderSource.Source = _bitmap;
             LevelRenderSource.Width = _bitmap.PixelWidth;
             LevelRenderSource.Height = _bitmap.PixelHeight;
-            RenderContainer.Width = level.ScreenLength * 16 * 16;
+            CanvasContainer.Width = RenderContainer.Width = level.ScreenLength * 16 * 16;
             level.ObjectData.ForEach(o => o.CalcBoundBox());
 
             EditMode = EditMode.Tiles;
-            
+
             Update();
             UpdateTextTables();
 
-            Music.SelectedValue = level.MusicValue.ToString("X");
-            AnimationType.SelectedValue = level.AnimationType.ToString();
+            TileSelector.Initialize(_graphicsAccessor, tileSet, palette);
         }
 
         private void Update(Rect updateRect)
@@ -293,8 +300,135 @@ namespace Spotlight
 
         private void UpdateTextTables()
         {
+            List<KeyValuePair<string, string>> _graphicsSetNames = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < 256; i++)
+            {
+                _graphicsSetNames.Add(new KeyValuePair<string, string>(i.ToString(), i.ToString("X")));
+            }
+
+            foreach (var kv in _textService.GetTable("graphics"))
+            {
+                _graphicsSetNames[int.Parse(kv.Key, System.Globalization.NumberStyles.HexNumber)] = new KeyValuePair<string, string>(kv.Key, kv.Value);
+            }
+
             Music.ItemsSource = _textService.GetTable("music").OrderBy(kv => kv.Value);
             AnimationType.ItemsSource = _textService.GetTable("animation_type");
+            EffectType.ItemsSource = _textService.GetTable("effects");
+            EventType.ItemsSource = _textService.GetTable("event_type");
+            PaletteIndex.ItemsSource = _graphicsService.GetPaletteNames();
+            GraphicsSet.ItemsSource = _graphicsSetNames;
+            PaletteEffect.ItemsSource = _textService.GetTable("palette_effect");
+            Screens.ItemsSource = new int[15] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            ScrollType.ItemsSource = _textService.GetTable("scroll_types");
+            TileSet.ItemsSource = _textService.GetTable("tile_sets");
+
+            Music.SelectedValue = _level.MusicValue.ToString("X");
+            AnimationType.SelectedValue = _level.AnimationType.ToString();
+            EffectType.SelectedValue = _level.Effects.ToString("X");
+            EventType.SelectedValue = _level.EventType.ToString("X");
+            PaletteIndex.SelectedIndex = _level.PaletteIndex;
+            GraphicsSet.SelectedValue = _level.GraphicsSet.ToString("X");
+            PaletteEffect.SelectedValue = _level.PaletteEffect.ToString();
+            Screens.SelectedIndex = _level.ScreenLength - 1;
+            ScrollType.SelectedValue = _level.ScrollType.ToString("X");
+            TileSet.SelectedValue = _level.TileSetIndex.ToString("X");
+        }
+
+        private void AnimationType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.AnimationType = int.Parse(AnimationType.SelectedValue.ToString());
+            _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+            TileSelector.Update();
+            Update();
+        }
+
+        private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.GraphicsSet = int.Parse(GraphicsSet.SelectedValue.ToString());
+            _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_level.GraphicsSet));
+            TileSelector.Update();
+            Update();
+        }
+
+        private void EventType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.EventType = int.Parse(EventType.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
+        }
+
+        private void Music_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.MusicValue = int.Parse(Music.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
+        }
+
+        private void PaletteIndex_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.PaletteIndex = int.Parse(PaletteIndex.SelectedIndex.ToString());
+
+            Palette palette = _graphicsService.GetPalette(_level.PaletteIndex);
+            _renderer.SetPalette(_graphicsService.GetPalette(_level.PaletteIndex));
+            TileSelector.Update(palette);
+            Update();
+        }
+
+        private void PaletteEffect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.PaletteEffect = int.Parse(PaletteEffect.SelectedValue.ToString());
+        }
+
+        private void Screens_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.ScreenLength = int.Parse(Screens.SelectedValue.ToString());
+            CanvasContainer.Width = RenderContainer.Width = _level.ScreenLength * 16 * 16;
+        }
+
+        private void ScrollType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.ScrollType = int.Parse(ScrollType.SelectedValue.ToString());
+        }
+
+        private void TileSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.TileSetIndex = int.Parse(TileSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
+
+            TileSet tileSet = _tileService.GetTileSet(_level.TileSetIndex);
+            _renderer.SetTileSet(tileSet);
+            TileSelector.Update(tileSet);
+            Update();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            _levelService.SaveLevel(_level);
+            MessageBox.Show(_level.Name + " has been saved!", "Save succes");
+        }
+
+        private void EffectType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.Effects = int.Parse(EffectType.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
+        }
+
+        private void ShowGrid_Checked(object sender, RoutedEventArgs e)
+        {
+            _renderer.RenderGrid = true;
+            Update();
+        }
+
+        private void ShowGrid_Unchecked(object sender, RoutedEventArgs e)
+        {
+            _renderer.RenderGrid = false;
+            Update();
+        }
+
+        private void ShowScreenLines_Checked(object sender, RoutedEventArgs e)
+        {
+            _renderer.ScreenBorders = true;
+            Update();
+        }
+
+        private void ShowScreenLines_Unchecked(object sender, RoutedEventArgs e)
+        {
+            _renderer.ScreenBorders = false;
+            Update();
         }
     }
 

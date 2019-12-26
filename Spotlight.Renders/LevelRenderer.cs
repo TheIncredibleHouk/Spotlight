@@ -17,8 +17,6 @@ namespace Spotlight.Renderers
         public const int BITMAP_WIDTH = Level.BLOCK_WIDTH * 16;
 
         private byte[] _BackgroundLayer;
-        private byte[] _SpriteLayer;
-        private byte[] _CompositeLayer;
 
         private LevelDataAccessor _levelDataAccessor;
 
@@ -27,8 +25,6 @@ namespace Spotlight.Renderers
             _levelDataAccessor = levelDataAccessor;
 
             _BackgroundLayer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * BYTES_PER_BLOCK];
-            _SpriteLayer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * BYTES_PER_BLOCK];
-            _CompositeLayer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * BYTES_PER_BLOCK];
         }
 
 

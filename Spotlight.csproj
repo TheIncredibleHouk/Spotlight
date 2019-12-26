@@ -92,6 +92,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\TileSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\WorldPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -106,6 +110,9 @@
     </Compile>
     <Compile Include="Controls\TextPanel.xaml.cs">
       <DependentUpon>TextPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TileSelector.xaml.cs">
+      <DependentUpon>TileSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\WorldPanel.xaml.cs">
       <DependentUpon>WorldPanel.xaml</DependentUpon>

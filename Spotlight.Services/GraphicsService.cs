@@ -66,5 +66,10 @@ namespace Spotlight.Services
         {
             return _project.Palettes[paletteIndex];
         }
+
+        public List<string> GetPaletteNames()
+        {
+            return _project.Palettes.Select(p => p.Name).ToList();
+        }
     }
 }

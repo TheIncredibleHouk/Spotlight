@@ -19,9 +19,10 @@ namespace Spotlight.Services
 
         public List<KeyValuePair<string, string>> GetTable(string tableName)
         {
+
             if (_project.TextTable.ContainsKey(tableName))
             {
-                return _project.TextTable[tableName];
+                return _project.TextTable[tableName].OrderBy(kv => kv.Key).ToList();
             }
 
             return new List<KeyValuePair<string, string>>();
@@ -35,6 +36,11 @@ namespace Spotlight.Services
         public void AddTable(string tableName)
         {
             _project.TextTable.Add(tableName.ToLower(), new List<KeyValuePair<string, string>>());
+        }
+
+        public void SetTable(string tableName, List<KeyValuePair<string, string>> kvPairList)
+        {
+            _project.TextTable[tableName] = kvPairList;
         }
     }
 }

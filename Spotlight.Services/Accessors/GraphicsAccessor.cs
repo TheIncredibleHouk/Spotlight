@@ -25,12 +25,34 @@ namespace Spotlight.Services
 
         public Tile GetAbsoluteTile(int tileTableIndex, int tileIndex)
         {
-            return _globalTable[tileTableIndex * 0x40 + tileIndex];
+            int absoluteTileIndex = tileTableIndex * 0x40 + tileIndex;
+            if(absoluteTileIndex > _globalTable.Length - 1)
+            {
+                absoluteTileIndex = _globalTable.Length - 1;
+            }
+            return _globalTable[absoluteTileIndex];
         }
 
         public Tile GetRelativeTile(int tileIndex)
         {
             return _relativeTable[tileIndex];
+        }
+
+        public void SetStaticTable(Tile[] staticTable)
+        {
+            for (int i = 0; i < 128; i++)
+            {
+                _relativeTable[i] = staticTable[i];
+            }
+        }
+
+        public void SetAnimatedTable(Tile[] animatedTable)
+        {
+            for (int i = 0; i < 128; i++)
+            {
+                _relativeTable[i + 128] = animatedTable[i];
+
+            }
         }
     }
 }

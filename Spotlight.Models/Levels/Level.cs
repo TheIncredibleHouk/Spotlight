@@ -43,7 +43,7 @@ namespace Spotlight.Models
                         return 0xD0;
 
                     case 2:
-                        return 0xF8;
+                        return 0xF0;
 
                     case 3:
                         return 0x5C;
@@ -55,9 +55,9 @@ namespace Spotlight.Models
         }
         public int AnimationType { get; set; }
         public int ScrollType { get; set; }
-        public bool TemporaryProjectileInteractions { get; set; }
-        public bool RhythmBlocks { get; set; }
+        public int Effects { get; set; }
         public int EventType { get; set; }
+        public int GraphicsSet { get; set; }
         public int[] TileData { get; set; }
         public List<LevelObject> ObjectData { get; set; }
         public List<LevelPointer> LevelPointers { get; set; }
@@ -113,6 +113,10 @@ namespace Spotlight.Models
 
         [XmlAttribute]
         public string rhythm { get; set; }
+
+        [XmlAttribute]
+        public string dpadtiles { get; set; }
+
 
         [XmlAttribute]
         public string leveldata { get; set; }

@@ -52,20 +52,19 @@ namespace Spotlight
 
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
-            var textTable = _textService.GetTable((string)TextTables.SelectedItem);
-            textTable.Clear();
+            List<KeyValuePair<string, string>> textTable = new List<KeyValuePair<string, string>>();
 
             foreach(KeyValueTextbox kvTextbox in KeyValueList.Children)
             {
                 textTable.Add(kvTextbox.KeyValue);
-                
             }
+
+            _textService.SetTable((string)TextTables.SelectedItem, textTable);
         }
 
         private void KvTextbox_DeleteButtonClicked(KeyValueTextbox sender)
         {
             KeyValueList.Children.Remove(sender);
-            NewKeyValueButton.IsEnabled = false;
         }
 
         private void NewButton_Click(object sender, RoutedEventArgs e)

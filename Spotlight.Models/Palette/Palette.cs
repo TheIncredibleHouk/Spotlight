@@ -13,13 +13,14 @@ namespace Spotlight.Models
         {
             IndexedColors = new int[32];
             RgbColors = new Color[8][];
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 RgbColors[i] = new Color[4];
             }
         }
         public int[] IndexedColors { get; set; }
         public string Name { get; set; }
+        public int Index { get; set; }
 
 
         [JsonIgnore]

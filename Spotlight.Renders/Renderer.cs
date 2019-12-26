@@ -13,6 +13,10 @@ namespace Spotlight.Renderers
     public class Renderer
     {
 
+        public bool RenderGrid { get; set; }
+
+        public bool ScreenBorders { get; set; }
+
         protected GraphicsAccessor _graphicsAccessor;
 
         public Renderer(GraphicsAccessor graphicsAccessor)
@@ -59,11 +63,11 @@ namespace Spotlight.Renderers
 
             for (int i = 0, pixelY = verticalFlip ? 7 : 0; i < 8; i++, pixelY += pixelYChange)
             {
-                long offset = (BYTE_STRIDE * (y + i)) + (x * 4);
+                long yOffset = (BYTE_STRIDE * (y + i)) + (x * 4);
 
                 for (int j = 0, pixelX = horizontalFlip ? 7 : 0; j < 8; j++, pixelX += pixelXChange)
                 {
-                    long xOffset = (j * 4) + offset;
+                    long xOffset = (j * 4) + yOffset;
                     int colorIndex = tile[pixelX, pixelY];
 
                     Color color = palette[colorIndex];
@@ -71,6 +75,22 @@ namespace Spotlight.Renderers
 
                     if (xOffset >= 0 && xOffset < buffer.Length)
                     {
+                        if (RenderGrid && ((j == 0 && x % 16 == 0) || (i == 0 && y % 16 == 0)))
+                        {
+                            color = (j + i) % 2 == 1 ? Color.White : Color.Black;
+                        }
+
+                        if(ScreenBorders)
+                        {
+                            if(x > 0)
+                            {
+                                if(xOffset % 1024 == 1023 || xOffset % 1024 == 0)
+                                {
+                                    color = (j + i) % 2 == 1 ? Color.Red : Color.Green;
+                                }
+                            }
+                        }
+
                         buffer[xOffset] = (byte)((1 - calcOpacity) * buffer[xOffset] + (calcOpacity * color.B));
                         buffer[xOffset + 1] = (byte)((1 - calcOpacity) * buffer[xOffset + 1] + (calcOpacity * color.G));
                         buffer[xOffset + 2] = (byte)((1 - calcOpacity) * buffer[xOffset + 2] + (calcOpacity * color.R));
@@ -80,36 +100,5 @@ namespace Spotlight.Renderers
             }
         }
 
-        protected void DrawHorizontalLine(int x, int y, int width, Color color, byte[] buffer)
-        {
-            for (int i = 0; i < width; x++, i++)
-            {
-                long xOffset = (BYTE_STRIDE * y) + (x * 4);
-
-                if (xOffset >= 0 && xOffset < buffer.Length)
-                {
-                    buffer[xOffset] = (byte)color.B;
-                    buffer[xOffset + 1] = (byte)color.G;
-                    buffer[xOffset + 2] = (byte)color.R;
-                    buffer[xOffset + 3] = 255;
-                }
-            }
-        }
-
-        protected void DrawVerticalLine(int x, int y, int height, Color color, byte[] buffer)
-        {
-            for (int i = 0; i < height; y++, i++)
-            {
-                long xOffset = (BYTE_STRIDE * y) + (x * 4);
-
-                if (xOffset >= 0 && xOffset < buffer.Length)
-                {
-                    buffer[xOffset] = (byte)color.B;
-                    buffer[xOffset + 1] = (byte)color.G;
-                    buffer[xOffset + 2] = (byte)color.R;
-                    buffer[xOffset + 3] = 255;
-                }
-            }
-        }
     }
 }

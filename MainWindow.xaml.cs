@@ -93,7 +93,7 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            LevelPanel levelPanel = new LevelPanel(_graphicsService, _textService, _tileService, _levelService.LoadLevel(levelInfo));
+            LevelPanel levelPanel = new LevelPanel(_graphicsService, _textService, _tileService, _levelService, _levelService.LoadLevel(levelInfo));
 
             tabItem.Header = levelInfo.Name;
             tabItem.Content = levelPanel;

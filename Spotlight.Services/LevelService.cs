@@ -29,17 +29,17 @@ namespace Spotlight.Services
                 AnimationType = int.Parse(l.animationtype),
                 ClearTileIndex = int.Parse(l.clearvalue),
                 EventType = int.Parse(l.misc1),
+                GraphicsSet = int.Parse(l.graphicsbank, System.Globalization.NumberStyles.HexNumber),
                 Id = Guid.Parse(l.guid),
                 Name = l.name,
                 MusicValue = int.Parse(LegacyLevel.MusicValues[int.Parse(l.music)], System.Globalization.NumberStyles.HexNumber),
                 PaletteEffect = int.Parse(l.paletteeffect),
                 PaletteIndex = int.Parse(l.palette),
-                RhythmBlocks = bool.Parse(l.rhythm),
+                Effects = (bool.Parse(l.invincibleenemies) ? 0x80 : 0) | (bool.Parse(l.tempprojeffects) ? 0x40 : 0) | (bool.Parse(l.rhythm) ? 0x20 : 0) | (bool.Parse(l.dpadtiles) ? 0x10 : 0),
                 ScreenLength = int.Parse(l.length),
                 ScrollType = int.Parse(l.scrolltype),
                 StartX = int.Parse(l.xstart),
                 StartY = int.Parse(l.ystart),
-                TemporaryProjectileInteractions = bool.Parse(l.tempprojeffects),
                 StaticTileTableIndex = int.Parse(l.graphicsbank),
                 TileSetIndex = int.Parse(l.type),
                 TileData = l.leveldata.Split(',').Select(d => int.Parse(d)).ToArray(),
@@ -113,10 +113,15 @@ namespace Spotlight.Services
             }
         }
 
-        public void SaveLevel(Level Level, string basePath)
+        public void SaveLevel(Level Level, string basePath = null)
         {
             try
             {
+                if(basePath == null)
+                {
+                    basePath = _project.DirectoryPath;
+                }
+
                 string LevelDirectory = basePath + @"\levels";
 
                 if (!Directory.Exists(LevelDirectory))

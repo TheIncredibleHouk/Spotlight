@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Spotlight"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Background="Black"
         Padding="10"
         Height="150"
