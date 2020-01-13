@@ -18,6 +18,7 @@ namespace Spotlight.Models
         }
 
         public int GameId { get; set; }
+        public GameObjectType GameObjectType { get; set; }
         public string Name { get; set; }
         public List<Sprite> Sprites { get; set; }
         public List<string> Properties
@@ -136,12 +137,19 @@ namespace Spotlight.Models
 
             #endregion
         }
+    }
 
-        public enum SpriteRotation
-        {
-            HorizontalFlip,
-            VerticalFlip,
-            HorizontalAndVerticalFlip
-        }
+    public enum GameObjectType
+    {
+        Global = 1,
+        TypeA = 2,
+        TypeB = 3
+    }
+
+    public enum SpriteRotation
+    {
+        HorizontalFlip,
+        VerticalFlip,
+        HorizontalAndVerticalFlip
     }
 }

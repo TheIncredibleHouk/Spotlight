@@ -59,7 +59,7 @@ namespace Spotlight.Services
                 ObjectData = l.spritedata.Select(s => new LevelObject()
                 {
                     GameObjectId = int.Parse(s.value),
-                    Property = int.Parse(s.property),
+                    Property = int.Parse(s.property == "-1" ? "0" : s.property),
                     X = int.Parse(s.x),
                     Y = int.Parse(s.y)
                 }).ToList()

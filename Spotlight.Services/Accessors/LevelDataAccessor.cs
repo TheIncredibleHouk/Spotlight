@@ -21,14 +21,40 @@ namespace Spotlight.Services
 
         public int GetData(int x, int y)
         {
-            int dataOffset = y * DATA_ROW_LENGTH;
-            return _tileData[dataOffset + x];
+            if(x < 0 || y < 0 || x >= 240 || y >= 27)
+            {
+                return -1;
+            }
+
+            int dataOffset = (y * DATA_ROW_LENGTH) + x;
+            if (dataOffset >= _tileData.Length)
+            {
+                return -1;
+            }
+
+            return _tileData[dataOffset];
         }
 
         public void SetData(int x, int y, int tileValue)
         {
             int dataOffset = y * DATA_ROW_LENGTH;
-            _tileData[dataOffset + x] = tileValue;
+            int offset = dataOffset + x;
+
+            if (offset < _tileData.Length)
+            {
+                _tileData[offset] = tileValue;
+            }
+        }
+
+        public void ReplaceValue(int existingValue, int newValue)
+        {
+            for (int i = 0; i < _tileData.Length; i++)
+            {
+                if (_tileData[i] == existingValue)
+                {
+                    _tileData[i] = newValue;
+                }
+            }
         }
 
         public List<LevelObject> GetLevelObjects()

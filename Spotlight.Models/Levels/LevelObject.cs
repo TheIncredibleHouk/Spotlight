@@ -17,9 +17,6 @@ namespace Spotlight.Models
         public int Property { get; set; }
 
         [JsonIgnore]
-        public bool IsSelected { get; set; }
-
-        [JsonIgnore]
         public GameObject GameObject { get; set; }
 
         public void CalcBoundBox()

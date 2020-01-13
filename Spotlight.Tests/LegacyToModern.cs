@@ -15,7 +15,7 @@ namespace Spotlight.Tests
         {
             string legacyFilePath = @"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\Reuben.rbn";
             //string tsaLegacyPath = @"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\Reuben.tsa";
-            //string spriteLegacyPath = @"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\sprites.xml";
+            string spriteLegacyPath = @"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\sprites.xml";
             //string paletteLegacyPath = @"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\default.pal";
             string newFilePath = @"F:\ROM Hacking\Mario Adventure 3\Mushroom Mayhem";
             
@@ -25,7 +25,7 @@ namespace Spotlight.Tests
             
 
             LegacyProject legacyProject = ps.GetLegacyProject(legacyFilePath);
-            //Project project = ps.ConvertProject(legacyProject);
+            Project project = ps.ConvertProject(legacyProject);
 
             //TileService ts = new TileService(es, project);
             //GameObjectService gos = new GameObjectService(es, project);
@@ -46,6 +46,7 @@ namespace Spotlight.Tests
             //ps.SaveProject(project, newFilePath);
 
             Project reloadProject = ps.LoadProject(newFilePath + @"\Mushroom Mayhem.json");
+            reloadProject.GameObjects = new GameObjectService(null, null).ConvertFromLegacy(spriteLegacyPath).ToArray();
 
             WorldService ws = new WorldService(es);
             foreach(World w in ws.ConvertFromLegacy(ws.GetLegacyWorlds(@"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\Worlds", legacyProject.worldinfo)))

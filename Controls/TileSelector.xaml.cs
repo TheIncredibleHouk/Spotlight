@@ -40,17 +40,18 @@ namespace Spotlight
 
             TileRenderSource.Width = 256;
             TileRenderSource.Height = 256;
-            
+
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
 
             TileRenderSource.Source = _bitmap;
 
             Update(tileSet, palette);
+            SelectedTileValue = 0;
         }
 
         public void Update()
         {
-            if(_tileRenderer != null)
+            if (_tileRenderer != null)
             {
                 _tileRenderer.Update();
                 Render();
@@ -103,7 +104,38 @@ namespace Spotlight
 
         private void TileRenderSource_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            Point clickPoint = Snap(e.GetPosition(this));
 
+            SelectedTileValue = (int)(clickPoint.Y + (clickPoint.X / 16));
+        }
+
+        private int _selectedTileValue;
+        public int SelectedTileValue
+        {
+            get
+            {
+                return _selectedTileValue;
+            }
+            set
+            {
+                _selectedTileValue = value;
+                UpdateSelectionRectangle();
+            }
+        }
+        private void UpdateSelectionRectangle()
+        {
+            Canvas.SetTop(SelectionRectangle, ((int)(_selectedTileValue / 16)) * 16);
+            Canvas.SetLeft(SelectionRectangle, ((int)(_selectedTileValue % 16)) * 16);
+        }
+
+        private Point Snap(Point value)
+        {
+            return new Point(Snap(value.X), Snap(value.Y));
+        }
+
+        private int Snap(double value)
+        {
+            return (int)(Math.Floor(value / 16) * 16);
         }
     }
 }

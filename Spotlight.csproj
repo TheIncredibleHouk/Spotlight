@@ -60,6 +60,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\GameObjectSelector.xaml.cs">
+      <DependentUpon>GameObjectSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\InputWindow.xaml.cs">
       <DependentUpon>InputWindow.xaml</DependentUpon>
     </Compile>
@@ -72,6 +75,10 @@
     <Compile Include="Controls\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\GameObjectSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\InputWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

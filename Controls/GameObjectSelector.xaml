@@ -1,15 +1,12 @@
-﻿<UserControl x:Class="Spotlight.LevelPanel"
+﻿<UserControl x:Class="Spotlight.GameObjectSelector"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Spotlight"
+             Background="#000000"
              mc:Ignorable="d" 
-             VerticalAlignment="Stretch"
-             SnapsToDevicePixels="True"
-             HorizontalAlignment="Stretch"
-             Background="Black"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="#FFB5B8C1" />
@@ -115,96 +112,22 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <DockPanel>
-        <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
-            <Border DockPanel.Dock="Top"  Margin="0, 24">
-                <local:TileBlockSelector x:Name="TileSelector" />
-            </Border>
-            <ScrollViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" Padding="12">
-                <StackPanel>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                </StackPanel>
-            </ScrollViewer>
-        </DockPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type Rectangle}">
-                    <Setter Property="Margin" Value="10" />
-                    <Setter Property="Width" Value="1" />
-                    <Setter Property="Fill" Value="#FF3E3E3E" />
-                </Style>
-            </StackPanel.Resources>
-            <Button x:Name="SaveButton" Click="SaveButton_Click">Save Level</Button>
-            <Rectangle />
-            <RadioButton GroupName="Edit" IsChecked="True" Checked="EditTiles_Checked" x:Name="EditTiles">Tiles</RadioButton>
-            <RadioButton GroupName="Edit" Checked="EditSprites_Checked" x:Name="EditSprites">Sprites</RadioButton>
-            <RadioButton GroupName="Edit" Checked="EditPointers_Checked" x:Name="EditPointers">Pointers</RadioButton>
-            <Rectangle />
-            <RadioButton Checked="DefaultDraw_Checked" x:Name="DefaultDraw" GroupName="Draw" IsChecked="True">Default</RadioButton>
-            <RadioButton Checked="FillDraw_Checked" x:Name="FillDraw" GroupName="Draw">Fill</RadioButton>
-            <RadioButton Checked="ReplaceDraw_Checked" x:Name="ReplaceDraw" GroupName="Draw">Replace</RadioButton>
-            <Rectangle />
-            <RadioButton GroupName="Grid1" Checked="ShowGrid_Checked" Unchecked="ShowGrid_Unchecked" x:Name="ShowGrid">Grid</RadioButton>
-            <RadioButton GroupName="Grid2" Checked="ShowScreenLines_Checked" Unchecked="ShowScreenLines_Unchecked" x:Name="ShowScreenLines">Screen Lines</RadioButton>
-            <Rectangle />
-            <Button>Set Start</Button>
-        </StackPanel>
-        <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  Padding="0,0,0,15"  DockPanel.Dock="Right">
-            <StackPanel Orientation="Vertical">
-                <Label>Animation Type</Label>
-                <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
-
-                <Label>Effect Type</Label>
-                <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
-
-                <Label>Event Type</Label>
-                <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
-
-                <Label>Graphics Set</Label>
-                <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
-
-                <Label>Music</Label>
-                <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
-
-                <Label>Palette</Label>
-                <ComboBox SelectionChanged="PaletteIndex_SelectionChanged" x:Name="PaletteIndex" />
-
-                <Label>Palette Effect</Label>
-                <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
-
-                <Label>Screens</Label>
-                <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
-
-                <Label>Scroll Type</Label>
-                <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
-
-                <Label>Tile Set</Label>
-                <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
-
-            </StackPanel>
-        </ScrollViewer>
-        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Visible">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Canvas x:Name="CanvasContainer">
-                    <Border x:Name="RenderContainer" BorderThickness="0">
-                        <Image MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
-                    </Border>
-                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
-                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
-                    </Border>
-                    <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
-                </Canvas>
+    <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ComboBox  Grid.Column="0" HorizontalAlignment="Stretch">
+                <TextBlock>Global</TextBlock>
+                <TextBlock>Type A</TextBlock>
+                <TextBlock>Type B</TextBlock>
+            </ComboBox>
+            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"></ComboBox>
+        </Grid>
+        <ScrollViewer DockPanel.Dock="Bottom" VerticalAlignment="Stretch">
+            <StackPanel>
+                <Image x:Name="GameObjectImage" HorizontalAlignment="Center" />
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
