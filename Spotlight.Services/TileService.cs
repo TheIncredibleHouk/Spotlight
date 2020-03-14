@@ -20,23 +20,18 @@ namespace Spotlight.Services
             _project = project;
         }
 
-        public string GetTileDescription(int tileInteractionValue)
+        public IEnumerable<TileSet> GetTileSets()
         {
-            string tileDescription = _project.TileInteractions.Where(t => t.Value == tileInteractionValue).Select(t => t.Name).FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(tileDescription))
-            {
-                int stateValue = 0xF0 & tileInteractionValue;
-                int interactionValue = 0x0F & tileInteractionValue;
-
-                tileDescription = _project.TileStates.Where(s => s.Value == stateValue).Select(s => s.Name).FirstOrDefault() + " " + _project.TileInteractions.Where(s => s.Value == interactionValue).Select(s => s.Name).FirstOrDefault();
-            }
-
-            return tileDescription ?? "";
+            return _project.TileSets;
         }
 
         public TileSet GetTileSet(int tileSetIndex)
         {
             return _project.TileSets[tileSetIndex];
+        }
+        public List<TileTerrain> GetTerrain()
+        {
+            return _project.TileTerrain;
         }
 
         public List<TileSet> ConvertLegacy(string fileName)

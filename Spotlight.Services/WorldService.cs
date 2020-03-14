@@ -20,7 +20,7 @@ namespace Spotlight.Services
             _errorService = errorService;
         }
 
-        public List<World> ConvertFromLegacy(List<LegacyWorld> legacyWorld)
+        public List<World> ConvertFromLegacy(List<LegacyWorld> legacyWorld, LegacyProject legacyProject)
         {
             return legacyWorld.Select(w => new World()
             {
@@ -28,7 +28,7 @@ namespace Spotlight.Services
                 Id = Guid.Parse(w.guid),
                 Name = w.name,
                 MusicValue = int.Parse(w.music, System.Globalization.NumberStyles.HexNumber),
-                PaletteIndex = int.Parse(w.palette),
+                PaletteId = legacyProject.paletteinfo[int.Parse(w.palette)].guid,
                 Pointers = w.pointers.Select(p => new WorldPointer()
                 {
                     LevelId = Guid.Parse(w.guid),

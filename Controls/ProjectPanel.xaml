@@ -4,13 +4,38 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Spotlight"
+             Background="Black"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="50" d:DesignWidth="800">
     <UserControl.Resources>
         <Style TargetType="{x:Type Rectangle}">
             <Setter Property="Margin" Value="10" />
             <Setter Property="Width" Value="1" />
             <Setter Property="Fill" Value="#FF3E3E3E" />
+        </Style>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FFB5B8C1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="0" Margin="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF151515"/>
+                    <Setter Property="BorderBrush" Value="#FF363857" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value=".5" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
@@ -23,7 +48,8 @@
         <Button x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">Save ROM</Button>
         <Rectangle />
         <Button x:Name="PaletteButton" Click="SaveRomButton_Click" IsEnabled="False">Palette Editor</Button>
-        <Button x:Name="TileSetButton" Click="SaveRomButton_Click" IsEnabled="False">Tile Set Editor</Button>
+        <Button x:Name="ObjectButton" Click="ObjectButton_Click" IsEnabled="False">Object Editor</Button>
+        <Button x:Name="TileSetButton" Click="TileSetButton_Click" IsEnabled="False">Tile Set Editor</Button>
         <Button x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">Text Editor</Button>
     </StackPanel>
 </UserControl>

@@ -36,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -60,6 +63,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\GameObjectEditor.xaml.cs">
+      <DependentUpon>GameObjectEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GameObjectSelector.xaml.cs">
       <DependentUpon>GameObjectSelector.xaml</DependentUpon>
     </Compile>
@@ -75,6 +81,10 @@
     <Compile Include="Controls\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\GameObjectEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\GameObjectSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -99,7 +109,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\TileSelector.xaml">
+    <Page Include="Controls\TileBlockEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TileBlockSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -118,12 +132,16 @@
     <Compile Include="Controls\TextPanel.xaml.cs">
       <DependentUpon>TextPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TileSelector.xaml.cs">
-      <DependentUpon>TileSelector.xaml</DependentUpon>
+    <Compile Include="Controls\TileBlockEditor.xaml.cs">
+      <DependentUpon>TileBlockEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TileBlockSelector.xaml.cs">
+      <DependentUpon>TileBlockSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\WorldPanel.xaml.cs">
       <DependentUpon>WorldPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Conversions\Colors.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

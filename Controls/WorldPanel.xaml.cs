@@ -107,6 +107,8 @@ namespace Spotlight
                 if (dataContext is LevelInfo)
                 {
                     LevelOpened((LevelInfo)dataContext);
+                    Expanded = false;
+                    UpdateCollapsedState();
                 }
             }
         }

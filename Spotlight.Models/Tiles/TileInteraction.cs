@@ -8,13 +8,13 @@ namespace Spotlight.Models
 {
     public class TileInteraction
     {
-        public string Name { get; private set; }
-        public int Value { get; private set; }
+        public string Name { get;  set; }
+        public int Value { get; set; }
+        public TileBlock[] Overlays { get; set; }
 
-        public TileInteraction(string name, int value)
+        public TileInteraction()
         {
-            Name = name;
-            Value = value;
+
         }
 
     }

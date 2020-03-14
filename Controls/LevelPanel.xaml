@@ -87,7 +87,7 @@
                             <!-- Popup showing items -->
                             <Popup Name="Popup" Placement="Bottom" Focusable="False" AllowsTransparency="True" IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}" PopupAnimation="Slide">
                                 <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding FrameworkElement.ActualWidth}" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
-                                    <Border Name="DropDownBorder" Background="{StaticResource ComboBoxNormalBackgroundBrush}" BorderBrush="White" BorderThickness="1" Margin="1" />
+                                    <Border Name="DropDownBorder" Background="{StaticResource ComboBoxNormalBackgroundBrush}" BorderBrush="#FF3E3E3E" BorderThickness="1" Margin="1" />
                                     <ScrollViewer Margin="4" SnapsToDevicePixels="True" Padding="3">
                                         <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
@@ -117,95 +117,89 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
-            <Border DockPanel.Dock="Top"  Margin="0, 24">
-                <local:TileBlockSelector x:Name="TileSelector" />
-            </Border>
-            <ScrollViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" Padding="12">
+            <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 1, 0" DockPanel.Dock="Top">
                 <StackPanel>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
-                    <TextBox>asdfasfs</TextBox>
+                    <Border Margin="0, 24">
+                        <local:TileBlockSelector x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
+                    </Border>
+
+                    <local:GameObjectSelector x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
-            </ScrollViewer>
+            </Border>
         </DockPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type Rectangle}">
-                    <Setter Property="Margin" Value="10" />
-                    <Setter Property="Width" Value="1" />
-                    <Setter Property="Fill" Value="#FF3E3E3E" />
-                </Style>
-            </StackPanel.Resources>
-            <Button x:Name="SaveButton" Click="SaveButton_Click">Save Level</Button>
-            <Rectangle />
-            <RadioButton GroupName="Edit" IsChecked="True" Checked="EditTiles_Checked" x:Name="EditTiles">Tiles</RadioButton>
-            <RadioButton GroupName="Edit" Checked="EditSprites_Checked" x:Name="EditSprites">Sprites</RadioButton>
-            <RadioButton GroupName="Edit" Checked="EditPointers_Checked" x:Name="EditPointers">Pointers</RadioButton>
-            <Rectangle />
-            <RadioButton Checked="DefaultDraw_Checked" x:Name="DefaultDraw" GroupName="Draw" IsChecked="True">Default</RadioButton>
-            <RadioButton Checked="FillDraw_Checked" x:Name="FillDraw" GroupName="Draw">Fill</RadioButton>
-            <RadioButton Checked="ReplaceDraw_Checked" x:Name="ReplaceDraw" GroupName="Draw">Replace</RadioButton>
-            <Rectangle />
-            <RadioButton GroupName="Grid1" Checked="ShowGrid_Checked" Unchecked="ShowGrid_Unchecked" x:Name="ShowGrid">Grid</RadioButton>
-            <RadioButton GroupName="Grid2" Checked="ShowScreenLines_Checked" Unchecked="ShowScreenLines_Unchecked" x:Name="ShowScreenLines">Screen Lines</RadioButton>
-            <Rectangle />
-            <Button>Set Start</Button>
-        </StackPanel>
-        <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  Padding="0,0,0,15"  DockPanel.Dock="Right">
-            <StackPanel Orientation="Vertical">
-                <Label>Animation Type</Label>
-                <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
-
-                <Label>Effect Type</Label>
-                <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
-
-                <Label>Event Type</Label>
-                <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
-
-                <Label>Graphics Set</Label>
-                <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
-
-                <Label>Music</Label>
-                <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
-
-                <Label>Palette</Label>
-                <ComboBox SelectionChanged="PaletteIndex_SelectionChanged" x:Name="PaletteIndex" />
-
-                <Label>Palette Effect</Label>
-                <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
-
-                <Label>Screens</Label>
-                <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
-
-                <Label>Scroll Type</Label>
-                <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
-
-                <Label>Tile Set</Label>
-                <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
-
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 1" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal" >
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <Setter Property="Margin" Value="10" />
+                        <Setter Property="Width" Value="1" />
+                        <Setter Property="Fill" Value="#FF3E3E3E" />
+                    </Style>
+                </StackPanel.Resources>
+                <Button x:Name="SaveButton" Click="SaveButton_Click">Save Level</Button>
+                <Rectangle />
+                <RadioButton GroupName="Edit" IsChecked="True" Checked="EditTiles_Checked" x:Name="EditTiles">Tiles</RadioButton>
+                <RadioButton GroupName="Edit" Checked="EditSprites_Checked" x:Name="EditSprites">Sprites</RadioButton>
+                <RadioButton GroupName="Edit" Checked="EditPointers_Checked" x:Name="EditPointers">Pointers</RadioButton>
+                <Rectangle />
+                <RadioButton Checked="DefaultDraw_Checked" x:Name="DefaultDraw" GroupName="Draw" IsChecked="True">Default</RadioButton>
+                <RadioButton Checked="FillDraw_Checked" x:Name="FillDraw" GroupName="Draw">Fill</RadioButton>
+                <RadioButton Checked="ReplaceDraw_Checked" x:Name="ReplaceDraw" GroupName="Draw">Replace</RadioButton>
+                <Rectangle />
+                <RadioButton GroupName="Grid1" Checked="ShowGrid_Checked" Unchecked="ShowGrid_Unchecked" x:Name="ShowGrid">Grid</RadioButton>
+                <RadioButton GroupName="Grid2" Checked="ShowScreenLines_Checked" Unchecked="ShowScreenLines_Unchecked" x:Name="ShowScreenLines">Screen Lines</RadioButton>
+                <RadioButton GroupName="Grid3" Checked="ShowExtraSprites_Unchecked" Unchecked="ShowExtraSprites_Unchecked" x:Name="ShowExtraSprites">Extra Sprites</RadioButton>
+                <RadioButton GroupName="Grid4" Checked="ShowTerrain_Checked" Unchecked="ShowTerrain_Unchecked" x:Name="ShowTerrain">Extra Sprites</RadioButton>
+                <Rectangle />
+                <Button>Set Start</Button>
             </StackPanel>
+        </Border>
+        <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  DockPanel.Dock="Right">
+            <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 0">
+                <StackPanel Orientation="Vertical">
+                    <Label>Animation Type</Label>
+                    <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
+
+                    <Label>Effect Type</Label>
+                    <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
+
+                    <Label>Event Type</Label>
+                    <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
+
+                    <Label>Graphics Set</Label>
+                    <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
+
+                    <Label>Music</Label>
+                    <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
+
+                    <Label>Palette</Label>
+                    <ComboBox SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
+
+                    <Label>Palette Effect</Label>
+                    <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
+
+                    <Label>Screens</Label>
+                    <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
+
+                    <Label>Scroll Type</Label>
+                    <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
+
+                    <Label>Tile Set</Label>
+                    <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
+
+                </StackPanel>
+            </Border>
         </ScrollViewer>
-        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Visible">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Canvas x:Name="CanvasContainer">
-                    <Border x:Name="RenderContainer" BorderThickness="0">
-                        <Image MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
-                    </Border>
-                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
-                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
-                    </Border>
-                    <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
-                </Canvas>
-            </StackPanel>
+        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Canvas x:Name="CanvasContainer" VerticalAlignment="Top" UseLayoutRounding="True">
+                <Border x:Name="RenderContainer" BorderThickness="0" UseLayoutRounding="True">
+                    <Image MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="True" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
+                </Border>
+                <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
+                    <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                </Border>
+                <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
+            </Canvas>
         </ScrollViewer>
     </DockPanel>
 </UserControl>

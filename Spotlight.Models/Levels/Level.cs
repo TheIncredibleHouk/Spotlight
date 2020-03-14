@@ -29,7 +29,7 @@ namespace Spotlight.Models
         public int StartX { get; set; }
         public int StartY { get; set; }
         public int PaletteEffect { get; set; }
-        public int PaletteIndex { get; set; }
+        public Guid PaletteId { get; set; }
         public int StaticTileTableIndex { get; set; }
         
         [JsonIgnore]

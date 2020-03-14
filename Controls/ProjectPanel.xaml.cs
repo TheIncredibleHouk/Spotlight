@@ -28,8 +28,14 @@ namespace Spotlight
         public delegate void ProjectLoadEventHandler(Project project);
         public event ProjectLoadEventHandler ProjectLoaded;
 
+        public delegate void TileBlockEditorOpenEventHandler();
+        public event TileBlockEditorOpenEventHandler TileBlockEditorOpened;
+
         public delegate void TextEditorOpenEventHandler();
         public event TextEditorOpenEventHandler TextEditorOpened;
+
+        public delegate void ObjectEditorEventHandler();
+        public event ObjectEditorEventHandler ObjectEditorOpened;
 
         public ProjectService ProjectService { get; set; }
 
@@ -45,7 +51,7 @@ namespace Spotlight
             {
                 Project project = ProjectService.LoadProject(openFileDialog.FileName);
                 ProjectLoaded(project);
-                NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveProjectButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true ;
+                ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveProjectButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true ;
             }
         }
 
@@ -73,6 +79,16 @@ namespace Spotlight
         private void TextEditButton_Click(object sender, RoutedEventArgs e)
         {
             TextEditorOpened();
+        }
+
+        private void ObjectButton_Click(object sender, RoutedEventArgs e)
+        {
+            ObjectEditorOpened();
+        }
+
+        private void TileSetButton_Click(object sender, RoutedEventArgs e)
+        {
+            TileBlockEditorOpened();
         }
     }
 }

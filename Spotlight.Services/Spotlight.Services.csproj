@@ -51,6 +51,7 @@
     <Compile Include="ErrorService.cs" />
     <Compile Include="GameObjectService.cs" />
     <Compile Include="GraphicsService.cs" />
+    <Compile Include="HistoryService.cs" />
     <Compile Include="LevelService.cs" />
     <Compile Include="ProjectService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

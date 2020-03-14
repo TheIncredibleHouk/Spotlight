@@ -14,7 +14,6 @@ namespace Spotlight.Renderers
     {
 
         public bool RenderGrid { get; set; }
-
         public bool ScreenBorders { get; set; }
 
         protected GraphicsAccessor _graphicsAccessor;
@@ -54,7 +53,7 @@ namespace Spotlight.Renderers
         public const int BLOCKS_PER_SCREEN = 16;
         public const int SCREENS_PER_LEVEL = 15;
 
-        public const int BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK * BLOCKS_PER_SCREEN * SCREENS_PER_LEVEL;
+        public int BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK * BLOCKS_PER_SCREEN * SCREENS_PER_LEVEL;
 
         protected void RenderTile(int x, int y, Tile tile, int paletteIndex, byte[] buffer, Color[] palette, bool horizontalFlip = false, bool verticalFlip = false, bool useTransparency = false, double opacity = 1)
         {
@@ -100,5 +99,51 @@ namespace Spotlight.Renderers
             }
         }
 
+        protected void DrawColor(int x, int y, Color color, int[] buffer, double opacity = .5)
+        {
+            for (int i = 0, pixelY = 0; i < 16; i++, pixelY ++)
+            {
+                long yOffset = (BYTE_STRIDE * (y + i)) + (x * 4);
+
+                for (int j = 0, pixelX = 0; j < 16; j++, pixelX++)
+                {
+                    long xOffset = (j * 4) + yOffset;
+
+                    if (xOffset >= 0 && xOffset < buffer.Length)
+                    {
+                        if (RenderGrid && ((j == 0 && x % 16 == 0) || (i == 0 && y % 16 == 0)))
+                        {
+                            color = (j + i) % 2 == 1 ? Color.White : Color.Black;
+                        }
+
+                        if (ScreenBorders)
+                        {
+                            if (x > 0)
+                            {
+                                if (xOffset % 1024 == 1023 || xOffset % 1024 == 0)
+                                {
+                                    color = (j + i) % 2 == 1 ? Color.Red : Color.Green;
+                                }
+                            }
+                        }
+
+                        buffer[xOffset] = (byte)((1 - opacity) * buffer[xOffset] + (opacity * color.B));
+                        buffer[xOffset + 1] = (byte)((1 - opacity) * buffer[xOffset + 1] + (opacity * color.G));
+                        buffer[xOffset + 2] = (byte)((1 - opacity) * buffer[xOffset + 2] + (opacity * color.R));
+                        buffer[xOffset + 3] = 255;
+                    }
+                }
+            }
+        }
+        protected void Clear(Color color, byte[] buffer)
+        {
+            for(int i = 0; i < buffer.Length; i += 4)
+            {
+                buffer[i] = (byte)color.B;
+                buffer[i + 1] = (byte)color.G;
+                buffer[i + 2] = (byte)color.R;
+                buffer[i + 3] = (byte)color.A;
+            }
+        }
     }
 }

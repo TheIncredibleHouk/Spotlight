@@ -21,10 +21,8 @@ namespace Spotlight.Models
         public GameObjectType GameObjectType { get; set; }
         public string Name { get; set; }
         public List<Sprite> Sprites { get; set; }
-        public List<string> Properties
-        {
-            get; set;
-        }
+        public List<string> Properties{ get; set; }
+        public string Group { get; set; }
 
         public class SpriteDefinition
         {

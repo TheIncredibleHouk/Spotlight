@@ -71,7 +71,8 @@ namespace Spotlight.Services
                 Palettes = legacyProject.paletteinfo.Select(s => new Palette()
                 {
                     IndexedColors = s.data.Split(',').Select(c => Int32.Parse(c, System.Globalization.NumberStyles.HexNumber)).ToArray(),
-                    Name = s.name
+                    Name = s.name,
+                    Id = s.guid
                 }).ToList(),
                 WorldInfo = legacyProject.worldinfo.Where(w => w.isnoworld == "false").Select(w => new WorldInfo()
                 {

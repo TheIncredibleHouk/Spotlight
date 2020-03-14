@@ -22,7 +22,7 @@ namespace Spotlight.Services
             _project = project;
         }
 
-        public List<Level> ConvertFromLegacy(List<LegacyLevel> legacyLevels)
+        public List<Level> ConvertFromLegacy(List<LegacyLevel> legacyLevels, LegacyProject legacyProject)
         {
             return legacyLevels.Select(l => new Level()
             {
@@ -34,7 +34,7 @@ namespace Spotlight.Services
                 Name = l.name,
                 MusicValue = int.Parse(LegacyLevel.MusicValues[int.Parse(l.music)], System.Globalization.NumberStyles.HexNumber),
                 PaletteEffect = int.Parse(l.paletteeffect),
-                PaletteIndex = int.Parse(l.palette),
+                PaletteId = legacyProject.paletteinfo[int.Parse(l.palette)].guid,
                 Effects = (bool.Parse(l.invincibleenemies) ? 0x80 : 0) | (bool.Parse(l.tempprojeffects) ? 0x40 : 0) | (bool.Parse(l.rhythm) ? 0x20 : 0) | (bool.Parse(l.dpadtiles) ? 0x10 : 0),
                 ScreenLength = int.Parse(l.length),
                 ScrollType = int.Parse(l.scrolltype),

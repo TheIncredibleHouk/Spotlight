@@ -20,7 +20,8 @@ namespace Spotlight.Models
         }
         public int[] IndexedColors { get; set; }
         public string Name { get; set; }
-        public int Index { get; set; }
+
+        public Guid Id { get; set;  }
 
 
         [JsonIgnore]
@@ -38,6 +39,11 @@ namespace Spotlight.Models
 
     public class LegacyPalette
     {
+        public LegacyPalette()
+        {
+            guid = Guid.NewGuid();
+        }
+
         [XmlAttribute]
         public string background { get; set; }
 
@@ -48,8 +54,6 @@ namespace Spotlight.Models
         public string name { get; set; }
 
         [XmlAttribute]
-#pragma warning disable IDE1006 // Naming Styles
-        public string guid { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
+        public Guid guid { get; set; }
     }
 }

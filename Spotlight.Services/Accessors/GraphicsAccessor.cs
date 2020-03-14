@@ -11,22 +11,30 @@ namespace Spotlight.Services
     {
         private Tile[] _relativeTable;
         private Tile[] _globalTable;
-        public GraphicsAccessor(Tile[] staticTable, Tile[] animatedTable, Tile[] globalTable)
+        private Tile[] _overlayTable;
+        public GraphicsAccessor(Tile[] staticTable, Tile[] animatedTable, Tile[] globalTable, Tile[] overlayTable)
         {
             _relativeTable = new Tile[256];
-            for(int i = 0; i < 128; i++)
+            for (int i = 0; i < 128; i++)
             {
                 _relativeTable[i] = staticTable[i];
                 _relativeTable[i + 128] = animatedTable[i];
             }
 
             _globalTable = globalTable;
+            _overlayTable = overlayTable;
+        }
+
+        public GraphicsAccessor(Tile[] globalTable, Tile[] extraTable)
+        {
+            _globalTable = globalTable;
+            _overlayTable = extraTable;
         }
 
         public Tile GetAbsoluteTile(int tileTableIndex, int tileIndex)
         {
             int absoluteTileIndex = tileTableIndex * 0x40 + tileIndex;
-            if(absoluteTileIndex > _globalTable.Length - 1)
+            if (absoluteTileIndex > _globalTable.Length - 1)
             {
                 absoluteTileIndex = _globalTable.Length - 1;
             }
@@ -36,6 +44,11 @@ namespace Spotlight.Services
         public Tile GetRelativeTile(int tileIndex)
         {
             return _relativeTable[tileIndex];
+        }
+
+        public Tile GetOverlayTile(int tileIndex)
+        {
+            return _overlayTable[tileIndex];
         }
 
         public void SetStaticTable(Tile[] staticTable)

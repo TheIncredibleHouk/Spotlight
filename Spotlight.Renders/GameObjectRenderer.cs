@@ -13,85 +13,101 @@ namespace Spotlight.Renderers
     public class GameObjectRenderer : Renderer
     {
 
-        public const int BITMAP_HEIGHT = Level.BLOCK_HEIGHT * 16;
-        public const int BITMAP_WIDTH = Level.BLOCK_WIDTH * 16;
-
-        private byte[] _BackgroundLayer;
-
+        private byte[] _drawLayer;
         private GameObjectService _gameObjectService;
-        private List<LevelObject> _levelObjects;
 
-        public GameObjectRenderer(GraphicsAccessor graphicsAccessor, GameObjectService gameObjectService, List<LevelObject> levelObjects) : base(graphicsAccessor)
+        public GameObjectRenderer(GameObjectService gameObjectService, GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
         {
+            BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK * 16;
+            _drawLayer = new byte[256 * 256 * 4];
             _gameObjectService = gameObjectService;
-            _levelObjects = levelObjects;
-        }
-
-        public void Refresh()
-        {
-            _BackgroundLayer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * BYTES_PER_BLOCK];
         }
 
         private Color[][] _rgbPalette;
-        public void SetPalette(Palette palette)
+        public void Update(Palette palette)
         {
             _rgbPalette = palette.RgbColors;
-            if (_levelObjects != null)
+            if (_drawLayer != null)
             {
-                Update();
+                Update(_lastObjects, _lastWithOverlays);
             }
-        }
-
-        public byte[] GetRectangle(Int32Rect rect)
-        {
-            return GetRectangle(rect, _BackgroundLayer);
         }
 
         public void Update()
         {
-            Update(new Rect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT));
+            Update(_lastObjects, _lastWithOverlays);
         }
 
-        public void Update(Int32Rect rect)
+        public byte[] GetRectangle(Int32Rect rect)
         {
-            Update(new Rect(rect.X, rect.Y, rect.Width, rect.Height));
+
+            return GetRectangle(rect, _drawLayer);
         }
 
-        public void Update(Rect updateRect)
-        {
-            int blockX = (int)(updateRect.X / 16),
-                blockY = (int)(updateRect.Y / 16),
-                blockWidth = (int)((updateRect.X + updateRect.Width) / 16) + 2,
-                blockHeight = (int)((updateRect.Y + updateRect.Height) / 16) + 2;
+        private List<LevelObject> _lastObjects;
 
-            RenderObjects(blockX, blockY, blockWidth, blockHeight);
+        public void Clear()
+        {
+            for (int y = 0; y < 256; y++)
+            {
+                long yOffset = (256 * 4 * y);
+
+                for (int x = 0; x < 256; x++)
+                {
+                    long xOffset = (x * 4) + yOffset;
+                    Color color = _rgbPalette[0][0];
+
+                    if (xOffset >= 0 && xOffset < _drawLayer.Length)
+                    {
+                        if (RenderGrid && (x % 16 == 0 || y % 16 == 0))
+                        {
+                            color = (y + x) % 2 == 1 ? Color.White : Color.Black;
+                        }
+
+                        _drawLayer[xOffset] = (byte)color.B;
+                        _drawLayer[xOffset + 1] = (byte)color.G;
+                        _drawLayer[xOffset + 2] = (byte)color.R;
+                        _drawLayer[xOffset + 3] = 255;
+
+                    }
+                }
+            }
         }
 
-        public void RenderObjects(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT)
+        private bool _lastWithOverlays;
+        public void Update(List<LevelObject> _levelObjects, bool withOverlays)
         {
-            Rect updateReact = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
+            if (_levelObjects == null)
+            {
+                return;
+            }
+
+            _lastObjects = _levelObjects;
+            _lastWithOverlays = withOverlays;
 
             foreach (var levelObject in _levelObjects)
             {
                 int baseX = levelObject.X * 16, baseY = levelObject.Y * 16;
-                foreach (var sprite in levelObject.GameObject.Sprites.Where(s => s.PropertiesAppliedTo == null ? true : s.PropertiesAppliedTo.Contains(levelObject.Property)))
-                {
-                    if (sprite.Overlay)
-                    {
-                        continue;
-                    }
+                var visibleSprites = levelObject.GameObject.Sprites.Where(s => s.PropertiesAppliedTo == null ? true : s.PropertiesAppliedTo.Contains(levelObject.Property)).Where(s => withOverlays ? true : !s.Overlay).ToList();
 
-                    int tileValue = sprite.TileValue;
+                if (visibleSprites.Count == 0)
+                {
+                    visibleSprites = _gameObjectService.InvisibleSprites;
+                }
+
+                foreach (var sprite in visibleSprites)
+                {
                     int paletteIndex = sprite.PaletteIndex;
 
-                    Tile topTile = _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValue);
-                    Tile bottomTile = _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValue + 1);
+                    Tile topTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileValueIndex) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex);
+                    Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, paletteIndex, _BackgroundLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
-                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, paletteIndex, _BackgroundLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, paletteIndex, _drawLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, paletteIndex, _drawLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }
+
     }
 }

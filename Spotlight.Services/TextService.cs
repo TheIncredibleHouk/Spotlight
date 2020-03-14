@@ -22,7 +22,7 @@ namespace Spotlight.Services
 
             if (_project.TextTable.ContainsKey(tableName))
             {
-                return _project.TextTable[tableName].OrderBy(kv => kv.Key).ToList();
+                return _project.TextTable[tableName].ToList();
             }
 
             return new List<KeyValuePair<string, string>>();

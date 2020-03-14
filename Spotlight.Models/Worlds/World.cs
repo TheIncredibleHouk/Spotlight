@@ -20,7 +20,7 @@ namespace Spotlight.Models
         public int TileTableIndex { get; set; }
         public int MusicValue { get; set; }
         public int ScreenLength { get; set; }
-        public int PaletteIndex { get; set; }
+        public Guid PaletteId { get; set; }
         public string Name { get; set; }
         public int[] TileData { get; set; }
         public List<WorldPointer> Pointers { get; set; }

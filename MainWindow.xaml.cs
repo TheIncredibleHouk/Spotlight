@@ -28,7 +28,7 @@ namespace Spotlight
         private LevelService _levelService;
         private TileService _tileService;
         private TextService _textService;
-
+        private GameObjectService _gameObjectService;
         public MainWindow()
         {
             _errorService = new ErrorService();
@@ -39,6 +39,54 @@ namespace Spotlight
             _ProjectPanel.ProjectService = _projectService;
             _ProjectPanel.ProjectLoaded += _ProjectPanel_ProjectLoaded;
             _ProjectPanel.TextEditorOpened += _ProjectPanel_TextEditorOpened;
+            _ProjectPanel.ObjectEditorOpened += _ProjectPanel_ObjectEditorOpened;
+            _ProjectPanel.TileBlockEditorOpened += _ProjectPanel_TileBlockEditorOpened;
+        }
+
+        private void _ProjectPanel_TileBlockEditorOpened()
+        {
+            var existingTab = OpenedTabs.Where(t => t.DataContext == _tileService).FirstOrDefault();
+
+            if (existingTab != null)
+            {
+                TabsOpen.SelectedItem = existingTab;
+                return;
+            }
+
+            TabItem tabItem = new TabItem();
+            TileBlockEditor tileSetEditor = new TileBlockEditor(_graphicsService, _tileService, _textService);
+
+            tabItem.Header = "Tile Set Editor";
+            tabItem.Content = tileSetEditor;
+            tabItem.DataContext = _tileService;
+
+            TabsOpen.Items.Add(tabItem);
+            OpenedTabs.Add(tabItem);
+            TabsOpen.Visibility = Visibility.Visible;
+            TabsOpen.SelectedItem = tabItem;
+        }
+
+        private void _ProjectPanel_ObjectEditorOpened()
+        {
+            var existingTab = OpenedTabs.Where(t => t.DataContext == _gameObjectService).FirstOrDefault();
+
+            if (existingTab != null)
+            {
+                TabsOpen.SelectedItem = existingTab;
+                return;
+            }
+
+            TabItem tabItem = new TabItem();
+            GameObjectEditor objectEditor = new GameObjectEditor(_projectService, _graphicsService, _gameObjectService);
+
+            tabItem.Header = "Object Editor";
+            tabItem.Content = objectEditor;
+            tabItem.DataContext = _gameObjectService;
+
+            TabsOpen.Items.Add(tabItem);
+            OpenedTabs.Add(tabItem);
+            TabsOpen.Visibility = Visibility.Visible;
+            TabsOpen.SelectedItem = tabItem;
         }
 
         private void _ProjectPanel_TextEditorOpened()
@@ -71,6 +119,7 @@ namespace Spotlight
             _levelService = new LevelService(_errorService, project);
             _tileService = new TileService(_errorService, project);
             _textService = new TextService(_errorService, project);
+            _gameObjectService = new GameObjectService(_errorService, project);
 
             List<WorldInfo> worldInfos = new List<WorldInfo>();
             worldInfos.AddRange(project.WorldInfo);
@@ -93,7 +142,7 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            LevelPanel levelPanel = new LevelPanel(_graphicsService, _textService, _tileService, _levelService, _levelService.LoadLevel(levelInfo));
+            LevelPanel levelPanel = new LevelPanel(_graphicsService, _textService, _tileService, _gameObjectService, _levelService, _levelService.LoadLevel(levelInfo));
 
             tabItem.Header = levelInfo.Name;
             tabItem.Content = levelPanel;

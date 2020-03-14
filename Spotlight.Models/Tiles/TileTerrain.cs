@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Spotlight.Models
 {
-    public class TileState
+    public class TileTerrain : TileInteraction
     {
-
-        public string Name { get; set; }
-        public int Value { get; set; }
-
         public static byte Background = 0x00;
         public static byte Foreground = 0x10;
         public static byte Water = 0x20;
@@ -20,11 +16,13 @@ namespace Spotlight.Models
         public static byte HiddenItemBlock = 0x80;
         public static byte Solid = 0xC0;
         public static byte ItemBlock = 0xF0;
+        public static byte Mask = 0xF0;
 
-        public TileState(string name, int value)
+        public List<TileInteraction> Interactions { get; set; }
+
+        public TileTerrain()
         {
-            Name = name;
-            Value = value;
+            Interactions = new List<TileInteraction>();
         }
     }
 }

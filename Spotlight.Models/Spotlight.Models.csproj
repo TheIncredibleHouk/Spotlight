@@ -47,16 +47,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameObjects\GameObjectTable.cs" />
     <Compile Include="GameObjects\Sprite.cs" />
     <Compile Include="Levels\Level.cs" />
     <Compile Include="Levels\LevelObject.cs" />
+    <Compile Include="Levels\LevelObjectChange.cs" />
     <Compile Include="Levels\LevelPointer.cs" />
     <Compile Include="Project\LevelInfo.cs" />
     <Compile Include="Palette\Palette.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="Tiles\PSwitchAlteration.cs" />
     <Compile Include="Tiles\Tile.cs" />
-    <Compile Include="Tiles\TileState.cs" />
+    <Compile Include="Tiles\TileChange.cs" />
+    <Compile Include="Tiles\TileTerrain.cs" />
     <Compile Include="Tiles\TileBlock.cs" />
     <Compile Include="Tiles\TileInteraction.cs" />
     <Compile Include="Tiles\TileSet.cs" />
