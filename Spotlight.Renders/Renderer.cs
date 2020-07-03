@@ -48,14 +48,18 @@ namespace Spotlight.Renderers
         }
 
         public const int BYTES_PER_PIXEL = 4;
-        public const int PIXELS_PER_BLOCK = 16;
+        public const int PIXELS_PER_TILE = 8 * 8;
+        public const int PIXELS_PER_BLOCK_ROW = 16;
+        public const int TILES_PER_ROW = 16;
+        public const int TILES_PER_COLUMN = 16;
+        public const int PIXELS_PER_BLOCK = 16 * 16;
         public const int BYTES_PER_BLOCK = BYTES_PER_PIXEL * PIXELS_PER_BLOCK;
         public const int BLOCKS_PER_SCREEN = 16;
         public const int SCREENS_PER_LEVEL = 15;
 
-        public int BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK * BLOCKS_PER_SCREEN * SCREENS_PER_LEVEL;
+        public int BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK_ROW * BLOCKS_PER_SCREEN * SCREENS_PER_LEVEL;
 
-        protected void RenderTile(int x, int y, Tile tile, int paletteIndex, byte[] buffer, Color[] palette, bool horizontalFlip = false, bool verticalFlip = false, bool useTransparency = false, double opacity = 1)
+        protected void RenderTile(int x, int y, Tile tile, byte[] buffer, Color[] palette, bool horizontalFlip = false, bool verticalFlip = false, bool useTransparency = false, double opacity = 1)
         {
             int pixelXChange = horizontalFlip ? -1 : 1,
                 pixelYChange = verticalFlip ? -1 : 1;
@@ -70,22 +74,25 @@ namespace Spotlight.Renderers
                     int colorIndex = tile[pixelX, pixelY];
 
                     Color color = palette[colorIndex];
-                    double calcOpacity = (byte)(useTransparency && colorIndex == 0 ? 0 : opacity);
+                    double calcOpacity = (double)(useTransparency && (colorIndex == 0) ? 0 : opacity);
 
                     if (xOffset >= 0 && xOffset < buffer.Length)
                     {
-                        if (RenderGrid && ((j == 0 && x % 16 == 0) || (i == 0 && y % 16 == 0)))
+                        if (colorIndex == 0)
                         {
-                            color = (j + i) % 2 == 1 ? Color.White : Color.Black;
-                        }
-
-                        if(ScreenBorders)
-                        {
-                            if(x > 0)
+                            if (RenderGrid && ((j == 0 && x % 16 == 0) || (i == 0 && y % 16 == 0)))
                             {
-                                if(xOffset % 1024 == 1023 || xOffset % 1024 == 0)
+                                color = (j + i) % 2 == 1 ? Color.White : Color.Black;
+                            }
+
+                            if (ScreenBorders)
+                            {
+                                if (x > 0)
                                 {
-                                    color = (j + i) % 2 == 1 ? Color.Red : Color.Green;
+                                    if (xOffset % 1024 == 1023 || xOffset % 1024 == 0)
+                                    {
+                                        color = (j + i) % 2 == 1 ? Color.Red : Color.Green;
+                                    }
                                 }
                             }
                         }
@@ -101,7 +108,7 @@ namespace Spotlight.Renderers
 
         protected void DrawColor(int x, int y, Color color, int[] buffer, double opacity = .5)
         {
-            for (int i = 0, pixelY = 0; i < 16; i++, pixelY ++)
+            for (int i = 0, pixelY = 0; i < 16; i++, pixelY++)
             {
                 long yOffset = (BYTE_STRIDE * (y + i)) + (x * 4);
 
@@ -137,7 +144,7 @@ namespace Spotlight.Renderers
         }
         protected void Clear(Color color, byte[] buffer)
         {
-            for(int i = 0; i < buffer.Length; i += 4)
+            for (int i = 0; i < buffer.Length; i += 4)
             {
                 buffer[i] = (byte)color.B;
                 buffer[i + 1] = (byte)color.G;

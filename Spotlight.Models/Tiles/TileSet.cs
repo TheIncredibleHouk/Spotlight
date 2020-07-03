@@ -13,12 +13,12 @@ namespace Spotlight.Models
             FireBallInteractions = new List<int>();
             IceBallInteractions = new List<int>();
             PSwitchAlterations = new List<PSwitchAlteration>();
-            Tiles = new TileBlock[256];
+            TileBlocks = new TileBlock[256];
         }
 
         public List<int> FireBallInteractions { get; set; }
         public List<int> IceBallInteractions { get; set; }
         public List<PSwitchAlteration> PSwitchAlterations { get; set; }
-        public TileBlock[] Tiles { get; set; }
+        public TileBlock[] TileBlocks { get; set; }
     }
 }

@@ -46,13 +46,15 @@ namespace Spotlight
             _historyService = new HistoryService();
             _level = level;
 
+            level.ObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
+
             Tile[] staticSet = _graphicsService.GetTileSection(level.StaticTileTableIndex);
             Tile[] animationSet = _graphicsService.GetTileSection(level.AnimationTileTableIndex);
             _graphicsAccessor = new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             _levelDataAccessor = new LevelDataAccessor(level);
 
             _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, 96, 96, PixelFormats.Bgra32, null);
-            _renderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _gameObjectService);
+            _renderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _gameObjectService, _tileService.GetTerrain());
 
             TileSet tileSet = _tileService.GetTileSet(level.TileSetIndex);
             _renderer.SetTileSet(tileSet);
@@ -72,13 +74,19 @@ namespace Spotlight
 
             EditMode = EditMode.Tiles;
 
-            TileSelector.Initialize(_graphicsAccessor, tileSet, palette);
+            TileSelector.Initialize(_graphicsAccessor, _tileService, tileSet, palette);
             ObjectSelector.Initialize(_gameObjectService, _graphicsAccessor, palette);
 
             Update();
             UpdateTextTables();
 
             gameObjectService.GameObjectUpdated += GameObjectService_GameObjectsUpdated;
+            ObjectSelector.GameObjectDoubleClicked += ObjectSelector_GameObjectDoubleClicked;
+        }
+
+        private void ObjectSelector_GameObjectDoubleClicked(GameObject gameObject)
+        {
+            GlobalPanels.EditGameObject(gameObject, (Palette)PaletteIndex.SelectedItem);
         }
 
         private void GameObjectService_GameObjectsUpdated(GameObject gameObject)
@@ -135,7 +143,7 @@ namespace Spotlight
 
                 Int32Rect sourceArea = new Int32Rect(0, 0, Math.Min(safeRect.Width, LevelRenderer.BITMAP_WIDTH), Math.Min(safeRect.Height, LevelRenderer.BITMAP_HEIGHT));
 
-                _renderer.Update(safeRect, withOverlays);
+                _renderer.Update(safeRect, ShowExtraSprites.IsChecked.Value, ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
                 _bitmap.WritePixels(sourceArea, _renderer.GetRectangle(safeRect), safeRect.Width * 4, safeRect.X, safeRect.Y);
                 _bitmap.AddDirtyRect(safeRect);
             }
@@ -223,7 +231,7 @@ namespace Spotlight
 
                 if (Keyboard.Modifiers == ModifierKeys.Shift)
                 {
-                    TileSelector.SelectedTileValue = tileValue;
+                    TileSelector.SelectedBlockValue = tileValue;
                     return;
                 }
 
@@ -237,9 +245,9 @@ namespace Spotlight
                 }
                 else if (DrawMode == DrawMode.Replace)
                 {
-                    if (tileValue != TileSelector.SelectedTileValue)
+                    if (tileValue != TileSelector.SelectedBlockValue)
                     {
-                        _levelDataAccessor.ReplaceValue(tileValue, TileSelector.SelectedTileValue);
+                        _levelDataAccessor.ReplaceValue(tileValue, TileSelector.SelectedBlockValue);
                         Update();
                     }
                 }
@@ -249,7 +257,7 @@ namespace Spotlight
                     stack.Push(new Point(x, y));
 
                     int checkValue = _levelDataAccessor.GetData(x, y);
-                    if (checkValue == TileSelector.SelectedTileValue)
+                    if (checkValue == TileSelector.SelectedBlockValue)
                     {
                         return;
                     }
@@ -269,7 +277,7 @@ namespace Spotlight
 
                         if (checkValue == _levelDataAccessor.GetData(i, j))
                         {
-                            _levelDataAccessor.SetData(i, j, TileSelector.SelectedTileValue);
+                            _levelDataAccessor.SetData(i, j, TileSelector.SelectedBlockValue);
 
                             if (i < lowestX)
                             {
@@ -294,6 +302,18 @@ namespace Spotlight
                             stack.Push(new Point(i, j - 1));
                         }
                     }
+
+                    TileChange tileChange = new TileChange(lowestX, lowestY, highestX - lowestX + 1, highestY - lowestY + 1);
+
+                    for (int j = 0, row = lowestY; row <= highestY; row++, j++)
+                    {
+                        for (int i = 0, col = lowestX; col <= highestX; col++, i++)
+                        {
+                            tileChange.Data[i, j] = _levelDataAccessor.GetData(col, row) == TileSelector.SelectedBlockValue ? checkValue : -1;
+                        }
+                    }
+
+                    _historyService.UndoTiles.Push(tileChange);
 
                     Update(new Rect(lowestX * 16, lowestY * 16, (highestX - lowestX + 1) * 16, (highestY - lowestY + 1) * 16));
                 }
@@ -681,8 +701,11 @@ namespace Spotlight
             {
                 for (int r = rowStart, j = 0; r < rowEnd; r++, j++)
                 {
-                    reverseTileChange.Data[i, j] = _levelDataAccessor.GetData(c, r);
-                    _levelDataAccessor.SetData(c, r, tileChange.Data[i, j]);
+                    if (tileChange.Data[i, j] > -1)
+                    {
+                        reverseTileChange.Data[i, j] = _levelDataAccessor.GetData(c, r);
+                        _levelDataAccessor.SetData(c, r, tileChange.Data[i, j]);
+                    }
                 }
             }
 
@@ -750,7 +773,7 @@ namespace Spotlight
                         for (int r = rowStart, j = 0; r <= rowEnd; r++, j++)
                         {
                             tileChange.Data[i, j] = _levelDataAccessor.GetData(c, r);
-                            _levelDataAccessor.SetData(c, r, TileSelector.SelectedTileValue);
+                            _levelDataAccessor.SetData(c, r, TileSelector.SelectedBlockValue);
                         }
                     }
 
@@ -938,6 +961,11 @@ namespace Spotlight
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            SaveLevel();
+        }
+
+        private void SaveLevel()
+        {
             _levelService.SaveLevel(_level);
             MessageBox.Show(_level.Name + " has been saved!", "Save succes");
         }
@@ -1001,7 +1029,6 @@ namespace Spotlight
                 }
 
                 Update(selectedObject.BoundRectangle);
-                LevelRenderSource.Focus();
             }
         }
 
@@ -1015,19 +1042,16 @@ namespace Spotlight
             EditMode = EditMode.Tiles;
         }
 
-        private bool withOverlays = false;
-        private void ShowExtraSprites_Unchecked(object sender, RoutedEventArgs e)
-        {
-            withOverlays = ShowExtraSprites.IsChecked.Value;
-            Update();
-        }
-
         private void LevelRenderSource_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
                 switch (e.Key)
                 {
+                    case Key.S:
+                        SaveLevel();
+                        break;
+
                     case Key.C:
                         CopySelection();
                         break;
@@ -1078,7 +1102,7 @@ namespace Spotlight
 
         private void LevelRenderSource_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (!GameObjectProperty.IsMouseOver)
+            if (!GameObjectProperty.IsMouseOver && LevelScroller.IsMouseOver)
             {
                 LevelRenderSource.Focus();
             }
@@ -1088,14 +1112,38 @@ namespace Spotlight
         private bool _showTerrain;
         private void ShowTerrain_Unchecked(object sender, RoutedEventArgs e)
         {
-            _showTerrain = ShowTerrain.IsChecked.Value;
             Update();
+            TileSelector.Update(ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
         }
 
         private void ShowTerrain_Checked(object sender, RoutedEventArgs e)
         {
-            _showTerrain = ShowTerrain.IsChecked.Value;
             Update();
+            TileSelector.Update(ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
+        }
+
+        private void ShowInteraction_Checked(object sender, RoutedEventArgs e)
+        {
+            Update();
+            TileSelector.Update(ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
+        }
+
+        private void ShowInteraction_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Update();
+            TileSelector.Update(ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
+        }
+
+        private void ShowExtraSprites_Checked(object sender, RoutedEventArgs e)
+        {
+            Update();
+            TileSelector.Update(ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
+        }
+
+        private void ShowExtraSprites_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Update();
+            TileSelector.Update(ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
         }
     }
 

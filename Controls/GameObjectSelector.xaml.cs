@@ -26,6 +26,8 @@ namespace Spotlight
 
         public delegate void GameObjectSelectorEventHandler(GameObject gameObject);
         public event GameObjectSelectorEventHandler GameObjectChanged;
+        public event GameObjectSelectorEventHandler GameObjectDoubleClicked;
+
         public GameObjectSelector()
         {
             InitializeComponent();
@@ -100,10 +102,13 @@ namespace Spotlight
             }
             set
             {
-                GameObjectTypes.SelectedItem = value.GameObjectType;
-                GameObjectGroups.SelectedItem = value.Group;
-                _selectedObject = _gameObjectService.GetObjects((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.GameObject == value).FirstOrDefault();
-                UpdateSelectedObject();
+                if (value != null)
+                {
+                    GameObjectTypes.SelectedItem = value.GameObjectType;
+                    GameObjectGroups.SelectedItem = value.Group;
+                    _selectedObject = _gameObjectService.GetObjects((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.GameObject == value).FirstOrDefault();
+                    UpdateSelectedObject();
+                }
             }
         }
 
@@ -170,6 +175,14 @@ namespace Spotlight
                     if (GameObjectChanged != null)
                     {
                         GameObjectChanged(_selectedObject.GameObject);
+                    }
+                }
+
+                if(e.ClickCount > 1)
+                {
+                    if(GameObjectDoubleClicked != null)
+                    {
+                        GameObjectDoubleClicked(_selectedObject.GameObject);
                     }
                 }
             }

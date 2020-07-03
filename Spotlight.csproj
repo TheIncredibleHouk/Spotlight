@@ -81,6 +81,7 @@
     <Compile Include="Controls\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\GlobalPanels.cs" />
     <Page Include="Controls\GameObjectEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -141,7 +142,7 @@
     <Compile Include="Controls\WorldPanel.xaml.cs">
       <DependentUpon>WorldPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Conversions\Colors.cs" />
+    <Compile Include="Utilities\Colors.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

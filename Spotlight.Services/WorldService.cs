@@ -14,10 +14,12 @@ namespace Spotlight.Services
     public class WorldService
     {
         private readonly ErrorService _errorService;
+        private readonly Project _project;
 
-        public WorldService(ErrorService errorService)
+        public WorldService(ErrorService errorService, Project project)
         {
             _errorService = errorService;
+            _project = project;
         }
 
         public List<World> ConvertFromLegacy(List<LegacyWorld> legacyWorld, LegacyProject legacyProject)
@@ -72,11 +74,12 @@ namespace Spotlight.Services
             return legacyWorlds;
         }
 
-        public World LoadWorld(string path)
+        public World LoadWorld(WorldInfo worldInfo)
         {
             try
             {
-                return JsonConvert.DeserializeObject<World>(File.ReadAllText(path));
+                string fileName = _project.DirectoryPath + @"\worlds\" + worldInfo.Name + ".json";
+                return JsonConvert.DeserializeObject<World>(File.ReadAllText(fileName));
             }
             catch (Exception e)
             {

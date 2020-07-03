@@ -23,6 +23,9 @@ namespace Spotlight
     /// </summary>
     public partial class TileBlockSelector : UserControl
     {
+        public delegate void TileBlockSelectorEventHandler(TileBlock tileBlock, int tileBlockValue);
+        public event TileBlockSelectorEventHandler TileBlockSelected;
+
         public TileBlock SelectedTileBlock { get; private set; }
         public TileBlockSelector()
         {
@@ -30,13 +33,16 @@ namespace Spotlight
         }
 
         private GraphicsAccessor _graphicsAccessor;
-        private TileRenderer _tileRenderer;
+        private TileSetRenderer _tileSetRenderer;
         private WriteableBitmap _bitmap;
-        public void Initialize(GraphicsAccessor graphicsAccessor, TileSet tileSet, Palette palette)
+        private TileSet _tileSet;
+        private List<TileTerrain> _terrain;
+        public void Initialize(GraphicsAccessor graphicsAccessor, TileService tileService, TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
         {
             _graphicsAccessor = graphicsAccessor;
-
-            _tileRenderer = new TileRenderer(graphicsAccessor);
+            _tileSet = tileSet;
+            _terrain = tileService.GetTerrain();
+            _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(graphicsAccessor, _terrain);
 
             TileRenderSource.Width = 256;
             TileRenderSource.Height = 256;
@@ -46,58 +52,78 @@ namespace Spotlight
             TileRenderSource.Source = _bitmap;
 
             Update(tileSet, palette);
-            SelectedTileValue = 0;
+            SelectedBlockValue = 0;
         }
 
-        public void Update()
+
+        public void Update(int tileIndex)
         {
-            if (_tileRenderer != null)
+            if (_tileSetRenderer != null)
             {
-                _tileRenderer.Update();
-                Render();
+                _tileSetRenderer.Update();
+                Update(new Rect((int) (tileIndex  % 16) * 16, (int)((tileIndex / 16) * 16), 16, 16));
             }
         }
+
         public void Update(TileSet tileSet)
         {
-            if (_tileRenderer != null)
+            if (_tileSetRenderer != null)
             {
-                _tileRenderer.Update(tileSet);
-                Render();
+                _tileSet = tileSet;
+                _tileSetRenderer.Update(tileSet);
+                Update();
             }
         }
 
         public void Update(Palette palette)
         {
-            if (_tileRenderer != null)
+            if (_tileSetRenderer != null)
             {
-                _tileRenderer.Update(palette);
-                Render();
+                _tileSetRenderer.Update(palette);
+                Update();
             }
         }
 
         public void Update(TileSet tileSet, Palette palette)
         {
-            if (_tileRenderer != null)
+            if (_tileSetRenderer != null)
             {
-                _tileRenderer.Update(tileSet, palette);
-                Render();
+                _tileSet = tileSet;
+                _tileSetRenderer.Update(tileSet, palette);
+                Update();
             }
         }
 
-        private void Render()
+        public void Update(bool withTerrain, bool withInteractions)
         {
-            if (_bitmap == null || _tileRenderer == null)
+            if (_tileSetRenderer != null)
+            {
+                _tileSetRenderer.Update(withTerrain, withInteractions);
+                Update();
+            }
+        }
+
+        public void Update()
+        {
+            if (_tileSetRenderer != null)
+            {
+                Update(new Rect(0, 0, 256, 256));
+            }
+        }
+
+        private void Update(Rect rect)
+        {
+            if (_bitmap == null || _tileSetRenderer == null)
             {
                 return;
             }
-
+            
             _bitmap.Lock();
 
 
-            Int32Rect sourceArea = new Int32Rect(0, 0, 256, 256);
-            _bitmap.WritePixels(sourceArea, _tileRenderer.GetRectangle(sourceArea), sourceArea.Width * 4, sourceArea.X, sourceArea.Y);
+            Int32Rect sourceArea = new Int32Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+            _bitmap.WritePixels(sourceArea, _tileSetRenderer.GetRectangle(sourceArea), sourceArea.Width * 4, sourceArea.X, sourceArea.Y);
             _bitmap.AddDirtyRect(sourceArea);
-
             _bitmap.Unlock();
         }
 
@@ -105,27 +131,32 @@ namespace Spotlight
         private void TileRenderSource_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point clickPoint = Snap(e.GetPosition(this));
-
-            SelectedTileValue = (int)(clickPoint.Y + (clickPoint.X / 16));
+            SelectedBlockValue = (int)(clickPoint.Y + (clickPoint.X / 16));
         }
 
-        private int _selectedTileValue;
-        public int SelectedTileValue
+        private int _selectedBlockValue;
+        public int SelectedBlockValue
         {
             get
             {
-                return _selectedTileValue;
+                return _selectedBlockValue;
             }
             set
             {
-                _selectedTileValue = value;
+                _selectedBlockValue = value;
+                SelectedTileBlock = _tileSet.TileBlocks[value];
+
                 UpdateSelectionRectangle();
+                if(TileBlockSelected != null)
+                {
+                    TileBlockSelected(_tileSet.TileBlocks[value], value);
+                }
             }
         }
         private void UpdateSelectionRectangle()
         {
-            Canvas.SetTop(SelectionRectangle, ((int)(_selectedTileValue / 16)) * 16);
-            Canvas.SetLeft(SelectionRectangle, ((int)(_selectedTileValue % 16)) * 16);
+            Canvas.SetTop(SelectionRectangle, ((int)(_selectedBlockValue / 16)) * 16);
+            Canvas.SetLeft(SelectionRectangle, ((int)(_selectedBlockValue % 16)) * 16);
         }
 
         private Point Snap(Point value)

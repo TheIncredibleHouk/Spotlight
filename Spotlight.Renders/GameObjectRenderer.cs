@@ -13,13 +13,13 @@ namespace Spotlight.Renderers
     public class GameObjectRenderer : Renderer
     {
 
-        private byte[] _drawLayer;
+        private byte[] _buffer;
         private GameObjectService _gameObjectService;
 
         public GameObjectRenderer(GameObjectService gameObjectService, GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
         {
-            BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK * 16;
-            _drawLayer = new byte[256 * 256 * 4];
+            BYTE_STRIDE = 256 * 4;
+            _buffer = new byte[256 * 256 * 4];
             _gameObjectService = gameObjectService;
         }
 
@@ -27,7 +27,7 @@ namespace Spotlight.Renderers
         public void Update(Palette palette)
         {
             _rgbPalette = palette.RgbColors;
-            if (_drawLayer != null)
+            if (_buffer != null)
             {
                 Update(_lastObjects, _lastWithOverlays);
             }
@@ -41,7 +41,7 @@ namespace Spotlight.Renderers
         public byte[] GetRectangle(Int32Rect rect)
         {
 
-            return GetRectangle(rect, _drawLayer);
+            return GetRectangle(rect, _buffer);
         }
 
         private List<LevelObject> _lastObjects;
@@ -57,17 +57,17 @@ namespace Spotlight.Renderers
                     long xOffset = (x * 4) + yOffset;
                     Color color = _rgbPalette[0][0];
 
-                    if (xOffset >= 0 && xOffset < _drawLayer.Length)
+                    if (xOffset >= 0 && xOffset < _buffer.Length)
                     {
                         if (RenderGrid && (x % 16 == 0 || y % 16 == 0))
                         {
                             color = (y + x) % 2 == 1 ? Color.White : Color.Black;
                         }
 
-                        _drawLayer[xOffset] = (byte)color.B;
-                        _drawLayer[xOffset + 1] = (byte)color.G;
-                        _drawLayer[xOffset + 2] = (byte)color.R;
-                        _drawLayer[xOffset + 3] = 255;
+                        _buffer[xOffset] = (byte)color.B;
+                        _buffer[xOffset + 1] = (byte)color.G;
+                        _buffer[xOffset + 2] = (byte)color.R;
+                        _buffer[xOffset + 3] = 255;
 
                     }
                 }
@@ -103,8 +103,8 @@ namespace Spotlight.Renderers
                     Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, paletteIndex, _drawLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
-                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, paletteIndex, _drawLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }

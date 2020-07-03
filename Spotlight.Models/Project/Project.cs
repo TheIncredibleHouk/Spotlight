@@ -143,6 +143,7 @@ namespace Spotlight.Models
         public GameObject[] GameObjects { get; set; }
         public Dictionary<string, List<KeyValuePair<string, string>>> TextTable { get; set; }
         public Color[] RgbPalette { get; set; }
+
     }
 
     [XmlRoot("project")]

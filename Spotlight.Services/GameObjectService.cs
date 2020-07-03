@@ -34,6 +34,25 @@ namespace Spotlight.Services
             _project = project;
             GameObjectTable = new GameObjectTable();
             localGameObjects = JsonConvert.DeserializeObject<GameObject[]>(JsonConvert.SerializeObject(_project.GameObjects));
+
+            for(int i = 0; i < localGameObjects.Length; i++)
+            {
+                if(localGameObjects[i] == null)
+                {
+                    localGameObjects[i] = new GameObject()
+                    {
+                        Group = "Unused",
+                        GameId = i,
+                        GameObjectType = GameObjectType.Global,
+                        Name = "Unused x" + i.ToString("X"),
+                        Sprites = new List<Sprite>()
+                        {
+                            new Sprite(){ Overlay = true, X = 0, Y = 0, TileValueIndex = 8},
+                            new Sprite(){ Overlay = true, X = 0, Y = 0, TileValueIndex = 0x0A}
+                        }
+                    };
+                }
+            }
             RefreshGameObjectTable();
         }
 
@@ -128,8 +147,15 @@ namespace Spotlight.Services
 
         public void CommitGameObject(GameObject gameObject)
         {
-            localGameObjects[gameObject.GameId] = gameObject;
-            _project.GameObjects = JsonConvert.DeserializeObject<GameObject[]>(JsonConvert.SerializeObject(localGameObjects));
+            GameObject globalGameObject = _project.GameObjects[gameObject.GameId];
+            globalGameObject.Name = gameObject.Name;
+            globalGameObject.Properties = gameObject.Properties;
+            globalGameObject.Sprites = gameObject.Sprites;
+
+            if(GameObjectUpdated != null)
+            {
+                GameObjectUpdated(globalGameObject);
+            }
         }
 
         public List<GameObject> ConvertFromLegacy(string fileName)

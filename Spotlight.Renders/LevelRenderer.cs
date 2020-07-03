@@ -16,17 +16,17 @@ namespace Spotlight.Renderers
         public const int BITMAP_HEIGHT = Level.BLOCK_HEIGHT * 16;
         public const int BITMAP_WIDTH = Level.BLOCK_WIDTH * 16;
 
-        private byte[] _BackgroundLayer;
+        private byte[] _buffer;
 
         private LevelDataAccessor _levelDataAccessor;
         private GameObjectService _gameObjectService;
-        private TileService _tileService;
-
-        public LevelRenderer(GraphicsAccessor graphicsAccessor, LevelDataAccessor levelDataAccessor, GameObjectService gameObjectService) : base(graphicsAccessor)
+        private List<TileTerrain> _terrain;
+        public LevelRenderer(GraphicsAccessor graphicsAccessor, LevelDataAccessor levelDataAccessor, GameObjectService gameObjectService, List<TileTerrain> terrain) : base(graphicsAccessor)
         {
             _levelDataAccessor = levelDataAccessor;
             _gameObjectService = gameObjectService;
-            _BackgroundLayer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * BYTES_PER_BLOCK];
+            _terrain = terrain;
+            _buffer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * 4];
         }
 
 
@@ -54,31 +54,47 @@ namespace Spotlight.Renderers
 
         public byte[] GetRectangle(Int32Rect rect)
         {
-            return GetRectangle(rect, _BackgroundLayer);
+            return GetRectangle(rect, _buffer);
         }
 
-        public void Update(bool withOverlays = false, bool withTerrain = false)
+        public void Update()
         {
-            Update(new Rect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT), withOverlays);
+            Update(new Rect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT));
         }
 
-        public void Update(Int32Rect rect, bool withOverlays, bool withTerrain = false)
+        public void Update(Int32Rect rect)
         {
-            Update(new Rect(rect.X, rect.Y, rect.Width, rect.Height), withOverlays);
+            Update(new Rect(rect.X, rect.Y, rect.Width, rect.Height));
         }
 
-        public void Update(Rect updateRect, bool withOverlays, bool withTerrain = false)
+        public void Update(Rect updateRect)
         {
             int blockX = (int)(updateRect.X / 16),
                 blockY = (int)(updateRect.Y / 16),
                 blockWidth = (int)(updateRect.Width / 16),
                 blockHeight = (int)(updateRect.Height / 16);
 
-            RenderTiles(blockX, blockY, blockWidth, blockHeight, withOverlays);
-            RenderObjects(blockX, blockY, blockWidth, blockHeight, withOverlays);
+            RenderTiles(blockX, blockY, blockWidth, blockHeight);
+            RenderObjects(blockX, blockY, blockWidth, blockHeight);
         }
 
-        public void RenderTiles(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT, bool withTerrain = false)
+        private bool _withSpriteOverlays, _withTerrainOverlay, _withInteractionOerlay;
+        public void Update(bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
+        {
+            _withSpriteOverlays = withSpriteOverlays;
+            _withTerrainOverlay = withTerrainOverlay;
+            _withInteractionOerlay = withInteractionOverlay;
+        }
+
+        public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
+        {
+            _withSpriteOverlays = withSpriteOverlays;
+            _withTerrainOverlay = withTerrainOverlay;
+            _withInteractionOerlay = withInteractionOverlay;
+            Update(rect);
+        }
+
+        public void RenderTiles(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT)
         {
             int maxRow = blockY + blockHeight;
             int maxCol = blockX + blockWidth;
@@ -98,26 +114,48 @@ namespace Spotlight.Renderers
                 for (int col = blockX; col < maxCol; col++)
                 {
 
-                    
+
                     int tileValue = _levelDataAccessor.GetData(col, row);
                     int paletteIndex = (tileValue & 0XC0) >> 6;
-                    TileBlock tile = _tileSet.Tiles[tileValue];
+                    TileBlock tile = _tileSet.TileBlocks[tileValue];
                     int x = col * 16, y = row * 16;
 
-                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tile.UpperLeft), tile.UpperLeftPalette, _BackgroundLayer, _rgbPalette[paletteIndex]);
-                    RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight), tile.UpperRightPalette, _BackgroundLayer, _rgbPalette[paletteIndex]);
-                    RenderTile(x, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerLeft), tile.LowerLeftPalette, _BackgroundLayer, _rgbPalette[paletteIndex]);
-                    RenderTile(x + 8, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerRight), tile.LowerRightPalette, _BackgroundLayer, _rgbPalette[paletteIndex]);
+                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tile.UpperLeft), _buffer, _rgbPalette[paletteIndex]);
+                    RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight), _buffer, _rgbPalette[paletteIndex]);
+                    RenderTile(x, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerLeft), _buffer, _rgbPalette[paletteIndex]);
+                    RenderTile(x + 8, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerRight), _buffer, _rgbPalette[paletteIndex]);
 
-                    if (withTerrain)
+                    if (_withTerrainOverlay)
                     {
-                        if(tile.Property >= TileTerrain.Foreground)
-                        {
-                            RenderTile(x, y, _graphicsAccessor.GetOverlayTile(tile.UpperLeft), tile.UpperLeftPalette, _BackgroundLayer, _rgbPalette[paletteIndex], useTransparency: true, opacity: .5);
-                            RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(tile.UpperRight), tile.UpperRightPalette, _BackgroundLayer, _rgbPalette[paletteIndex], useTransparency: true, opacity: .5);
-                            RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(tile.LowerLeft), tile.LowerLeftPalette, _BackgroundLayer, _rgbPalette[paletteIndex], useTransparency: true, opacity: .5);
-                            RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(tile.LowerRight), tile.LowerRightPalette, _BackgroundLayer, _rgbPalette[paletteIndex], useTransparency: true, opacity: .5);
+                        TileTerrain terrain = _terrain.Where(t => t.HasTerrain(tile.Property)).FirstOrDefault();
 
+                        if (terrain != null)
+                        {
+                            TileBlockOverlay overlay = terrain.Overlay;
+                            if (overlay != null)
+                            {
+                                RenderTile(x + overlay.OffsetX, y + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.UpperLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8 + overlay.OffsetX, y + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.UpperRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + overlay.OffsetX, y + 8 + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.LowerLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8 + overlay.OffsetX, y + 8 + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.LowerRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                            }
+                        }
+                    }
+
+                    if (_withInteractionOerlay)
+                    {
+                        TileInteraction interaction = _terrain.Where(t => t.HasTerrain(tile.Property)).FirstOrDefault()?.Interactions.Where(i => i.HasInteraction(tile.Property)).FirstOrDefault();
+
+                        if (interaction != null)
+                        {
+                            TileBlockOverlay overlay = interaction.Overlay;
+                            if (overlay != null)
+                            {
+                                RenderTile(x + overlay.OffsetX, y + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.UpperLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8 + overlay.OffsetX, y + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.UpperRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + overlay.OffsetX, y + 8 + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.LowerLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8 + overlay.OffsetX, y + 8 + overlay.OffsetY, _graphicsAccessor.GetOverlayTile(overlay.LowerRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                            }
                         }
                     }
                 }
@@ -131,7 +169,7 @@ namespace Spotlight.Renderers
             foreach (var levelObject in _levelDataAccessor.GetLevelObjects().Where(o => o.BoundRectangle.IntersectsWith(updateReact)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList())
             {
                 int baseX = levelObject.X * 16, baseY = levelObject.Y * 16;
-                var visibleSprites = levelObject.GameObject.Sprites.Where(s => (s.PropertiesAppliedTo == null ? true : s.PropertiesAppliedTo.Contains(levelObject.Property)) && (withOverlays ? true : !s.Overlay)).ToList();
+                var visibleSprites = levelObject.GameObject.Sprites.Where(s => (s.PropertiesAppliedTo == null ? true : s.PropertiesAppliedTo.Contains(levelObject.Property)) && (_withSpriteOverlays ? true : !s.Overlay)).ToList();
 
                 if (visibleSprites.Count == 0)
                 {
@@ -146,8 +184,8 @@ namespace Spotlight.Renderers
                     Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, paletteIndex, _BackgroundLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
-                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, paletteIndex, _BackgroundLayer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }

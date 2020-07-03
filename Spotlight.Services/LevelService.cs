@@ -97,14 +97,30 @@ namespace Spotlight.Services
             return legacyLevels;
         }
 
+        public List<IInfo> AllLevels()
+        {
+            List<IInfo> levelInfo = _project.WorldInfo.Select(w => (IInfo) w).ToList();
+            levelInfo.AddRange(_project.WorldInfo.SelectMany(w => GetLevelInfo(w.LevelsInfo)).ToList());
+
+            return levelInfo;
+        }
+
+        public List<IInfo> GetLevelInfo(List<LevelInfo> levelInfos)
+        {
+            List<IInfo> returnInfos = new List<IInfo>();
+            returnInfos.AddRange(levelInfos.Select(l => (IInfo) l));
+            returnInfos.AddRange(levelInfos.SelectMany(l => GetLevelInfo(l.SublevelsInfo)));
+            return returnInfos;
+        }
+
         public Level LoadLevel(LevelInfo levelInfo)
         {
             try
             {
-                string fileName = _project.DirectoryPath + @"\levels\" + levelInfo.Name + ".json";
-                var level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
-                level.ObjectData.ForEach(o => o.GameObject = _project.GameObjects[o.GameObjectId]);
-                return level;
+                string safeFileName = levelInfo.Name.Replace("!", "").Replace("?", "");
+
+                string fileName = _project.DirectoryPath + @"\levels\" + safeFileName + ".json";
+                return  JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
             }
             catch (Exception e)
             {
@@ -129,7 +145,9 @@ namespace Spotlight.Services
                     Directory.CreateDirectory(LevelDirectory);
                 }
 
-                File.WriteAllText(string.Format(@"{0}\{1}.json", LevelDirectory, Level.Name), JsonConvert.SerializeObject(Level));
+                string safeFileName = Level.Name.Replace("!", "").Replace("?", "");
+
+                File.WriteAllText(string.Format(@"{0}\{1}.json", LevelDirectory, safeFileName), JsonConvert.SerializeObject(Level));
             }
             catch (Exception e)
             {

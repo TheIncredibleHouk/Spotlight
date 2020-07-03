@@ -44,10 +44,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObjectRenderer.cs" />
+    <Compile Include="GraphicsRenderer.cs" />
+    <Compile Include="GraphicsSetRenderer.cs" />
     <Compile Include="LevelRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer.cs" />
-    <Compile Include="TileRenderer.cs" />
+    <Compile Include="TileSetRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spotlight.Models\Spotlight.Models.csproj">

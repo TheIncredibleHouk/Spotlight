@@ -37,6 +37,7 @@ namespace Spotlight
         private LevelObject viewObject = new LevelObject() { X = 8, Y = 7, Property = -1 };
         private List<LevelObject> viewObjects = new List<LevelObject>();
         private WriteableBitmap _bitmap;
+
         public GameObjectEditor(ProjectService projectService, GraphicsService graphicsService, GameObjectService gameObjectService)
         {
             InitializeComponent();
@@ -62,6 +63,17 @@ namespace Spotlight
             PaletteSelector.SelectedIndex = 0;
         }
 
+
+        public void SelectObject(GameObject gameObject, Palette palette)
+        {
+            if (gameObject != null)
+            {
+                ObjectSelector.SelectedObject = gameObject;
+                PaletteSelector.SelectedItem = palette ?? PaletteSelector.Items[0];
+                ObjectSelector_GameObjectChanged(gameObject);
+            }
+        }
+
         private void PaletteSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Palette selectedPalette = _graphicsService.GetPalette(((Palette)PaletteSelector.SelectedItem).Id);
@@ -74,7 +86,6 @@ namespace Spotlight
         private void ObjectSelector_GameObjectChanged(GameObject gameObject)
         {
             List<string> properties = gameObject.Properties.ToList();
-            properties.Insert(0, "None");
 
             _gameObject = viewObject.GameObject = gameObject;
             ObjectDefinition.Text = JsonConvert.SerializeObject(gameObject, Formatting.Indented);
@@ -106,10 +117,12 @@ namespace Spotlight
                 viewObject.GameObject = gameObject;
                 Update();
                 ObjectDefinition.Foreground = new SolidColorBrush(Colors.White);
+                SaveButton.IsEnabled = true;
             }
-            catch (Exception ex)
+            catch
             {
                 ObjectDefinition.Foreground = new SolidColorBrush(Colors.Red);
+                SaveButton.IsEnabled = false;
             }
         }
 
@@ -126,6 +139,8 @@ namespace Spotlight
                 _gameObjectService.UpdateGameTable(viewObject.GameObject);
                 _gameObjectService.CommitGameObject(viewObject.GameObject);
                 _projectService.SaveProject();
+                MessageBox.Show("Object data saved.");
+                
             }
         }
 
@@ -138,7 +153,7 @@ namespace Spotlight
 
         private void Properties_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            viewObject.Property = Properties.SelectedIndex - 1;
+            viewObject.Property = Properties.SelectedIndex;
             Update();
         }
     }

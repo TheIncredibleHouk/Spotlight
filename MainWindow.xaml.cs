@@ -25,6 +25,7 @@ namespace Spotlight
         private ProjectService _projectService;
         private ErrorService _errorService;
         private GraphicsService _graphicsService;
+        private WorldService _worldService;
         private LevelService _levelService;
         private TileService _tileService;
         private TextService _textService;
@@ -39,22 +40,34 @@ namespace Spotlight
             _ProjectPanel.ProjectService = _projectService;
             _ProjectPanel.ProjectLoaded += _ProjectPanel_ProjectLoaded;
             _ProjectPanel.TextEditorOpened += _ProjectPanel_TextEditorOpened;
-            _ProjectPanel.ObjectEditorOpened += _ProjectPanel_ObjectEditorOpened;
-            _ProjectPanel.TileBlockEditorOpened += _ProjectPanel_TileBlockEditorOpened;
+            _ProjectPanel.ObjectEditorOpened += OpenGameObjectEditor;
+            _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
+            TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
+
+            GlobalPanels.MainWindow = this;
         }
 
-        private void _ProjectPanel_TileBlockEditorOpened()
+        private TabItem SelectedTabItem = null;
+        private void TabsOpen_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(SelectedTabItem != null && TabsOpen.SelectedItem != SelectedTabItem)
+            {
+                TabsOpen.SelectedItem = SelectedTabItem;
+            }
+        }
+
+        public void OpenTileBlockEditor()
         {
             var existingTab = OpenedTabs.Where(t => t.DataContext == _tileService).FirstOrDefault();
 
             if (existingTab != null)
             {
-                TabsOpen.SelectedItem = existingTab;
+                TabsOpen.SelectedItem = SelectedTabItem = existingTab;
                 return;
             }
 
             TabItem tabItem = new TabItem();
-            TileBlockEditor tileSetEditor = new TileBlockEditor(_graphicsService, _tileService, _textService);
+            TileBlockEditor tileSetEditor = new TileBlockEditor(_projectService, _worldService, _levelService, _graphicsService, _tileService, _textService);
 
             tabItem.Header = "Tile Set Editor";
             tabItem.Content = tileSetEditor;
@@ -63,16 +76,17 @@ namespace Spotlight
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
-            TabsOpen.SelectedItem = tabItem;
+            TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
-        private void _ProjectPanel_ObjectEditorOpened()
+        public void OpenGameObjectEditor(GameObject gameObject, Palette palette = null)
         {
             var existingTab = OpenedTabs.Where(t => t.DataContext == _gameObjectService).FirstOrDefault();
 
             if (existingTab != null)
             {
-                TabsOpen.SelectedItem = existingTab;
+                ((GameObjectEditor)existingTab.Content).SelectObject(gameObject, palette);
+                TabsOpen.SelectedItem = SelectedTabItem = existingTab;
                 return;
             }
 
@@ -83,10 +97,13 @@ namespace Spotlight
             tabItem.Content = objectEditor;
             tabItem.DataContext = _gameObjectService;
 
+            objectEditor.SelectObject(gameObject, palette);
+
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
-            TabsOpen.SelectedItem = tabItem;
+            TabsOpen.SelectedItem = SelectedTabItem = tabItem;
+            
         }
 
         private void _ProjectPanel_TextEditorOpened()
@@ -95,7 +112,7 @@ namespace Spotlight
 
             if (existingTab != null)
             {
-                TabsOpen.SelectedItem = existingTab;
+                TabsOpen.SelectedItem = SelectedTabItem = existingTab;
                 return;
             }
 
@@ -109,7 +126,7 @@ namespace Spotlight
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
-            TabsOpen.SelectedItem = tabItem;
+            TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
         private void _ProjectPanel_ProjectLoaded(Project project)
@@ -117,6 +134,7 @@ namespace Spotlight
             _projectService = new ProjectService(new ErrorService(), project);
             _graphicsService = new GraphicsService(_errorService, project);
             _levelService = new LevelService(_errorService, project);
+            _worldService = new WorldService(_errorService, project);
             _tileService = new TileService(_errorService, project);
             _textService = new TextService(_errorService, project);
             _gameObjectService = new GameObjectService(_errorService, project);
@@ -137,7 +155,7 @@ namespace Spotlight
 
             if (existingTab != null)
             {
-                TabsOpen.SelectedItem = existingTab;
+                TabsOpen.SelectedItem = SelectedTabItem = existingTab;
                 return;
             }
 
@@ -151,7 +169,7 @@ namespace Spotlight
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
-            TabsOpen.SelectedItem = tabItem;
+            TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
         private void CloseTab(TabItem tabItem)
@@ -160,11 +178,17 @@ namespace Spotlight
             {
                 TabsOpen.Items.Remove(tabItem);
                 OpenedTabs.Remove(tabItem);
+                if(SelectedTabItem == tabItem)
+                {
+                    SelectedTabItem = (TabItem) TabsOpen.SelectedItem;
+                }
             }
         }
 
         private void TabItemHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            SelectedTabItem = null;
+
             if (e.ChangedButton == MouseButton.Middle)
             {
                 if (TabsOpen.Items.Count > 1)
@@ -176,10 +200,42 @@ namespace Spotlight
 
         private void CloseButton_Clicked(object sender, RoutedEventArgs e)
         {
-
+            TabItem tabItem = (TabItem)((Button)sender).DataContext;
             if (TabsOpen.Items.Count > 1)
             {
-                CloseTab((TabItem)((Button)sender).DataContext);
+                if (((string)(tabItem.Header)).EndsWith("*"))
+                {
+                    if (MessageBox.Show("You have unsaved changes, are you sure you want to close this tab?", "Confirm Tab Close", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        CloseTab(tabItem);
+                    }
+                }
+                else
+                {
+                    CloseTab(tabItem);
+                }
+            }
+        }
+
+        public void SetUnsavedTab(string tabHeader)
+        {
+            foreach(TabItem item in TabsOpen.Items)
+            {
+                if(((string)item.Header).Equals(tabHeader, StringComparison.OrdinalIgnoreCase))
+                {
+                    item.Header = tabHeader + "*";
+                }
+            }
+        }
+
+        public void SetSavedTab(string tabHeader)
+        {
+            foreach (TabItem item in TabsOpen.Items)
+            {
+                if (((string)item.Header).Equals(tabHeader + "*", StringComparison.OrdinalIgnoreCase))
+                {
+                    item.Header = tabHeader;
+                }
             }
         }
     }

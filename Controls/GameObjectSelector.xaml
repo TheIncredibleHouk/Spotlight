@@ -122,8 +122,8 @@
         <TextBlock Padding="15, 0, 0, 5" x:Name="GameObjectName" />
         <Border BorderBrush="#FF3E3E3E" BorderThickness="1" Margin="15, 0" HorizontalAlignment="Left">
             <Border x:Name="GameObjectImageBorder" HorizontalAlignment="Center" BorderThickness="8" Width="272" Height="272">
-                <Canvas UseLayoutRounding="True">
-                    <Image  UseLayoutRounding="True" SnapsToDevicePixels="True" x:Name="GameObjectImage" DockPanel.Dock="Bottom" VerticalAlignment="Stretch" HorizontalAlignment="Center" MouseDown="GameObjectImage_MouseDown" />
+                <Canvas SnapsToDevicePixels="True">
+                    <Image Width="257" Height="257" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GameObjectImage" DockPanel.Dock="Bottom" VerticalAlignment="Stretch" HorizontalAlignment="Center" MouseDown="GameObjectImage_MouseDown" />
                     <Border UseLayoutRounding="True" BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle">
                         <Border UseLayoutRounding="True" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                     </Border>

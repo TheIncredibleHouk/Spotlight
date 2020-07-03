@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Spotlight"
              mc:Ignorable="d" 
+             SnapsToDevicePixels="True"
              VerticalAlignment="Stretch"
-             VerticalContentAlignment="Top"
+             VerticalContentAlignment="Stretch"
              Background="Black" d:DesignWidth="800" Height="800">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
@@ -105,48 +106,45 @@
     </UserControl.Resources>
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Stretch">
         <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Margin="8, 0, 0, 0">Palette</TextBlock>
-                <ComboBox x:Name="PaletteList" SelectedValuePath="Id" DisplayMemberPath="Name" Width="256" Margin="10, 0, 66, 0" />
-            </StackPanel>
-            <StackPanel Orientation="Vertical">
-                <TextBlock Margin="8, 0, 0, 0">Tile Set</TextBlock>
-                <ComboBox x:Name="TileSetList" Width="256" Margin="10, 0, 0, 0" DisplayMemberPath="Value" />
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
             <Border VerticalAlignment="Center" Margin="10, 10, 10, 0" BorderThickness="1" BorderBrush="#FF3E3E3E">
-                <Image Width="256" Height="256" />
+                <Canvas SnapsToDevicePixels="True" Width="256" Height="256">
+                    <Image MouseDown="GraphicsSetImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GraphicsSetImage" Width="256" Height="256" />
+                    <Border SnapsToDevicePixels="True" UseLayoutRounding="True" BorderThickness="1" BorderBrush="Red" x:Name="TileSelectionRectangle" Width="16" Height="16">
+                        <Border SnapsToDevicePixels="True" UseLayoutRounding="True" BorderThickness="1" Background="#60FFFFFF" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                    </Border>
+                </Canvas>
             </Border>
             <Border VerticalAlignment="Center" Margin="10" BorderThickness="1" BorderBrush="#FF3E3E3E">
-                <Image Width="32" Height="32" />
+                <Image MouseDown="TileBlockImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="TileBlockImage" Width="32" Height="32" />
             </Border>
             <Border VerticalAlignment="Center" BorderThickness="1"  Margin="10, 10, 10, 0" BorderBrush="#FF3E3E3E">
-                <local:TileBlockSelector x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
+                <local:TileBlockSelector x:Name="BlockSelector" />
             </Border>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-            <StackPanel Margin="11, 0, 0, 0" Orientation="Vertical" HorizontalAlignment="Left">
-                <TextBlock>Overlay Definition</TextBlock>
-                <TextBox AcceptsReturn="True" Height="125"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="OverlyDefinition" Background="Black" VerticalAlignment="Stretch"></TextBox>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button>Reset</Button>
-                    <Button>Apply</Button>
-                </StackPanel>
+            <StackPanel Margin="11, 27, 0, 0" Orientation="Vertical" HorizontalAlignment="Left">
+                <TextBlock>Terrain Overlay Definition</TextBlock>
+                <TextBox TextChanged="TerrainOverlay_TextChanged" AcceptsReturn="True" Height="80"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="TerrainOverlay" Background="Black" VerticalAlignment="Stretch"></TextBox>
+                <TextBlock>Interaction Overlay Definition</TextBlock>
+                <TextBox TextChanged="InteractionOverlay_TextChanged" AcceptsReturn="True" Height="80"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="InteractionOverlay" Background="Black" VerticalAlignment="Stretch"></TextBox>
             </StackPanel>
             <Border VerticalAlignment="Center" Margin="10" Width="46" BorderThickness="1"  Padding="10" />
             <StackPanel Margin="10, 0, 10, 0" Orientation="Vertical" Width="256" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <TextBlock>Terrain</TextBlock>
-                <ComboBox SelectionChanged="TerrainList_SelectionChanged" DisplayMemberPath="Name" Margin="0, 0, 0, 0" HorizontalAlignment="Left" Width="256" x:Name="TerrainList" />
-                <TextBlock>Interaction</TextBlock>
-                <ComboBox DisplayMemberPath="Name" Margin="0, 0, 0, 0" HorizontalAlignment="Left" Width="256" x:Name="InteractionList" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" >
-                    <TextBlock VerticalAlignment="Center">Terrain</TextBlock>
-                    <CheckBox VerticalAlignment="Center" Background="Black" Click="ShowInteractions_Changed"  x:Name="ShowTerrain" />
-                    <TextBlock Margin="42, 0, 0, 0" VerticalAlignment="Center">Interactions</TextBlock>
-                    <CheckBox VerticalAlignment="Center" Background="Black" Click="ShowItems_Changed" x:Name="ShowInteractions" />
-                    <TextBlock Margin="42, 0, 0, 0" VerticalAlignment="Center">Items</TextBlock>
-                    <CheckBox VerticalAlignment="Center" Background="Black" Click="ShowItems_Changed" x:Name="ShowItems" />
+                    <TextBlock VerticalAlignment="Center">Show Terrain</TextBlock>
+                    <CheckBox VerticalAlignment="Center" Background="Black" Click="ShowTerrain_Click"  x:Name="ShowTerrain" />
+                    <TextBlock Margin="28, 0, 0, 0" VerticalAlignment="Center">Show Interactions</TextBlock>
+                    <CheckBox VerticalAlignment="Center" Background="Black" Click="ShowInteractions_Click" x:Name="ShowInteractions" />
+                </StackPanel>
+                <TextBlock>Level</TextBlock>
+                <ComboBox SelectionChanged="LevelList_SelectionChanged" DisplayMemberPath="DisplayName" Margin="0, 0, 0, 18" HorizontalAlignment="Left" Width="256" x:Name="LevelList" />
+                <TextBlock>Terrain</TextBlock>
+                <ComboBox SelectionChanged="TerrainList_SelectionChanged" SelectedValuePath="Value" DisplayMemberPath="Name" Margin="0, 0, 0, 18" HorizontalAlignment="Left" Width="256" x:Name="TerrainList" />
+                <TextBlock>Interaction</TextBlock>
+                <ComboBox SelectionChanged="InteractionList_SelectionChanged" SelectedValuePath="Value" DisplayMemberPath="Name" Margin="0, 0, 0, 0" HorizontalAlignment="Left" Width="256" x:Name="InteractionList" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Click="Button_Click_1">Reset</Button>
+                    <Button Click="Button_Click">Apply</Button>
                 </StackPanel>
             </StackPanel>
 

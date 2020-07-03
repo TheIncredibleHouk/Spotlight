@@ -16,9 +16,13 @@ namespace Spotlight.Models
         public static byte HiddenItemBlock = 0x80;
         public static byte Solid = 0xC0;
         public static byte ItemBlock = 0xF0;
-        public static byte Mask = 0xF0;
+        public static new byte Mask = 0xF0;
 
         public List<TileInteraction> Interactions { get; set; }
+        public bool HasTerrain(int property)
+        {
+            return Value == (int)(property & Mask);
+        }
 
         public TileTerrain()
         {

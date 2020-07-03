@@ -34,7 +34,7 @@ namespace Spotlight
         public delegate void TextEditorOpenEventHandler();
         public event TextEditorOpenEventHandler TextEditorOpened;
 
-        public delegate void ObjectEditorEventHandler();
+        public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
         public event ObjectEditorEventHandler ObjectEditorOpened;
 
         public ProjectService ProjectService { get; set; }
@@ -83,7 +83,7 @@ namespace Spotlight
 
         private void ObjectButton_Click(object sender, RoutedEventArgs e)
         {
-            ObjectEditorOpened();
+            ObjectEditorOpened(null, null);
         }
 
         private void TileSetButton_Click(object sender, RoutedEventArgs e)
