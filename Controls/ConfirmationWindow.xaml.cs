@@ -17,43 +17,34 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for InputWindow.xaml
     /// </summary>
-    public partial class InputWindow : Window
+    public partial class ConfirmationWindow : Window
     {
-        public static string GetInput(string text)
+        public static System.Windows.Forms.DialogResult Confirm(string text)
         {
-            InputWindow window = new InputWindow();
-            window.DisplayText.Text = text;
+            ConfirmationWindow window = new ConfirmationWindow();
+            window.DisplayText.Text  = text;
             window.Owner = GlobalPanels.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
-            return window.InputText;
+            return window.Result;
         }
 
-        public InputWindow()
+        public ConfirmationWindow()
         {
             InitializeComponent();
         }
 
-        public string InputText
-        {
-            get
-            {
-                return InputTextbox.Text;
-            }
-            set
-            {
-                InputTextbox.Text = value;
-            }
-        }
-
+        public System.Windows.Forms.DialogResult Result { get; private set; }
+        
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            InputText = "";
+            Result = System.Windows.Forms.DialogResult.No;
             this.Close();
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
+            Result = System.Windows.Forms.DialogResult.Yes;
             this.Close();
         }
 
@@ -61,16 +52,7 @@ namespace Spotlight
         {
             if (e.Key == Key.Escape)
             {
-                InputText = "";
-                this.Close();
-            }
-        }
-
-        private void InputTextbox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-
+                Result = System.Windows.Forms.DialogResult.Yes;
                 this.Close();
             }
         }

@@ -17,39 +17,20 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for InputWindow.xaml
     /// </summary>
-    public partial class InputWindow : Window
+    public partial class AlertWindow : Window
     {
-        public static string GetInput(string text)
+        public static void Alert(string text)
         {
-            InputWindow window = new InputWindow();
+            AlertWindow window = new AlertWindow();
             window.DisplayText.Text = text;
             window.Owner = GlobalPanels.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
-            return window.InputText;
         }
 
-        public InputWindow()
+        public AlertWindow()
         {
             InitializeComponent();
-        }
-
-        public string InputText
-        {
-            get
-            {
-                return InputTextbox.Text;
-            }
-            set
-            {
-                InputTextbox.Text = value;
-            }
-        }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            InputText = "";
-            this.Close();
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -61,16 +42,11 @@ namespace Spotlight
         {
             if (e.Key == Key.Escape)
             {
-                InputText = "";
                 this.Close();
             }
-        }
-
-        private void InputTextbox_KeyDown(object sender, KeyEventArgs e)
-        {
+            
             if (e.Key == Key.Enter)
             {
-
                 this.Close();
             }
         }

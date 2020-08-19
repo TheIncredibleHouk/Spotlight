@@ -34,6 +34,7 @@ namespace Spotlight
         public delegate void TextEditorOpenEventHandler();
         public event TextEditorOpenEventHandler TextEditorOpened;
 
+
         public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
         public event ObjectEditorEventHandler ObjectEditorOpened;
 
@@ -58,7 +59,7 @@ namespace Spotlight
         private void SaveProjectButton_Click(object sender, RoutedEventArgs e)
         {
             ProjectService.SaveProject();
-            MessageBox.Show("Project saved.");
+            AlertWindow.Alert("Project saved.");
         }
 
         private void NewWorldButton_Click(object sender, RoutedEventArgs e)
@@ -73,7 +74,7 @@ namespace Spotlight
 
         private void SaveRomButton_Click(object sender, RoutedEventArgs e)
         {
-
+            GlobalPanels.OpenPaletteEditor();
         }
 
         private void TextEditButton_Click(object sender, RoutedEventArgs e)

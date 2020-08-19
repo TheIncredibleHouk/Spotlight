@@ -129,6 +129,12 @@ namespace Spotlight.Models
             //TextTable["music"].Add(new KeyValuePair<string, string>("B0", "Bowser Fight"));
 
             //GameObjects = new GameObject[256];
+            //MapTileInteractions = new List<MapTileInteraction>();
+            //MapTileInteractions.Add(new MapTileInteraction() { Value = 0, Name = "Boundary" });
+            //MapTileInteractions.Add(new MapTileInteraction() { Value = 1, Name = "Traversable" });
+            //MapTileInteractions.Add(new MapTileInteraction() { Value = 2, Name = "Enterable" });
+            //MapTileInteractions.Add(new MapTileInteraction() { Value = 3, Name = "Enterable Completable" });
+            //MapTileInteractions.Add(new MapTileInteraction() { Value = 4, Name = "Blocked Road" });
         }
 
         public string Name { get; set; }
@@ -139,6 +145,7 @@ namespace Spotlight.Models
         public List<WorldInfo> WorldInfo { get; set; }
         public WorldInfo EmptyWorld { get; set; }
         public List<TileTerrain> TileTerrain { get; set; }
+        public List<MapTileInteraction> MapTileInteractions { get; set; }
         public List<TileSet> TileSets { get; set; }
         public GameObject[] GameObjects { get; set; }
         public Dictionary<string, List<KeyValuePair<string, string>>> TextTable { get; set; }

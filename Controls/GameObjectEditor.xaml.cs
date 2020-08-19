@@ -22,7 +22,7 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for GameObjectEditor.xaml
     /// </summary>
-    public partial class GameObjectEditor : UserControl
+    public partial class GameObjectEditor : UserControl, IDetachEvents
     {
         public GameObjectEditor()
         {
@@ -33,36 +33,54 @@ namespace Spotlight
         private GraphicsAccessor _graphicsAccessor;
         private GraphicsService _graphicsService;
         private GameObjectService _gameObjectService;
+        private PalettesService _palettesService;
         private GameObjectRenderer _renderer;
         private LevelObject viewObject = new LevelObject() { X = 8, Y = 7, Property = -1 };
         private List<LevelObject> viewObjects = new List<LevelObject>();
         private WriteableBitmap _bitmap;
 
-        public GameObjectEditor(ProjectService projectService, GraphicsService graphicsService, GameObjectService gameObjectService)
+        public GameObjectEditor(ProjectService projectService, PalettesService palettesService, GraphicsService graphicsService, GameObjectService gameObjectService)
         {
             InitializeComponent();
 
             _projectService = projectService;
             _gameObjectService = gameObjectService;
             _graphicsService = graphicsService;
+            _palettesService = palettesService;
             _graphicsAccessor = new GraphicsAccessor(graphicsService.GetGlobalTiles(), graphicsService.GetExtraTiles());
             viewObjects.Add(viewObject);
 
 
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
-            _renderer = new GameObjectRenderer(_gameObjectService, _graphicsAccessor);
+            _renderer = new GameObjectRenderer(_gameObjectService,_palettesService, _graphicsAccessor);
             _renderer.RenderGrid = true;
 
             GameObjectRenderer.Source = _bitmap;
 
-            List<Palette> palettes = graphicsService.GetPalettes();
+            List<Palette> palettes = _palettesService.GetPalettes();
 
-            ObjectSelector.Initialize(_gameObjectService, _graphicsAccessor, palettes[0]);
+            ObjectSelector.Initialize(_gameObjectService, _palettesService, _graphicsAccessor, palettes[0]);
 
             PaletteSelector.ItemsSource = palettes;
             PaletteSelector.SelectedIndex = 0;
+
+            _graphicsService.GraphicsUpdated += _graphicsService_GraphicsUpdated;
+            _graphicsService.ExtraGraphicsUpdated += _graphicsService_GraphicsUpdated;
         }
 
+        public void DetachEvents()
+        {
+            _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
+            _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
+            ObjectSelector.DetachEvents();
+        }
+
+        private void _graphicsService_GraphicsUpdated()
+        {
+            _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            Update();
+            ObjectSelector.Update();
+        }
 
         public void SelectObject(GameObject gameObject, Palette palette)
         {
@@ -76,7 +94,7 @@ namespace Spotlight
 
         private void PaletteSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Palette selectedPalette = _graphicsService.GetPalette(((Palette)PaletteSelector.SelectedItem).Id);
+            Palette selectedPalette = _palettesService.GetPalette(((Palette)PaletteSelector.SelectedItem).Id);
             _renderer.Update(selectedPalette);
             ObjectSelector.Update(selectedPalette);
             Update();
@@ -139,7 +157,7 @@ namespace Spotlight
                 _gameObjectService.UpdateGameTable(viewObject.GameObject);
                 _gameObjectService.CommitGameObject(viewObject.GameObject);
                 _projectService.SaveProject();
-                MessageBox.Show("Object data saved.");
+                AlertWindow.Alert("Object data saved.");
                 
             }
         }

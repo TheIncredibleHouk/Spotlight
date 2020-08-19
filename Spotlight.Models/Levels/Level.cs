@@ -53,6 +53,28 @@ namespace Spotlight.Models
                 }
             }
         }
+
+        [JsonIgnore]
+        public int PSwitchAnimationTileTableIndex
+        {
+            get
+            {
+                switch (AnimationType)
+                {
+                    case 1:
+                        return 0xE0;
+
+                    case 2:
+                        return 0xF0;
+
+                    case 3:
+                        return 0x5C;
+
+                    default:
+                        return 0xC0;
+                }
+            }
+        }
         public int AnimationType { get; set; }
         public int ScrollType { get; set; }
         public int Effects { get; set; }

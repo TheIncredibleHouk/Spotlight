@@ -97,20 +97,82 @@ namespace Spotlight.Services
             return legacyLevels;
         }
 
-        public List<IInfo> AllLevels()
+        public List<IInfo> AllWorldsLevels()
         {
-            List<IInfo> levelInfo = _project.WorldInfo.Select(w => (IInfo) w).ToList();
-            levelInfo.AddRange(_project.WorldInfo.SelectMany(w => GetLevelInfo(w.LevelsInfo)).ToList());
+            List<IInfo> infos = new List<IInfo>();
+            foreach (var world in _project.WorldInfo)
+            {
+                infos.Add(world);
 
-            return levelInfo;
+                foreach (var level in world.LevelsInfo)
+                {
+                    infos.Add(level);
+
+                    foreach (var sublevel1 in level.SublevelsInfo ?? new List<LevelInfo>())
+                    {
+                        infos.Add(sublevel1);
+
+                        foreach (var sublevel2 in sublevel1.SublevelsInfo ?? new List<LevelInfo>())
+                        {
+                            infos.Add(sublevel2);
+
+                            foreach (var sublevel3 in sublevel2.SublevelsInfo ?? new List<LevelInfo>())
+                            {
+                                infos.Add(sublevel2);
+
+                                foreach (var sublevel4 in sublevel3.SublevelsInfo ?? new List<LevelInfo>())
+                                {
+                                    infos.Add(sublevel4);
+
+                                    foreach (var sublevel5 in sublevel4.SublevelsInfo ?? new List<LevelInfo>())
+                                    {
+                                        infos.Add(sublevel5);
+
+                                        foreach (var sublevel6 in sublevel5.SublevelsInfo ?? new List<LevelInfo>())
+                                        {
+                                            infos.Add(sublevel6);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return infos;
         }
 
-        public List<IInfo> GetLevelInfo(List<LevelInfo> levelInfos)
+        public List<WorldInfo> AllWorlds()
         {
-            List<IInfo> returnInfos = new List<IInfo>();
-            returnInfos.AddRange(levelInfos.Select(l => (IInfo) l));
-            returnInfos.AddRange(levelInfos.SelectMany(l => GetLevelInfo(l.SublevelsInfo)));
-            return returnInfos;
+            return _project.WorldInfo.ToList();
+        }
+
+        public List<LevelInfo> AllLevels()
+        {
+            List<LevelInfo> levelInfos = new List<LevelInfo>();
+            foreach (var worldInfo in _project.WorldInfo)
+            {
+                levelInfos.AddRange(LevelInfoFromLevel(worldInfo.LevelsInfo));
+            }
+
+            return levelInfos;
+        }
+
+        private List<LevelInfo> LevelInfoFromLevel(List<LevelInfo> levelInfos)
+        {
+            List<LevelInfo> returnLevelInfos = new List<LevelInfo>();
+            foreach (var levelInfo in levelInfos)
+            {
+                if (levelInfo.SublevelsInfo != null && levelInfo.SublevelsInfo.Count > 0)
+                {
+                    returnLevelInfos.AddRange(levelInfo.SublevelsInfo);
+                }
+
+                returnLevelInfos.Add(levelInfo);
+            }
+
+            return returnLevelInfos;
         }
 
         public Level LoadLevel(LevelInfo levelInfo)

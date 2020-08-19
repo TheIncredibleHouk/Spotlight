@@ -16,12 +16,15 @@ namespace Spotlight.Renderers
         private byte[] _buffer;
 
         private List<TileTerrain> _terrain;
+        private List<MapTileInteraction> _mapTileInteractions;
 
-        public TileSetRenderer(GraphicsAccessor graphicsAccessor, List<TileTerrain> terrain) : base(graphicsAccessor)
+        public TileSetRenderer(GraphicsAccessor graphicsAccessor, List<TileTerrain> terrain, List<MapTileInteraction> mapTileInteractions) : base(graphicsAccessor)
         {
             _buffer = new byte[256 * 256 * BYTES_PER_BLOCK];
+            BYTE_STRIDE = 16 * 16 * 4;
             _graphicsAccessor = graphicsAccessor;
             _terrain = terrain;
+            _mapTileInteractions = mapTileInteractions;
         }
 
         public byte[] GetRectangle(Int32Rect rect)
@@ -31,36 +34,30 @@ namespace Spotlight.Renderers
 
         private TileSet _tileSet;
         private Palette _palette;
+        private bool _withTerrainOverlay,
+                     _withInteractionOverlay,
+                     _withMapInteractionOverlay,
+                     _withProjectileInteractions;
 
-        public void Update(TileSet tileSet, Palette palette)
+        
+        public void Update(TileSet tileSet = null, Palette palette = null, bool? withTerrainOverlay = null, bool? withInteractionOverlay = null, bool? withMapInteractionOverlay = null, bool? withProjectileInteractions = null)
         {
-            _tileSet = tileSet;
-            _palette = palette;
-            Update();
-        }
-
-        public void Update(TileSet tileSet)
-        {
-            _tileSet = tileSet;
-            Update();
-        }
-
-        public void Update(Palette palette)
-        {
-            _palette = palette;
-            Update();
-        }
-
-        private bool _withTerrainOverlay, _withInteractionOerlay;
-        public void Update(bool withTerrainOverlay, bool withInteractionOverlay)
-        {
-            _withTerrainOverlay = withTerrainOverlay;
-            _withInteractionOerlay = withInteractionOverlay;
+            _tileSet = tileSet ?? _tileSet;
+            _palette = palette ?? _palette;
+            _withProjectileInteractions = withProjectileInteractions ?? _withProjectileInteractions;
+            _withTerrainOverlay = withTerrainOverlay ?? _withTerrainOverlay;
+            _withInteractionOverlay = withInteractionOverlay ?? _withInteractionOverlay;
+            _withMapInteractionOverlay = withMapInteractionOverlay ?? _withMapInteractionOverlay;
+            
             Update();
         }
 
         public void Update()
         {
+            if(_tileSet == null || _palette == null)
+            {
+                return;
+            }
             
             int maxRow = 16;
             int maxCol = 16;
@@ -91,15 +88,15 @@ namespace Spotlight.Renderers
                             TileBlockOverlay overlay = terrain.Overlay;
                             if (overlay != null)
                             {
-                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
-                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
-                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
-                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
                             }
                         }
                     }
 
-                    if (_withInteractionOerlay)
+                    if (_withInteractionOverlay)
                     {
                         TileInteraction interaction = _terrain.Where(t => t.HasTerrain(tile.Property)).FirstOrDefault()?.Interactions.Where(i => i.HasInteraction(tile.Property)).FirstOrDefault();
                         if (interaction != null)
@@ -107,11 +104,51 @@ namespace Spotlight.Renderers
                             TileBlockOverlay overlay = interaction.Overlay;
                             if (overlay != null)
                             {
-                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
-                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
-                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
-                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
                             }
+                        }
+                    }
+
+                    if (_withMapInteractionOverlay)
+                    {
+                        MapTileInteraction interaction = _mapTileInteractions.Where(i => i.HasInteraction(tile.Property)).FirstOrDefault();
+                        if (interaction != null)
+                        {
+                            TileBlockOverlay overlay = interaction.Overlay;
+                            if (overlay != null)
+                            {
+                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                            }
+                        }
+                    }
+
+                    if (_withProjectileInteractions)
+                    {
+                        if (_tileSet.FireBallInteractions.Contains(tileValue))
+                        {
+                            RenderTile(x + 4, y + 4, _graphicsAccessor.GetOverlayTile(0, 0xEE), _buffer, _palette.RgbColors[5], useTransparency: true);
+                        }
+
+                        if (_tileSet.IceBallInteractions.Contains(tileValue))
+                        {
+                            RenderTile(x + 4, y + 4, _graphicsAccessor.GetOverlayTile(0, 0xEF), _buffer, _palette.RgbColors[5], useTransparency: true);
+                        }
+
+                        PSwitchAlteration alteration = _tileSet.PSwitchAlterations.Where(p => p.From == tileValue).FirstOrDefault();
+                        if (alteration != null)
+                        {
+                            TileBlock alternativeTile = PSwitchAlteration.GetAlterationBlocks(alteration.To);
+
+                            RenderTile(x, y, _graphicsAccessor.GetOverlayTile(4, alternativeTile.UpperLeft), _buffer, _palette.RgbColors[paletteIndex], useTransparency: true, opacity: .85);
+                            RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(4, alternativeTile.UpperRight), _buffer, _palette.RgbColors[paletteIndex], useTransparency: true, opacity: .85);
+                            RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(4, alternativeTile.LowerLeft), _buffer, _palette.RgbColors[paletteIndex], useTransparency: true, opacity: .85);
+                            RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(4, alternativeTile.LowerRight), _buffer, _palette.RgbColors[paletteIndex], useTransparency: true, opacity: .85);
                         }
                     }
                 }

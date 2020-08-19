@@ -69,13 +69,11 @@ namespace Spotlight
 
         private void NewButton_Click(object sender, RoutedEventArgs e)
         {
-            InputWindow inputWindow = new InputWindow();
-            inputWindow.DisplayText = "Text Table Name";
-            inputWindow.ShowDialog();
+            string inputText = InputWindow.GetInput("Text Table Name");
 
-            if (!string.IsNullOrWhiteSpace(inputWindow.InputText))
+            if (!string.IsNullOrWhiteSpace(inputText))
             {
-                _textService.AddTable(inputWindow.InputText);
+                _textService.AddTable(inputText);
                 var newTables = _textService.TableNames();
                 TextTables.ItemsSource = newTables;
                 TextTables.SelectedItem = newTables[newTables.Count - 1];

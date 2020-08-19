@@ -21,7 +21,7 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for GameObjectSelector.xaml
     /// </summary>
-    public partial class GameObjectSelector : UserControl
+    public partial class GameObjectSelector : UserControl, IDetachEvents
     {
 
         public delegate void GameObjectSelectorEventHandler(GameObject gameObject);
@@ -35,17 +35,19 @@ namespace Spotlight
 
         private GameObjectService _gameObjectService;
         private GraphicsAccessor _graphicsAccessor;
+        private PalettesService _palettesService;
         private Palette _palette;
         private GameObjectRenderer _renderer;
         private WriteableBitmap _bitmap;
 
-        public void Initialize(GameObjectService gameObjectService, GraphicsAccessor graphicsAccessor, Palette palette)
+        public void Initialize(GameObjectService gameObjectService, PalettesService palettesService, GraphicsAccessor graphicsAccessor, Palette palette)
         {
             _gameObjectService = gameObjectService;
             _graphicsAccessor = graphicsAccessor;
             _palette = palette;
+            _palettesService = palettesService;
 
-            _renderer = new GameObjectRenderer(gameObjectService, graphicsAccessor);
+            _renderer = new GameObjectRenderer(gameObjectService, _palettesService, graphicsAccessor);
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
 
             _selectedGroup = new Dictionary<GameObjectType, string>();
@@ -63,9 +65,15 @@ namespace Spotlight
 
             _renderer.Update(palette);
 
-            GameObjectImageBorder.BorderBrush = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
+            CanvasArea.Background = GameObjectImageBorder.BorderBrush = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
             GameObjectTypes.SelectedIndex = 0;
+
             _gameObjectService.GameObjectUpdated += GameObjectsUpdated;
+        }
+
+        public void DetachEvents()
+        {
+            _gameObjectService.GameObjectUpdated -= GameObjectsUpdated;
         }
 
         private void GameObjectsUpdated(GameObject gameObject)
@@ -77,7 +85,7 @@ namespace Spotlight
         {
             _palette = palette;
             _renderer.Update(palette);
-            GameObjectImageBorder.BorderBrush = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
+            CanvasArea.Background = GameObjectImageBorder.Background = GameObjectImageBorder.BorderBrush = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
             Update();
         }
 
@@ -98,6 +106,11 @@ namespace Spotlight
         {
             get
             {
+                if(_selectedObject == null)
+                {
+                    return null;
+                }
+
                 return _selectedObject.GameObject;
             }
             set
@@ -151,8 +164,8 @@ namespace Spotlight
             else
             {
                 var selectedObjectRect = _selectedObject.BoundRectangle;
-                Canvas.SetTop(SelectionRectangle, selectedObjectRect.Top - 1);
-                Canvas.SetLeft(SelectionRectangle, selectedObjectRect.Left - 1);
+                Canvas.SetTop(SelectionRectangle, selectedObjectRect.Top);
+                Canvas.SetLeft(SelectionRectangle, selectedObjectRect.Left);
                 SelectionRectangle.Width = selectedObjectRect.Width + 1;
                 SelectionRectangle.Height = selectedObjectRect.Height + 1;
                 SelectionRectangle.Visibility = Visibility.Visible;

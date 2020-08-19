@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +25,15 @@ namespace Spotlight.Models
         public string Name { get; set; }
         public int[] TileData { get; set; }
         public List<WorldPointer> Pointers { get; set; }
+
+        [JsonIgnore]
+
+        public int AnimationTileTableIndex
+        {
+            get { return 0x70; }
+        }
     }
-    
+
     [XmlRoot("world")]
     public class LegacyWorld
     {
@@ -40,7 +48,7 @@ namespace Spotlight.Models
 
         [XmlAttribute]
         public string length { get; set; }
-        
+
         [XmlAttribute]
         public string music { get; set; }
 

@@ -16,16 +16,76 @@ namespace Spotlight.Services
         private List<Tile> _extraTiles;
         private Project _project;
 
+        private DateTime _lastGraphicsUpdate;
+        private DateTime _lastExtraGraphicsUpdated;
+
+        public delegate void GraphicsUpdatedHandler();
+        public event GraphicsUpdatedHandler GraphicsUpdated;
+        public event GraphicsUpdatedHandler ExtraGraphicsUpdated;
+
         public GraphicsService(ErrorService errorService, Project project)
         {
             _errorService = errorService;
             _project = project;
-            LoadGraphics(project);
+            LoadGraphics();
+            LoadExtraGraphics();
         }
 
-        public void LoadGraphics(Project project)
+        public void CheckGraphics()
         {
-            string fileName = project.DirectoryPath + @"\" + project.Name + @".chr";
+            string fileName = _project.DirectoryPath + @"\" + _project.Name + @".chr";
+            string extraFileName = _project.DirectoryPath + @"\" + _project.Name + @".extra.chr";
+
+            if(File.GetLastWriteTime(fileName) > _lastGraphicsUpdate)
+            {
+                LoadGraphics();
+                if (GraphicsUpdated != null)
+                {
+                    GraphicsUpdated();
+                }
+            }
+
+            if(File.GetLastWriteTime(extraFileName) > _lastExtraGraphicsUpdated)
+            {
+                LoadExtraGraphics();
+                if (ExtraGraphicsUpdated != null)
+                {
+                    ExtraGraphicsUpdated();
+                }
+            }
+
+        }
+        public Color[][] GetRgbPalette(Palette palette)
+        {
+            Color[][] rgbPalette = new Color[4][];
+            for (int i = 0; i < 4; i++)
+            {
+                rgbPalette[i] = new Color[4];
+                for (int j = 0; j < 4; j++)
+                {
+                    rgbPalette[i][j] = _project.RgbPalette[palette.IndexedColors[(i * 4) + j]];
+                }
+            }
+
+            return rgbPalette;
+        }
+
+        public Color[] GetRgbPalette(string[] paletteIndex)
+        {
+            Color[] rgbPalette = new Color[4];
+            for (int j = 0; j < 4; j++)
+            {
+                rgbPalette[j] = _project.RgbPalette[Int32.Parse(paletteIndex[j], System.Globalization.NumberStyles.HexNumber)];
+            }
+
+            return rgbPalette;
+        }
+
+        public void LoadGraphics()
+        {
+            string fileName = _project.DirectoryPath + @"\" + _project.Name + @".chr";
+
+            _lastGraphicsUpdate = File.GetLastWriteTime(fileName);
 
             byte[] graphicsData = File.ReadAllBytes(fileName);
             _tiles = new List<Tile>();
@@ -35,7 +95,6 @@ namespace Spotlight.Services
 
             for (int i = 0; i < 256; i++)
             {
-
                 for (int j = 0; j < 64; j++)
                 {
                     byte[] nextTileChunk = new byte[16];
@@ -47,16 +106,21 @@ namespace Spotlight.Services
                     _tiles.Add(new Tile(nextTileChunk));
                 }
             }
-            
-            string extraFileName = project.DirectoryPath + @"\" + project.Name + @".extra.chr";
+        }
+
+        public void LoadExtraGraphics()
+        {
+            string extraFileName = _project.DirectoryPath + @"\" + _project.Name + @".extra.chr";
+
+            _lastExtraGraphicsUpdated = File.GetLastWriteTime(extraFileName);
+
             byte[] extraGraphicsData = File.ReadAllBytes(extraFileName);
             _extraTiles = new List<Tile>();
 
-            dataPointer = 0;
+            int dataPointer = 0;
 
             for (int i = 0; i < 12; i++)
             {
-
                 for (int j = 0; j < 64; j++)
                 {
                     byte[] nextTileChunk = new byte[16];
@@ -95,19 +159,9 @@ namespace Spotlight.Services
             return _project.Palettes[index];
         }
 
-        public Palette GetPalette(Guid paletteId)
-        {
-            return _project.Palettes.Where(p => p.Id == paletteId).FirstOrDefault();
-        }
-
         public List<Color> GetColors()
         {
             return _project.RgbPalette.ToList();
-        }
-
-        public List<Palette> GetPalettes()
-        {
-            return _project.Palettes.ToList();
         }
     }
 }

@@ -42,6 +42,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -63,12 +64,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AlertWindow.xaml.cs">
+      <DependentUpon>AlertWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ConfirmationWindow.xaml.cs">
+      <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GameObjectEditor.xaml.cs">
       <DependentUpon>GameObjectEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\GameObjectSelector.xaml.cs">
       <DependentUpon>GameObjectSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\IDetachEvents.cs" />
     <Compile Include="Controls\InputWindow.xaml.cs">
       <DependentUpon>InputWindow.xaml</DependentUpon>
     </Compile>
@@ -78,10 +86,24 @@
     <Compile Include="Controls\LevelPanel.xaml.cs">
       <DependentUpon>LevelPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PaletteEditor.xaml.cs">
+      <DependentUpon>PaletteEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PointerEditor.xaml.cs">
+      <DependentUpon>PointerEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\GlobalPanels.cs" />
+    <Page Include="Controls\AlertWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ConfirmationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\GameObjectEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -99,6 +121,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LevelPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PaletteEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PointerEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

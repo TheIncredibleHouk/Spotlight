@@ -22,7 +22,7 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for TileBlockEditor.xaml
     /// </summary>
-    public partial class TileBlockEditor : UserControl
+    public partial class TileBlockEditor : UserControl, IDetachEvents
     {
 
 
@@ -30,20 +30,20 @@ namespace Spotlight
         private TileService _tileService;
         private TextService _textService;
         private GraphicsAccessor _graphicsAccessor;
-        private ProjectService _projectService;
         private WorldService _worldService;
         private LevelService _levelService;
+        private PalettesService _palettesService;
         private TileSetRenderer _tileSetRenderer;
         private GraphicsSetRender _graphicsSetRenderer;
         private WriteableBitmap _graphicsSetBitmap;
         private WriteableBitmap _tileBlockBitmap;
 
-        public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, TileService tileService, TextService textService)
+        public TileBlockEditor(WorldService worldService, LevelService levelService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, TextService textService)
         {
             _ignoreChanges = true;
             InitializeComponent();
 
-            _projectService = projectService;
+            _palettesService = palettesService;
             _graphicsService = graphicsService;
             _worldService = worldService;
             _levelService = levelService;
@@ -56,13 +56,14 @@ namespace Spotlight
 
             tileSetText.Insert(0, new KeyValuePair<string, string>("0", "Map"));
 
-            TerrainList.ItemsSource = _localTerrain = _tileService.GetTerrainCopy();
-            LevelList.ItemsSource = _projectService.AllWorldsLevels();
+            TerrainList.ItemsSource = _localTileTerrain = _tileService.GetTerrainCopy();
+            LevelList.ItemsSource = _levelService.AllWorldsLevels();
+            MapInteractionList.ItemsSource = _localMapTileInteraction = _tileService.GetMapTileInteractionCopy();
 
             _graphicsAccessor = new GraphicsAccessor(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
 
             _graphicsSetRenderer = new GraphicsSetRender(_graphicsAccessor);
-            _tileSetRenderer = new TileSetRenderer(_graphicsAccessor, _localTerrain);
+            _tileSetRenderer = new TileSetRenderer(_graphicsAccessor, _localTileTerrain, _localMapTileInteraction);
 
             _graphicsSetBitmap = new WriteableBitmap(128, 128, 96, 96, PixelFormats.Bgra32, null);
             _tileBlockBitmap = new WriteableBitmap(16, 16, 96, 96, PixelFormats.Bgra32, null);
@@ -81,18 +82,125 @@ namespace Spotlight
             LevelList.SelectedIndex = 1;
             BlockSelector.SelectedBlockValue = 0;
             _ignoreChanges = false;
+
+            _graphicsService.GraphicsUpdated += _graphicsService_GraphicsUpdated;
+            _graphicsService.ExtraGraphicsUpdated += _graphicsService_GraphicsUpdated;
         }
 
+        public void DetachEvents()
+        {
+            _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
+            _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
+            BlockSelector.TileBlockSelected -= BlockSelector_TileBlockSelected;
+        }
+
+        private void _graphicsService_GraphicsUpdated()
+        {
+            if (_currentLevel != null)
+            {
+                _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex));
+                _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_currentLevel.StaticTileTableIndex));
+            }
+            else if (_currentWorld != null)
+            {
+                _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex));
+                _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_currentWorld.TileTableIndex));
+            }
+
+            _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            UpdateTileBlock();
+            UpdateGraphics();
+            BlockSelector.Update();
+        }
+
+        public void SelectTileBlock(Guid levelId, int tileBlockValue)
+        {
+            LevelList.SelectedValue = levelId;
+            BlockSelector.SelectedBlockValue = tileBlockValue;
+        }
+
+        private PSwitchAlteration _pSwitchAlteration = null;
+
         private void BlockSelector_TileBlockSelected(TileBlock tileBlock, int tileValue)
-        { 
+        {
             _ignoreChanges = true;
+
+
+            if (_currentLevel != null)
+            {
+                TerrainList.SelectedValue = _localTileTerrain.Where(t => t.HasTerrain(tileBlock.Property)).FirstOrDefault()?.Value;
+                InteractionList.SelectedValue = _localTileTerrain.Where(t => t.HasTerrain(tileBlock.Property)).FirstOrDefault()?.Interactions.Where(i => i.HasInteraction(tileBlock.Property)).FirstOrDefault()?.Value;
+            }
+            else if (_currentWorld != null)
+            {
+                MapInteractionList.SelectedValue = _localMapTileInteraction.Where(t => t.HasInteraction(tileBlock.Property)).FirstOrDefault()?.Value;
+            }
+
             _graphicsSetRenderer.Update((tileValue & 0xC0) >> 6);
             UpdateTileBlock();
             UpdateGraphics();
 
-            TerrainList.SelectedValue = _localTerrain.Where(t => t.HasTerrain(tileBlock.Property)).FirstOrDefault()?.Value;
-            InteractionList.SelectedValue = _localTerrain.Where(t => t.HasTerrain(tileBlock.Property)).FirstOrDefault()?.Interactions.Where(i => i.HasInteraction(tileBlock.Property)).FirstOrDefault()?.Value;
             _ignoreChanges = false;
+
+            if (_setInteractions)
+            {
+                if (Mouse.LeftButton == MouseButtonState.Pressed)
+                {
+                    if (_localTileSet.FireBallInteractions.Contains(BlockSelector.SelectedBlockValue))
+                    {
+                        _localTileSet.FireBallInteractions.Remove(BlockSelector.SelectedBlockValue);
+                    }
+                    else
+                    {
+                        if (_localTileSet.FireBallInteractions.Count < 8)
+                        {
+                            _localTileSet.FireBallInteractions.Add(BlockSelector.SelectedBlockValue);
+                        }
+                    }
+                }
+                else if (Mouse.RightButton == MouseButtonState.Pressed)
+                {
+                    if (_localTileSet.IceBallInteractions.Contains(BlockSelector.SelectedBlockValue))
+                    {
+                        _localTileSet.IceBallInteractions.Remove(BlockSelector.SelectedBlockValue);
+                    }
+                    else
+                    {
+                        if (_localTileSet.IceBallInteractions.Count < 8)
+                        {
+                            _localTileSet.IceBallInteractions.Add(BlockSelector.SelectedBlockValue);
+                        }
+                    }
+                }
+                else if (Mouse.MiddleButton == MouseButtonState.Pressed)
+                {
+                    if (_pSwitchAlteration != null)
+                    {
+                        _pSwitchAlteration.To = BlockSelector.SelectedBlockValue;
+                        _localTileSet.PSwitchAlterations.Add(_pSwitchAlteration);
+                        _pSwitchAlteration = null;
+                    }
+                    else
+                    {
+                        PSwitchAlteration existingAlteration = _localTileSet.PSwitchAlterations.Where(p => p.From == BlockSelector.SelectedBlockValue).FirstOrDefault();
+                        if (existingAlteration != null)
+                        {
+                            _localTileSet.PSwitchAlterations.Remove(existingAlteration);
+                        }
+                        else
+                        {
+                            if (_localTileSet.PSwitchAlterations.Count < 16)
+                            {
+                                _pSwitchAlteration = new PSwitchAlteration();
+                                _pSwitchAlteration.From = BlockSelector.SelectedBlockValue;
+                            }
+                        }
+                    }
+                }
+
+                BlockSelector.Update();
+                UpdateTileBlock();
+            }
         }
 
         private void TerrainList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -104,7 +212,7 @@ namespace Spotlight
             BlockSelector.SelectedTileBlock.Property = selectedTerrain.Value | ((TileInteraction)InteractionList.SelectedItem).Value;
             TerrainOverlay.Text = JsonConvert.SerializeObject(selectedTerrain.Overlay, Formatting.Indented);
 
-            BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+            BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
             UpdateTileBlock();
             SetUnsaved();
         }
@@ -118,39 +226,84 @@ namespace Spotlight
                 BlockSelector.SelectedTileBlock.Property = ((TileTerrain)TerrainList.SelectedItem).Value | selectedIteraction.Value;
                 InteractionOverlay.Text = JsonConvert.SerializeObject(selectedIteraction.Overlay, Formatting.Indented);
 
-                BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+                BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
                 UpdateTileBlock();
                 SetUnsaved();
             }
         }
 
         private TileSet _localTileSet;
-        private List<TileTerrain> _localTerrain;
+        private List<TileTerrain> _localTileTerrain;
+        private List<MapTileInteraction> _localMapTileInteraction;
+        private World _currentWorld;
         private Level _currentLevel;
         private void LevelList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _ignoreChanges = true;
             if (LevelList.SelectedItem is LevelInfo)
             {
+                _setInteractions = false;
+                _pSwitchAlteration = null;
+                SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
+
+                SetProjectileInteractions.Visibility = TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Visible;
+                MapTileDefinitions.Visibility = MapTileSection.Visibility = Visibility.Collapsed;
+
                 LevelInfo levelInfo = (LevelInfo)LevelList.SelectedItem;
                 _currentLevel = _levelService.LoadLevel(levelInfo);
+                _currentWorld = null;
 
                 Tile[] staticTiles = _graphicsService.GetTileSection(_currentLevel.StaticTileTableIndex);
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex);
-                Palette palette = _graphicsService.GetPalette(_currentLevel.PaletteId);
+                Palette palette = _palettesService.GetPalette(_currentLevel.PaletteId);
 
                 _graphicsAccessor.SetAnimatedTable(animatedTiles);
                 _graphicsAccessor.SetStaticTable(staticTiles);
 
                 _localTileSet = JsonConvert.DeserializeObject<TileSet>(JsonConvert.SerializeObject(_tileService.GetTileSet(_currentLevel.TileSetIndex)));
+
+                _ignoreChanges = false;
+                _graphicsSetRenderer.Update(palette);
+                BlockSelector.Update(tileSet: _localTileSet, palette: palette, withProjectileInteractions: false);
+                UpdateGraphics();
+                UpdateTileBlock();
+            }
+            else if (LevelList.SelectedItem is WorldInfo)
+            {
+                _setInteractions = false;
+                _pSwitchAlteration = null;
+                SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
+
+                SetProjectileInteractions.Visibility = TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Collapsed;
+                MapTileDefinitions.Visibility = MapTileSection.Visibility = Visibility.Visible;
+
+                if (MapInteractionList.SelectedIndex == -1)
+                {
+                    MapInteractionList.SelectedIndex = 0;
+                }
+
+                WorldInfo worldInfo = (WorldInfo)LevelList.SelectedItem;
+                _currentWorld = _worldService.LoadWorld(worldInfo);
+                _currentLevel = null;
+
+                Tile[] staticTiles = _graphicsService.GetTileSection(_currentWorld.TileTableIndex);
+                Tile[] animatedTiles = _graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex);
+                Palette palette = _palettesService.GetPalette(_currentWorld.PaletteId);
+
+                _graphicsAccessor.SetAnimatedTable(animatedTiles);
+                _graphicsAccessor.SetStaticTable(staticTiles);
+
+                _localTileSet = JsonConvert.DeserializeObject<TileSet>(JsonConvert.SerializeObject(_tileService.GetTileSet(0)));
                 _graphicsSetRenderer.Update(palette);
 
-                BlockSelector.Update(_localTileSet, palette);
+                _ignoreChanges = false;
 
-                UpdateTileBlock();
+                _graphicsSetRenderer.Update(palette);
+                BlockSelector.Update(tileSet: _localTileSet, palette: palette, withProjectileInteractions: false);
                 UpdateGraphics();
+                UpdateTileBlock();
             }
-            _ignoreChanges = false;
+
         }
 
         private void UpdateGraphics()
@@ -194,7 +347,7 @@ namespace Spotlight
                     TerrainOverlay.Foreground = new SolidColorBrush(Colors.White);
                     selectedTerrain.Overlay = overlay;
 
-                    BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+                    BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
                     UpdateTileBlock();
                     SetUnsaved();
                 }
@@ -221,8 +374,8 @@ namespace Spotlight
 
                     InteractionOverlay.Foreground = new SolidColorBrush(Colors.White);
                     selectedInteraction.Overlay = overlay;
-                    
-                    BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+
+                    BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
                     UpdateTileBlock();
                     SetUnsaved();
                 }
@@ -235,33 +388,53 @@ namespace Spotlight
 
         private void ShowInteractions_Click(object sender, RoutedEventArgs e)
         {
-            BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+            BlockSelector.Update(withInteractionOverlay: _currentLevel != null ? ShowInteractions.IsChecked.Value : false,
+                                 withMapInteractionOverlay: _currentWorld != null ? ShowInteractions.IsChecked.Value: false);
             UpdateTileBlock();
         }
 
         private void ShowTerrain_Click(object sender, RoutedEventArgs e)
         {
-            BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+            BlockSelector.Update(withMapInteractionOverlay: _currentLevel != null ? ShowTerrain.IsChecked.Value : false);
             UpdateTileBlock();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            _tileService.CommitTerrain(_localTerrain);
-            _tileService.CommitTileSet(_currentLevel.TileSetIndex, _localTileSet);
-            BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+            _tileService.CommitTileSet(_currentLevel.TileSetIndex, _localTileSet, _localTileTerrain, _localMapTileInteraction);
+            BlockSelector.Update();
             UpdateTileBlock();
             SetSaved();
         }
 
         private int _graphicTileIndexSelected = 0;
+        private bool _isQuadSelected = false;
         private void GraphicsSetImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Point clickPoint = Snap(e.GetPosition((Image)sender));
-            Canvas.SetLeft(TileSelectionRectangle, clickPoint.X);
-            Canvas.SetTop(TileSelectionRectangle, clickPoint.Y);
+            Point clickPoint = Snap(e.GetPosition((Image)GraphicsSetImage));
+
+
+            TileSelectionRectangle.Height = TileSelectionRectangle.Width = 16;
+            _isQuadSelected = false;
+
+            if (e.RightButton == MouseButtonState.Pressed)
+            {
+                _isQuadSelected = true;
+                TileSelectionRectangle.Height = TileSelectionRectangle.Width = 32;
+                if (clickPoint.X >= 16 * 15)
+                {
+                    clickPoint.X = 16 * 14;
+                }
+
+                if (clickPoint.Y >= 16 * 15)
+                {
+                    clickPoint.Y = 16 * 14;
+                }
+            }
 
             _graphicTileIndexSelected = (int)(clickPoint.Y + (clickPoint.X / 16));
+            Canvas.SetLeft(TileSelectionRectangle, clickPoint.X);
+            Canvas.SetTop(TileSelectionRectangle, clickPoint.Y);
         }
 
         private Point Snap(Point value)
@@ -281,21 +454,48 @@ namespace Spotlight
             if (clickPoint.X <= 15 && clickPoint.Y <= 15)
             {
                 BlockSelector.SelectedTileBlock.UpperLeft = _graphicTileIndexSelected;
+                if (_isQuadSelected)
+                {
+                    BlockSelector.SelectedTileBlock.UpperRight = _graphicTileIndexSelected + 1;
+                    BlockSelector.SelectedTileBlock.LowerLeft = _graphicTileIndexSelected + 0x10;
+                    BlockSelector.SelectedTileBlock.LowerRight = _graphicTileIndexSelected + 0x11;
+                }
             }
-            else if(clickPoint.X <= 15 && clickPoint.Y >= 16)
+            else if (clickPoint.X <= 15 && clickPoint.Y >= 16)
             {
                 BlockSelector.SelectedTileBlock.LowerLeft = _graphicTileIndexSelected;
+
+                if (_isQuadSelected)
+                {
+                    BlockSelector.SelectedTileBlock.LowerRight = _graphicTileIndexSelected + 1;
+                    BlockSelector.SelectedTileBlock.UpperLeft = _graphicTileIndexSelected + 0x10;
+                    BlockSelector.SelectedTileBlock.UpperRight = _graphicTileIndexSelected + 0x11;
+                }
             }
             else if (clickPoint.X >= 16 && clickPoint.Y <= 15)
             {
                 BlockSelector.SelectedTileBlock.UpperRight = _graphicTileIndexSelected;
+
+                if (_isQuadSelected)
+                {
+                    BlockSelector.SelectedTileBlock.UpperLeft = _graphicTileIndexSelected + 0x1;
+                    BlockSelector.SelectedTileBlock.LowerRight = _graphicTileIndexSelected + 0x10;
+                    BlockSelector.SelectedTileBlock.LowerLeft = _graphicTileIndexSelected + 0x11;
+                }
             }
             else if (clickPoint.X >= 16 && clickPoint.Y >= 16)
             {
                 BlockSelector.SelectedTileBlock.LowerRight = _graphicTileIndexSelected;
+
+                if (_isQuadSelected)
+                {
+                    BlockSelector.SelectedTileBlock.LowerLeft = _graphicTileIndexSelected + 0x1;
+                    BlockSelector.SelectedTileBlock.UpperRight = _graphicTileIndexSelected + 0x10;
+                    BlockSelector.SelectedTileBlock.UpperLeft = _graphicTileIndexSelected + 0x11;
+                }
             }
 
-            BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
+            BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
             UpdateTileBlock();
             SetUnsaved();
         }
@@ -303,17 +503,17 @@ namespace Spotlight
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             var originalTerrain = _tileService.GetTerrain();
-            for (var i = 0; i < _localTerrain.Count; i++)
+            for (var i = 0; i < _localTileTerrain.Count; i++)
             {
-                _localTerrain[i].Overlay = originalTerrain[i].Overlay;
-                for(var j = 0; j < _localTerrain[i].Interactions.Count; j++)
+                _localTileTerrain[i].Overlay = originalTerrain[i].Overlay;
+                for (var j = 0; j < _localTileTerrain[i].Interactions.Count; j++)
                 {
-                    _localTerrain[i].Interactions[j].Overlay = originalTerrain[i].Interactions[j].Overlay;
+                    _localTileTerrain[i].Interactions[j].Overlay = originalTerrain[i].Interactions[j].Overlay;
                 }
             }
 
             var originalTileSet = _tileService.GetTileSet(_currentLevel.TileSetIndex);
-            for(var i = 0; i < _localTileSet.TileBlocks.Length; i++)
+            for (var i = 0; i < _localTileSet.TileBlocks.Length; i++)
             {
                 _localTileSet.TileBlocks[i].LowerLeft = originalTileSet.TileBlocks[i].LowerLeft;
                 _localTileSet.TileBlocks[i].LowerRight = originalTileSet.TileBlocks[i].LowerRight;
@@ -324,8 +524,6 @@ namespace Spotlight
             TerrainList_SelectionChanged(null, null);
             InteractionList_SelectionChanged(null, null);
 
-            BlockSelector.Update(ShowTerrain.IsChecked.Value, ShowInteractions.IsChecked.Value);
-            UpdateTileBlock();
             SetSaved();
         }
 
@@ -342,5 +540,109 @@ namespace Spotlight
         {
             GlobalPanels.MainWindow.SetSavedTab("Tile Set Editor");
         }
+
+        private void MapInteractionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MapTileInteraction selectedIteraction = (MapTileInteraction)MapInteractionList.SelectedItem;
+
+            if (selectedIteraction != null)
+            {
+                BlockSelector.SelectedTileBlock.Property = ((MapTileInteraction)MapInteractionList.SelectedItem).Value;
+                MapInteractionOverlay.Text = JsonConvert.SerializeObject(selectedIteraction.Overlay, Formatting.Indented);
+
+                BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
+                UpdateTileBlock();
+                SetUnsaved();
+            }
+        }
+
+        private void MapInteractionOverlay_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            MapTileInteraction selectedInteraction = (MapTileInteraction)MapInteractionList.SelectedItem;
+            if (selectedInteraction != null)
+            {
+                try
+                {
+                    TileBlockOverlay overlay = JsonConvert.DeserializeObject<TileBlockOverlay>(MapInteractionOverlay.Text);
+
+                    if (overlay != null && (overlay.PaletteIndex < 0 || overlay.PaletteIndex >= 8))
+                    {
+                        throw new Exception();
+                    }
+
+                    MapInteractionOverlay.Foreground = new SolidColorBrush(Colors.White);
+                    selectedInteraction.Overlay = overlay;
+
+                    BlockSelector.Update(tileIndex: BlockSelector.SelectedBlockValue);
+                    UpdateTileBlock();
+                    SetUnsaved();
+                }
+                catch
+                {
+                    MapInteractionOverlay.Foreground = new SolidColorBrush(Colors.Red);
+                }
+            }
+        }
+
+        private void BlockSelectorBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            BlockSelectorBorder.Focus();
+        }
+
+        private TileBlock _copiedblock;
+        private void BlockSelectorBorder_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.C)
+                {
+                    _copiedblock = BlockSelector.SelectedTileBlock;
+                }
+
+                if (e.Key == Key.V)
+                {
+                    BlockSelector.SelectedTileBlock.UpperLeft = _copiedblock.UpperLeft;
+                    BlockSelector.SelectedTileBlock.UpperRight = _copiedblock.UpperRight;
+                    BlockSelector.SelectedTileBlock.LowerLeft = _copiedblock.LowerLeft;
+                    BlockSelector.SelectedTileBlock.LowerRight = _copiedblock.LowerRight;
+                    BlockSelector.Update();
+                    UpdateTileBlock();
+                    SetUnsaved();
+                }
+            }
+        }
+
+        private bool _setInteractions;
+        private void SetProjectileInteractions_Click(object sender, RoutedEventArgs e)
+        {
+            if (_setInteractions == false)
+            {
+                SetProjectileInteractions.Content = "Finish PSwitch/Fireball/Iceball Interactions";
+                _setInteractions = true;
+                BlockSelector.Update(withProjectileInteractions: true);
+            }
+            else
+            {
+                SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
+                _pSwitchAlteration = null;
+                _setInteractions = false;
+                BlockSelector.Update(withProjectileInteractions: false);
+            }
+        }
+
+        private void GraphicsSetImage_MouseMove(object sender, MouseEventArgs e)
+        {
+            Point mousePoint = Snap(e.GetPosition(GraphicsSetImage));
+            int value = (int)(mousePoint.Y + (mousePoint.X / 16));
+            GraphicsCoordinate.Text = value.ToString("X2");
+        }
+
+        private void BlockSelector_MouseMove(object sender, MouseEventArgs e)
+        {
+            Point mousePoint = Snap(e.GetPosition(BlockSelector));
+            int value = (int)(mousePoint.Y + (mousePoint.X / 16));
+            TileSelectorCoordinate.Text = value.ToString("X2");
+        }
     }
 }
+;

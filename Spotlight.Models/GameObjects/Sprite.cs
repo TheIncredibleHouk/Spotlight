@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +21,16 @@ namespace Spotlight.Models
         {
             get
             {
+                if(TileTableAddress == null)
+                {
+                    return 0;
+                }
+
                 return Int32.Parse(TileTableAddress.Substring(2), System.Globalization.NumberStyles.HexNumber) / 0x400;
             }
             set
             {
-                TileTableAddress = "0x" + value.ToString("X2");
+                TileTableAddress = "0x" + (value * 0x400).ToString("X2");
             }
         }
 
@@ -46,6 +52,7 @@ namespace Spotlight.Models
         public bool VerticalFlip { get; set; }
         public int PaletteIndex { get; set; }
         public bool Overlay { get; set; }
+        public string[] CustomPalette { get; set; }
     }
 
     public class LegacySprite

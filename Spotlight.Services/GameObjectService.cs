@@ -2,9 +2,8 @@
 using Spotlight.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
 using static Spotlight.Models.GameObject;
@@ -19,11 +18,50 @@ namespace Spotlight.Services
         private readonly ErrorService _errorService;
         private readonly Project _project;
 
-        public readonly List<Sprite> InvisibleSprites = new List<Sprite>()
+        private static Dictionary<char, int> hexToSprite = new Dictionary<char, int>()
         {
-            new Sprite() { X = 0, Y = 0, PaletteIndex = 1, TileValueIndex = 0, Overlay = true},
-            new Sprite() { X = 8, Y = 0, PaletteIndex = 1, TileValueIndex = 2, Overlay = true}
+            {'1', Int32.Parse("20", System.Globalization.NumberStyles.HexNumber) },
+            {'2', Int32.Parse("22", System.Globalization.NumberStyles.HexNumber) },
+            {'3', Int32.Parse("24", System.Globalization.NumberStyles.HexNumber) },
+            {'4', Int32.Parse("26", System.Globalization.NumberStyles.HexNumber) },
+            {'5', Int32.Parse("28", System.Globalization.NumberStyles.HexNumber) },
+            {'6', Int32.Parse("40", System.Globalization.NumberStyles.HexNumber) },
+            {'7', Int32.Parse("42", System.Globalization.NumberStyles.HexNumber) },
+            {'8', Int32.Parse("44", System.Globalization.NumberStyles.HexNumber) },
+            {'9', Int32.Parse("46", System.Globalization.NumberStyles.HexNumber) },
+            {'0', Int32.Parse("48", System.Globalization.NumberStyles.HexNumber) },
+            {'A', Int32.Parse("60", System.Globalization.NumberStyles.HexNumber) },
+            {'B', Int32.Parse("62", System.Globalization.NumberStyles.HexNumber) },
+            {'C', Int32.Parse("64", System.Globalization.NumberStyles.HexNumber) },
+            {'D', Int32.Parse("66", System.Globalization.NumberStyles.HexNumber) },
+            {'E', Int32.Parse("68", System.Globalization.NumberStyles.HexNumber) },
+            {'F', Int32.Parse("6A", System.Globalization.NumberStyles.HexNumber) }
         };
+        public List<Sprite> FallBackSprites(GameObject gameObject)
+        {
+            List<Sprite> sprites = new List<Sprite>();
+            string objectId = gameObject.GameId.ToString("X2");
+            sprites.Add(new Sprite()
+            {
+                X = 0,
+                Y = 0,
+                Overlay = true,
+                TileTableAddress = "0x1000",
+                TileValueIndex = hexToSprite[objectId[0]],
+                PaletteIndex = 1
+            });
+            sprites.Add(new Sprite()
+            {
+                X = 8,
+                Y = 0,
+                Overlay = true,
+                TileTableAddress = "0x1000",
+                TileValueIndex = hexToSprite[objectId[1]],
+                PaletteIndex = 1
+            });
+
+            return sprites;
+        }
 
         public GameObjectTable GameObjectTable { get; private set; }
         private GameObject[] localGameObjects;
@@ -35,9 +73,9 @@ namespace Spotlight.Services
             GameObjectTable = new GameObjectTable();
             localGameObjects = JsonConvert.DeserializeObject<GameObject[]>(JsonConvert.SerializeObject(_project.GameObjects));
 
-            for(int i = 0; i < localGameObjects.Length; i++)
+            for (int i = 0; i < localGameObjects.Length; i++)
             {
-                if(localGameObjects[i] == null)
+                if (localGameObjects[i] == null)
                 {
                     localGameObjects[i] = new GameObject()
                     {
@@ -54,6 +92,33 @@ namespace Spotlight.Services
                 }
             }
             RefreshGameObjectTable();
+            _startPointPalette = new string[4]{ "00","0F", "36", "16" };
+            _startPointGameObject = new GameObject()
+            {
+                GameId = 0,
+                Name = "Start Point",
+                Sprites = new List<Sprite>()
+               {
+                   new Sprite()
+                   {
+                       X = 0,
+                       Y = 0,
+                       TileValueIndex = 0x8,
+                       TileTableIndex = 4,
+                       CustomPalette = _startPointPalette,
+                       Overlay = true
+                   },
+                   new Sprite()
+                   {
+                       X = 8,
+                       Y = 0,
+                       TileValueIndex = 0xA,
+                       TileTableIndex = 4,
+                       CustomPalette = _startPointPalette,
+                       Overlay = true
+                   }
+               }
+            };
         }
 
         public List<string> GetGroups(GameObjectType type)
@@ -69,6 +134,13 @@ namespace Spotlight.Services
         public GameObject GetObject(int gameObjectId)
         {
             return localGameObjects[gameObjectId];
+        }
+
+        private string[] _startPointPalette;
+        private GameObject _startPointGameObject;
+        public GameObject GetStartPointObject()
+        {
+            return _startPointGameObject;
         }
 
         public void RefreshGameObjectTable()
@@ -109,15 +181,23 @@ namespace Spotlight.Services
                 int actualX = (int)(rect.X / 16);
                 int actualY = (int)(rect.Y / 16);
 
-                if (actualX < nextObject.X)
+                if (nextObject.X - actualX >= 1)
                 {
-                    nextObject.X += nextObject.X - actualX;
+                    if (nextObject.X == 0)
+                    {
+                        nextObject.X += nextObject.X - actualX;
+                    }
+                    else
+                    {
+                        nextObject.X += (nextObject.X - actualX - 1);
+                    }
+
                     rect = nextObject.CalcBoundBox();
                 }
 
-                if(actualY < nextObject.Y)
+                if (nextObject.Y - actualY >= 1)
                 {
-                    nextObject.Y += nextObject.Y - actualY;
+                    nextObject.Y += (nextObject.Y - actualY - 1);
                     rect = nextObject.CalcBoundBox();
                 }
 
@@ -129,7 +209,7 @@ namespace Spotlight.Services
                 if (rect.X + rect.Width > 256)
                 {
                     nextX[gameObject.GameObjectType][gameObject.Group] = nextObject.X = 0;
-                    nextY[gameObject.GameObjectType][gameObject.Group] =  nextObject.Y += maxHeight[gameObject.GameObjectType][gameObject.Group] + 1;
+                    nextY[gameObject.GameObjectType][gameObject.Group] = nextObject.Y += maxHeight[gameObject.GameObjectType][gameObject.Group] + 1;
                     rect = nextObject.CalcBoundBox();
                 }
 
@@ -152,7 +232,7 @@ namespace Spotlight.Services
             globalGameObject.Properties = gameObject.Properties;
             globalGameObject.Sprites = gameObject.Sprites;
 
-            if(GameObjectUpdated != null)
+            if (GameObjectUpdated != null)
             {
                 GameObjectUpdated(globalGameObject);
             }

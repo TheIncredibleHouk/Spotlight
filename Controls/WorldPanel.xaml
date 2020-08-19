@@ -4,53 +4,233 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Spotlight"
-             Width="300"
-             Background="Black"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="40">
+             VerticalAlignment="Stretch"
+             SnapsToDevicePixels="True"
+             HorizontalAlignment="Stretch"
+             Background="Black"
+             d:DesignHeight="450" d:DesignWidth="1200">
     <UserControl.Resources>
-        <Style TargetType="{x:Type TreeView}">
-            <Setter Property="BorderBrush" Value="#FF3E3E3E" />
-            <Setter Property="BorderThickness">
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="#FFB5B8C1" />
+            <Setter Property="Margin" Value="0,15,0,0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <SolidColorBrush x:Key="ComboBoxNormalBorderBrush" Color="#e3e9ef" />
+        <SolidColorBrush x:Key="ComboBoxNormalBackgroundBrush" Color="Black" />
+        <SolidColorBrush x:Key="ComboBoxDisabledForegroundBrush" Color="#888" />
+        <SolidColorBrush x:Key="ComboBoxDisabledBackgroundBrush" Color="#eee" />
+        <SolidColorBrush x:Key="ComboBoxDisabledBorderBrush" Color="#888" />
+
+        <ControlTemplate TargetType="ToggleButton" x:Key="ComboBoxToggleButtonTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="2" Name="Border" BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" CornerRadius="0" BorderThickness="1, 1, 1, 1" Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
+                <Border Grid.Column="1" Margin="1, 1, 1, 1" BorderBrush="#444" Name="ButtonBorder" CornerRadius="0, 0, 0, 0" BorderThickness="0, 0, 0, 0"  Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
+                <Path Name="Arrow" Grid.Column="1" Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z" HorizontalAlignment="Center" Fill="#444" VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="Black"/>
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="Black"/>
+                    <Setter Property="Shape.Fill" TargetName="Arrow" Value="#FF8D979E"/>
+                </Trigger>
+                <Trigger Property="UIElement.IsEnabled" Value="False">
+                    <Setter Property="Panel.Background" TargetName="Border" Value="{StaticResource ComboBoxDisabledBackgroundBrush}"/>
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource ComboBoxDisabledBackgroundBrush}"/>
+                    <Setter Property="Border.BorderBrush" TargetName="ButtonBorder" Value="{StaticResource ComboBoxDisabledBorderBrush}"/>
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                    <Setter Property="Shape.Fill" TargetName="Arrow" Value="#999"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="Margin" Value="10, 0, 10, 0" />
+            <Setter Property="TextElement.Foreground" Value="Black"/>
+            <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Control.Template">
                 <Setter.Value>
-                    <Thickness Top="0" Left="0" Right="0" Bottom="1" />
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Name="ToggleButton" Grid.Column="2"
+                ClickMode="Press" Focusable="False"
+                IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+
+                            <ContentPresenter Name="ContentSite" Margin="5, 3, 23, 3" IsHitTestVisible="False"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"                              
+                              Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                              ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                            <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3"                     
+                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                     Visibility="Hidden" Background="Transparent"
+                     HorizontalAlignment="Left" VerticalAlignment="Center"
+                     Focusable="True" >
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="TextBox" >
+                                        <Border Name="PART_ContentHost" Focusable="False" />
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <!-- Popup showing items -->
+                            <Popup Name="Popup" Placement="Bottom" Focusable="False" AllowsTransparency="True" IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}" PopupAnimation="Slide">
+                                <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding FrameworkElement.ActualWidth}" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
+                                    <Border Name="DropDownBorder" Background="{StaticResource ComboBoxNormalBackgroundBrush}" BorderBrush="#FF3E3E3E" BorderThickness="1" Margin="1" />
+                                    <ScrollViewer Margin="4" SnapsToDevicePixels="True" Padding="3">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ItemsControl.HasItems" Value="False">
+                                <Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="UIElement.IsEnabled" Value="False">
+                                <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="ItemsControl.IsGrouping" Value="True">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                            </Trigger>
+                            <Trigger Property="ComboBox.IsEditable" Value="True">
+                                <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
+                                <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
+                                <Setter Property="UIElement.Visibility" TargetName="ContentSite" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style TargetType="{x:Type TreeViewItem}">
-            <Setter Property="Foreground" Value="#FFB5B8C1" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="BorderBrush" Value="#FF363857" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
     </UserControl.Resources>
     <DockPanel>
-        <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Bottom">
-            <Button HorizontalContentAlignment="Left" DockPanel.Dock="Left" x:Name="Expander" Click="Expander_Click">
-                <Polygon Fill="#FFB5B8C1" Margin="10" x:Name="CollapseIcon">
-                    <Polygon.Points>
-                        <Point X="0" Y="0" />
-                        <Point X="10" Y="5" />
-                        <Point X="0" Y="10" />
-                    </Polygon.Points>
-                </Polygon>
-            </Button>
-            <StackPanel x:Name="ActionPanel" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <Button Click="Open_Clicked">Open</Button>
-                <Button>Rename</Button>
-                <Button>Delete</Button>
-            </StackPanel>
+        <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
+            <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 0" DockPanel.Dock="Top">
+                <StackPanel>
+                    <local:TileBlockSelector  Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
+                    <local:GameObjectSelector x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
+                </StackPanel>
+            </Border>
         </DockPanel>
-        <TreeView  DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
-            <TreeView.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151515" />
-            </TreeView.Resources>
-        </TreeView>
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 1" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal" >
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <Setter Property="Margin" Value="10, 0, 10, 0" />
+                        <Setter Property="Height" Value="40" />
+                        <Setter Property="Width" Value="1" />
+                        <Setter Property="Fill" Value="#FF3E3E3E" />
+                    </Style>
+                </StackPanel.Resources>
+                <Button x:Name="SaveButton" Click="SaveButton_Click">Save Level</Button>
+                <Rectangle />
+                <TextBlock VerticalAlignment="Center">Edit Mode</TextBlock>
+                <ComboBox Width="80" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
+                    <ComboBoxItem>Tiles</ComboBoxItem>
+                    <ComboBoxItem>Sprites</ComboBoxItem>
+                    <ComboBoxItem>Pointers</ComboBoxItem>
+                </ComboBox>
+                <TextBlock VerticalAlignment="Center">Draw Mode</TextBlock>
+                <ComboBox Width="80" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
+                    <ComboBoxItem>Default</ComboBoxItem>
+                    <ComboBoxItem>Fill</ComboBoxItem>
+                    <ComboBoxItem>Replace</ComboBoxItem>
+                </ComboBox>
+                <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">Show Grid</RadioButton>
+                <Rectangle />
+                <RadioButton GroupName="Grid2" Click="ShowScreenLines_Click" x:Name="ShowScreenLines">Show Screen Lines</RadioButton>
+                <Rectangle />
+                <RadioButton GroupName="Grid4" Click="ShowTerrain_Click" x:Name="ShowTerrain">Show Terrain</RadioButton>
+                <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">Show Interactions</RadioButton>
+                <RadioButton GroupName="Grid4" Click="ShowPSwitch_Click" x:Name="ShowPSwitch">Show P-Switch</RadioButton>
+            </StackPanel>
+        </Border>
+        <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  DockPanel.Dock="Right">
+            <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 0" Padding="0, 0, 0, 10">
+                <StackPanel Orientation="Vertical">
+                    <Label>Animation Type</Label>
+                    <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
+
+                    <Label>Effect Type</Label>
+                    <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
+
+                    <Label>Event Type</Label>
+                    <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
+
+                    <Label>Graphics Set</Label>
+                    <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
+
+                    <Label>Music</Label>
+                    <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
+
+                    <Label>Palette</Label>
+                    <ComboBox SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
+
+                    <Label>Palette Effect</Label>
+                    <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
+
+                    <Label>Screens</Label>
+                    <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
+
+                    <Label>Scroll Type</Label>
+                    <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
+
+                    <Label>Tile Set</Label>
+                    <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
+
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 1" DockPanel.Dock="Bottom">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" >
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <Setter Property="Margin" Value="10, 0, 10, 0" />
+                        <Setter Property="Height" Value="40" />
+                        <Setter Property="Width" Value="1" />
+                        <Setter Property="Fill" Value="#FF3E3E3E" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock VerticalAlignment="Center" x:Name="PointerXY" Width="75">X: 0 Y: 0</TextBlock>
+                <Rectangle />
+                <StackPanel x:Name="TileStatus" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Tile Value:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="TileValue" Width="25">00</TextBlock>
+                    <Rectangle />
+                    <TextBlock VerticalAlignment="Center">Terrain:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="TerrainDescription" Width="125">Terrain</TextBlock>
+                    <Rectangle />
+                    <TextBlock VerticalAlignment="Center">Interaction:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="InteractionDescription" Width="125">Interacton</TextBlock>
+                </StackPanel>
+                <StackPanel x:Name="SpriteStatus" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Border x:Name="RenderContainer" BorderThickness="1,0,0,0" BorderBrush="#FF3E3E3E">
+                <Canvas x:Name="CanvasContainer" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Image RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="False" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
+                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
+                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                    </Border>
+                    <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
+                    <local:PointerEditor x:Name="PointerEditor" Visibility="Collapsed" />
+                </Canvas>
+            </Border>
+        </ScrollViewer>
     </DockPanel>
 </UserControl>

@@ -117,39 +117,44 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
-            <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 1, 0" DockPanel.Dock="Top">
-                <StackPanel SnapsToDevicePixels="True">
+            <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 0" DockPanel.Dock="Top">
+                <StackPanel>
                     <local:TileBlockSelector  Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
                     <local:GameObjectSelector x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>
         </DockPanel>
-        <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 1" DockPanel.Dock="Top">
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 1" DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal" >
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Rectangle}">
-                        <Setter Property="Margin" Value="10" />
+                        <Setter Property="Margin" Value="10, 0, 10, 0" />
+                        <Setter Property="Height" Value="40" />
                         <Setter Property="Width" Value="1" />
                         <Setter Property="Fill" Value="#FF3E3E3E" />
                     </Style>
                 </StackPanel.Resources>
                 <Button x:Name="SaveButton" Click="SaveButton_Click">Save Level</Button>
                 <Rectangle />
-                <RadioButton GroupName="Edit" IsChecked="True" Checked="EditTiles_Checked" x:Name="EditTiles">Tiles</RadioButton>
-                <RadioButton GroupName="Edit" Checked="EditSprites_Checked" x:Name="EditSprites">Sprites</RadioButton>
-                <RadioButton GroupName="Edit" Checked="EditPointers_Checked" x:Name="EditPointers">Pointers</RadioButton>
+                <TextBlock VerticalAlignment="Center">Edit Mode</TextBlock>
+                <ComboBox Width="80" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
+                    <ComboBoxItem>Tiles</ComboBoxItem>
+                    <ComboBoxItem>Sprites</ComboBoxItem>
+                    <ComboBoxItem>Pointers</ComboBoxItem>
+                </ComboBox>
+                <TextBlock VerticalAlignment="Center">Draw Mode</TextBlock>
+                <ComboBox Width="80" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
+                    <ComboBoxItem>Default</ComboBoxItem>
+                    <ComboBoxItem>Fill</ComboBoxItem>
+                    <ComboBoxItem>Replace</ComboBoxItem>
+                </ComboBox>
+                <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">Show Grid</RadioButton>
                 <Rectangle />
-                <RadioButton Checked="DefaultDraw_Checked" x:Name="DefaultDraw" GroupName="Draw" IsChecked="True">Default</RadioButton>
-                <RadioButton Checked="FillDraw_Checked" x:Name="FillDraw" GroupName="Draw">Fill</RadioButton>
-                <RadioButton Checked="ReplaceDraw_Checked" x:Name="ReplaceDraw" GroupName="Draw">Replace</RadioButton>
+                <RadioButton GroupName="Grid2" Click="ShowScreenLines_Click" x:Name="ShowScreenLines">Show Screen Lines</RadioButton>
                 <Rectangle />
-                <RadioButton GroupName="Grid1" Checked="ShowGrid_Checked" Unchecked="ShowGrid_Unchecked" x:Name="ShowGrid">Grid</RadioButton>
-                <RadioButton GroupName="Grid2" Checked="ShowScreenLines_Checked" Unchecked="ShowScreenLines_Unchecked" x:Name="ShowScreenLines">Screen Lines</RadioButton>
-                <RadioButton GroupName="Grid3" Checked="ShowExtraSprites_Checked" Unchecked="ShowExtraSprites_Unchecked" x:Name="ShowExtraSprites">Overlay Sprites</RadioButton>
-                <RadioButton GroupName="Grid4" Checked="ShowTerrain_Checked" Unchecked="ShowTerrain_Unchecked" x:Name="ShowTerrain">Show Terrain</RadioButton>
-                <RadioButton GroupName="Grid4" Checked="ShowInteraction_Checked" Unchecked="ShowInteraction_Unchecked" x:Name="ShowInteraction">Show Interactions</RadioButton>
-                <Rectangle />
-                <Button>Set Start</Button>
+                <RadioButton GroupName="Grid4" Click="ShowTerrain_Click" x:Name="ShowTerrain">Show Terrain</RadioButton>
+                <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">Show Interactions</RadioButton>
+                <RadioButton GroupName="Grid4" Click="ShowPSwitch_Click" x:Name="ShowPSwitch">Show P-Switch</RadioButton>
             </StackPanel>
         </Border>
         <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  DockPanel.Dock="Right">
@@ -188,16 +193,44 @@
                 </StackPanel>
             </Border>
         </ScrollViewer>
-        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <Canvas x:Name="CanvasContainer" VerticalAlignment="Top" UseLayoutRounding="True">
-                <Border x:Name="RenderContainer" BorderThickness="0" UseLayoutRounding="True">
-                    <Image RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="True" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
-                </Border>
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 1" DockPanel.Dock="Bottom">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" >
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <Setter Property="Margin" Value="10, 0, 10, 0" />
+                        <Setter Property="Height" Value="40" />
+                        <Setter Property="Width" Value="1" />
+                        <Setter Property="Fill" Value="#FF3E3E3E" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock VerticalAlignment="Center" x:Name="PointerXY" Width="75">X: 0 Y: 0</TextBlock>
+                <Rectangle />
+                <StackPanel x:Name="TileStatus" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Tile Value:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="TileValue" Width="25">00</TextBlock>
+                    <Rectangle />
+                    <TextBlock VerticalAlignment="Center">Terrain:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="TerrainDescription" Width="125">Terrain</TextBlock>
+                    <Rectangle />
+                    <TextBlock VerticalAlignment="Center">Interaction:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="InteractionDescription" Width="125">Interacton</TextBlock>
+                </StackPanel>
+                <StackPanel x:Name="SpriteStatus" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Border x:Name="RenderContainer" BorderThickness="1,0,0,0" BorderBrush="#FF3E3E3E">
+            <Canvas x:Name="CanvasContainer" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Image RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="False" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
                 <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
                     <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                 </Border>
                 <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
+                <local:PointerEditor x:Name="PointerEditor" Visibility="Collapsed" />
             </Canvas>
+            </Border>
         </ScrollViewer>
     </DockPanel>
 </UserControl>

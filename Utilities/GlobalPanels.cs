@@ -16,9 +16,19 @@ namespace Spotlight
             MainWindow.OpenGameObjectEditor(gameObject, palette);
         }
 
-        public static void EditTileBlock(TileSet tileSet, TileBlock tileBlock)
+        public static void EditTileBlock(Guid levelId, int tileBlockValue)
         {
+            MainWindow.OpenTileBlockEditor(levelId, tileBlockValue);
+        }
 
+        public static LevelPanel EditLevel(LevelInfo levelInfo)
+        {
+            return MainWindow.OpenLevelEditor(levelInfo);
+        }
+
+        public static void OpenPaletteEditor()
+        {
+            MainWindow.OpenPaletteEditor();
         }
     }
 }

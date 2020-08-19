@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Spotlight.Services
 {
@@ -11,12 +12,14 @@ namespace Spotlight.Services
     {
         private int[] _tileData;
         private List<LevelObject> _gameObjects;
+        private List<LevelPointer> _pointers;
         private const int DATA_ROW_LENGTH = 15 * 16;
 
         public LevelDataAccessor(Level _level)
         {
             _tileData = _level.TileData;
             _gameObjects = _level.ObjectData;
+            _pointers = _level.LevelPointers;
         }
 
         public int GetData(int x, int y)
@@ -57,9 +60,14 @@ namespace Spotlight.Services
             }
         }
 
-        public List<LevelObject> GetLevelObjects()
+        public List<LevelObject> GetLevelObjects(Rect area)
         {
-            return _gameObjects;
+            return _gameObjects.Where(o => o.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
+        }
+
+        public List<LevelPointer> GetPointers(Rect area)
+        {
+            return _pointers.Where(p => p.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
     }
 }

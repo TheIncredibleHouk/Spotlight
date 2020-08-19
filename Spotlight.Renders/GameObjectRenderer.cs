@@ -15,12 +15,14 @@ namespace Spotlight.Renderers
 
         private byte[] _buffer;
         private GameObjectService _gameObjectService;
+        private PalettesService _palettesService;
 
-        public GameObjectRenderer(GameObjectService gameObjectService, GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
+        public GameObjectRenderer(GameObjectService gameObjectService, PalettesService palettesService, GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
         {
             BYTE_STRIDE = 256 * 4;
             _buffer = new byte[256 * 256 * 4];
             _gameObjectService = gameObjectService;
+            _palettesService = palettesService;
         }
 
         private Color[][] _rgbPalette;
@@ -92,19 +94,19 @@ namespace Spotlight.Renderers
 
                 if (visibleSprites.Count == 0)
                 {
-                    visibleSprites = _gameObjectService.InvisibleSprites;
+                    visibleSprites = _gameObjectService.FallBackSprites(levelObject.GameObject);
                 }
 
                 foreach (var sprite in visibleSprites)
                 {
                     int paletteIndex = sprite.PaletteIndex;
 
-                    Tile topTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileValueIndex) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex);
-                    Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
+                    Tile topTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex);
+                    Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
-                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _palettesService.GetRgbPalette(sprite.CustomPalette) : _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _palettesService.GetRgbPalette(sprite.CustomPalette) : _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }

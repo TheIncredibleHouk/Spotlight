@@ -25,9 +25,9 @@ namespace Spotlight.Tests
             
 
             LegacyProject legacyProject = ps.GetLegacyProject(legacyFilePath);
-            //Project project = ps.ConvertProject(legacyProject);
+            Project project = ps.ConvertProject(legacyProject);
 
-            //TileService ts = new TileService(es, project);
+            TileService ts = new TileService(es, project);
             //GameObjectService gos = new GameObjectService(es, project);
 
 
@@ -45,6 +45,8 @@ namespace Spotlight.Tests
             ////ps.SaveProject(project, newFilePath);
 
             Project reloadProject = ps.LoadProject(newFilePath + @"\Mushroom Mayhem.json");
+            reloadProject.TileSets = ts.ConvertLegacy(tsaLegacyPath);
+            ps.SaveProject(reloadProject, newFilePath);
             //List<GameObject> gameObjects= new GameObjectService(es, reloadProject).ConvertFromLegacy(spriteLegacyPath);
 
             //reloadProject.GameObjects = new GameObject[256];
@@ -61,11 +63,11 @@ namespace Spotlight.Tests
             //    ws.SaveWorld(w, newFilePath);
             //}
 
-            LevelService ls = new LevelService(es, reloadProject);
-            foreach (Level l in ls.ConvertFromLegacy(ls.GetLegacyLevels(@"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\Levels", legacyProject.levelinfo), legacyProject))
-            {
-                ls.SaveLevel(l, newFilePath);
-            }
+            //LevelService ls = new LevelService(es, reloadProject);
+            //foreach (Level l in ls.ConvertFromLegacy(ls.GetLegacyLevels(@"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\Levels", legacyProject.levelinfo), legacyProject))
+            //{
+            //    ls.SaveLevel(l, newFilePath);
+            //}
         }
     }
 }

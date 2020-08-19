@@ -1,6 +1,7 @@
 ﻿using Spotlight.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,9 +47,9 @@ namespace Spotlight.Services
             return _relativeTable[tileIndex];
         }
 
-        public Tile GetOverlayTile(int tileIndex)
+        public Tile GetOverlayTile(int bank, int tileIndex)
         {
-            return _overlayTable[tileIndex];
+            return _overlayTable[bank * 0x40 + tileIndex];
         }
 
         public void SetStaticTable(Tile[] staticTable)
@@ -66,6 +67,12 @@ namespace Spotlight.Services
                 _relativeTable[i + 128] = animatedTable[i];
 
             }
+        }
+
+        public void SetGlobalTiles(Tile[] globalTable, Tile[] extraTable)
+        {
+            _globalTable = globalTable;
+            _overlayTable = extraTable;
         }
     }
 }

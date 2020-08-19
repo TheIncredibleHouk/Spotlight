@@ -12,7 +12,7 @@
     </Window.Resources>
     <DockPanel LastChildFill="True">
         <local:ProjectPanel x:Name="_ProjectPanel"  DockPanel.Dock="Top" />
-        <local:WorldPanel LevelOpened="_WorldPanel_LevelOpened" x:Name="_WorldPanel"  DockPanel.Dock="Right" />
+        <local:WorldPanel LevelOpened="_OpenLevelEditor" x:Name="_WorldPanel"  DockPanel.Dock="Right" />
         <Grid x:Name="DockFill" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <TextBlock HorizontalAlignment="Center" x:Name="SplashText" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>
             <TabControl BorderThickness="0,1,0,0" Padding="0" x:Name="TabsOpen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
@@ -22,7 +22,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="TabItem">
                                     <StackPanel Orientation="Horizontal">
-                                        <Border Name="Panel" MouseDown="TabItemHeader_MouseDown">
+                                        <Border Name="Panel" MouseDown="TabItemHeader_MouseDown" MouseUp="TabItemHeader_MouseUp">
                                             <Border.BorderThickness>
                                                 <Thickness Top="1" Left="1" Right="1" Bottom="0" />
                                             </Border.BorderThickness>

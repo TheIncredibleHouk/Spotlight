@@ -15,8 +15,6 @@ namespace Spotlight.Services
         public delegate void TileSetEventHandler(int index, TileSet tileSet);
         public event TileSetEventHandler TileSetUpdated;
 
-        public delegate void TileOverlayEventHandler();
-        public event TileOverlayEventHandler TileOverlayUpdated;
 
         private readonly ErrorService _errorService;
         private readonly Project _project;
@@ -32,9 +30,26 @@ namespace Spotlight.Services
             return _project.TileSets;
         }
 
-        public void CommitTileSet(int index, TileSet tileSet)
+        public void CommitTileSet(int index, TileSet tileSet, List<TileTerrain> tileTerrain, List<MapTileInteraction> mapTileInterations)
         {
-            _project.TileSets[index] = tileSet;
+            _project.TileSets[index].FireBallInteractions = tileSet.FireBallInteractions;
+            _project.TileSets[index].IceBallInteractions = tileSet.IceBallInteractions;
+            _project.TileSets[index].PSwitchAlterations = tileSet.PSwitchAlterations;
+
+            for (int i = 0; i < 256; i++)
+            {
+                _project.TileSets[index].TileBlocks[i] = tileSet.TileBlocks[i];
+            }
+
+            for (int i = 0; i < _project.TileTerrain.Count; i++)
+            {
+                _project.TileTerrain[i] = tileTerrain[i];
+            }
+
+            for (int i = 0; i < _project.MapTileInteractions.Count; i++)
+            {
+                _project.MapTileInteractions[i] = mapTileInterations[i];
+            }
 
             if (TileSetUpdated != null)
             {
@@ -47,16 +62,6 @@ namespace Spotlight.Services
             return _project.TileSets[tileSetIndex];
         }
 
-        public void CommitTerrain(List<TileTerrain> tileTerrain)
-        {
-            _project.TileTerrain = JsonConvert.DeserializeObject<List<TileTerrain>>(JsonConvert.SerializeObject(tileTerrain));
-
-            if (TileOverlayUpdated != null)
-            {
-                TileOverlayUpdated();
-            }
-        }
-
         public List<TileTerrain> GetTerrain()
         {
             return _project.TileTerrain;
@@ -65,6 +70,16 @@ namespace Spotlight.Services
         public List<TileTerrain> GetTerrainCopy()
         {
             return JsonConvert.DeserializeObject<List<TileTerrain>>(JsonConvert.SerializeObject(_project.TileTerrain));
+        }
+
+        public List<MapTileInteraction> GetMapTileInteractions()
+        {
+            return _project.MapTileInteractions;
+        }
+
+        public List<MapTileInteraction> GetMapTileInteractionCopy()
+        {
+            return JsonConvert.DeserializeObject<List<MapTileInteraction>>(JsonConvert.SerializeObject(_project.MapTileInteractions));
         }
 
         public List<TileSet> ConvertLegacy(string fileName)

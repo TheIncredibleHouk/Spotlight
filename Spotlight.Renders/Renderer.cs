@@ -23,6 +23,16 @@ namespace Spotlight.Renderers
             _graphicsAccessor = graphicsAccessor;
         }
 
+        protected bool _initializing;
+        public void Initializing()
+        {
+            _initializing = true;
+        }
+
+        public void Ready()
+        {
+            _initializing = false;
+        }
 
         public byte[] GetRectangle(Int32Rect rect, byte[] buffer)
         {
@@ -36,6 +46,7 @@ namespace Spotlight.Renderers
                 for (int x = rect.X; x < rect.Width + rect.X; x++)
                 {
                     int xOffset = yOffset + (x * 4);
+
 
                     copyData[copyDataPointer++] = buffer[xOffset];
                     copyData[copyDataPointer++] = buffer[xOffset + 1];
@@ -78,46 +89,6 @@ namespace Spotlight.Renderers
 
                     if (xOffset >= 0 && xOffset < buffer.Length)
                     {
-                        if (colorIndex == 0)
-                        {
-                            if (RenderGrid && ((j == 0 && x % 16 == 0) || (i == 0 && y % 16 == 0)))
-                            {
-                                color = (j + i) % 2 == 1 ? Color.White : Color.Black;
-                            }
-
-                            if (ScreenBorders)
-                            {
-                                if (x > 0)
-                                {
-                                    if (xOffset % 1024 == 1023 || xOffset % 1024 == 0)
-                                    {
-                                        color = (j + i) % 2 == 1 ? Color.Red : Color.Green;
-                                    }
-                                }
-                            }
-                        }
-
-                        buffer[xOffset] = (byte)((1 - calcOpacity) * buffer[xOffset] + (calcOpacity * color.B));
-                        buffer[xOffset + 1] = (byte)((1 - calcOpacity) * buffer[xOffset + 1] + (calcOpacity * color.G));
-                        buffer[xOffset + 2] = (byte)((1 - calcOpacity) * buffer[xOffset + 2] + (calcOpacity * color.R));
-                        buffer[xOffset + 3] = 255;
-                    }
-                }
-            }
-        }
-
-        protected void DrawColor(int x, int y, Color color, int[] buffer, double opacity = .5)
-        {
-            for (int i = 0, pixelY = 0; i < 16; i++, pixelY++)
-            {
-                long yOffset = (BYTE_STRIDE * (y + i)) + (x * 4);
-
-                for (int j = 0, pixelX = 0; j < 16; j++, pixelX++)
-                {
-                    long xOffset = (j * 4) + yOffset;
-
-                    if (xOffset >= 0 && xOffset < buffer.Length)
-                    {
                         if (RenderGrid && ((j == 0 && x % 16 == 0) || (i == 0 && y % 16 == 0)))
                         {
                             color = (j + i) % 2 == 1 ? Color.White : Color.Black;
@@ -134,9 +105,30 @@ namespace Spotlight.Renderers
                             }
                         }
 
-                        buffer[xOffset] = (byte)((1 - opacity) * buffer[xOffset] + (opacity * color.B));
-                        buffer[xOffset + 1] = (byte)((1 - opacity) * buffer[xOffset + 1] + (opacity * color.G));
-                        buffer[xOffset + 2] = (byte)((1 - opacity) * buffer[xOffset + 2] + (opacity * color.R));
+                        buffer[xOffset] = (byte)((1 - calcOpacity) * buffer[xOffset] + (calcOpacity * color.B));
+                        buffer[xOffset + 1] = (byte)((1 - calcOpacity) * buffer[xOffset + 1] + (calcOpacity * color.G));
+                        buffer[xOffset + 2] = (byte)((1 - calcOpacity) * buffer[xOffset + 2] + (calcOpacity * color.R));
+                        buffer[xOffset + 3] = 255;
+                    }
+                }
+            }
+        }
+
+        protected void DrawColorTile(int x, int y, Color color, byte[] buffer)
+        {
+            for (int i = 0, pixelY = 0; i < 16; i++, pixelY++)
+            {
+                long yOffset = (BYTE_STRIDE * (y + i)) + (x * 4);
+
+                for (int j = 0, pixelX = 0; j < 16; j++, pixelX++)
+                {
+                    long xOffset = (j * 4) + yOffset;
+
+                    if (xOffset >= 0 && xOffset < buffer.Length)
+                    {
+                        buffer[xOffset] = color.B;
+                        buffer[xOffset + 1] = color.G;
+                        buffer[xOffset + 2] = color.R;
                         buffer[xOffset + 3] = 255;
                     }
                 }

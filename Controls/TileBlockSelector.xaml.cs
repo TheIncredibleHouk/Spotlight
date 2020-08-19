@@ -37,17 +37,18 @@ namespace Spotlight
         private WriteableBitmap _bitmap;
         private TileSet _tileSet;
         private List<TileTerrain> _terrain;
+        private List<MapTileInteraction> _mapTileInteractions;
         public void Initialize(GraphicsAccessor graphicsAccessor, TileService tileService, TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
         {
             _graphicsAccessor = graphicsAccessor;
             _tileSet = tileSet;
             _terrain = tileService.GetTerrain();
-            _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(graphicsAccessor, _terrain);
-
-            TileRenderSource.Width = 256;
-            TileRenderSource.Height = 256;
+            _mapTileInteractions = tileService.GetMapTileInteractions();
+            _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(graphicsAccessor, _terrain, _mapTileInteractions);
 
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
+            TileRenderSource.Width = _bitmap.Width;
+            TileRenderSource.Height = _bitmap.Height;
 
             TileRenderSource.Source = _bitmap;
 
@@ -56,59 +57,21 @@ namespace Spotlight
         }
 
 
-        public void Update(int tileIndex)
+        public void Update(TileSet tileSet = null, Palette palette = null, int? tileIndex = null, bool? withTerrainOverlay = null, bool? withInteractionOverlay = null, bool? withMapInteractionOverlay = null, bool? withProjectileInteractions = null)
         {
             if (_tileSetRenderer != null)
             {
-                _tileSetRenderer.Update();
-                Update(new Rect((int) (tileIndex  % 16) * 16, (int)((tileIndex / 16) * 16), 16, 16));
-            }
-        }
-
-        public void Update(TileSet tileSet)
-        {
-            if (_tileSetRenderer != null)
-            {
-                _tileSet = tileSet;
-                _tileSetRenderer.Update(tileSet);
+                _tileSet = tileSet ?? _tileSet;
+                _tileSetRenderer.Update(tileSet: tileSet, palette: palette, withTerrainOverlay: withTerrainOverlay, withInteractionOverlay: withInteractionOverlay, withMapInteractionOverlay: withMapInteractionOverlay, withProjectileInteractions: withProjectileInteractions);
                 Update();
             }
         }
 
-        public void Update(Palette palette)
-        {
-            if (_tileSetRenderer != null)
-            {
-                _tileSetRenderer.Update(palette);
-                Update();
-            }
-        }
-
-        public void Update(TileSet tileSet, Palette palette)
-        {
-            if (_tileSetRenderer != null)
-            {
-                _tileSet = tileSet;
-                _tileSetRenderer.Update(tileSet, palette);
-                Update();
-            }
-        }
-
-        public void Update(bool withTerrain, bool withInteractions)
-        {
-            if (_tileSetRenderer != null)
-            {
-                _tileSetRenderer.Update(withTerrain, withInteractions);
-                Update();
-            }
-        }
 
         public void Update()
         {
-            if (_tileSetRenderer != null)
-            {
-                Update(new Rect(0, 0, 256, 256));
-            }
+            _tileSetRenderer.Update();
+            Update(new Rect(0, 0, 256, 256));
         }
 
         private void Update(Rect rect)
@@ -122,6 +85,7 @@ namespace Spotlight
 
 
             Int32Rect sourceArea = new Int32Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+
             _bitmap.WritePixels(sourceArea, _tileSetRenderer.GetRectangle(sourceArea), sourceArea.Width * 4, sourceArea.X, sourceArea.Y);
             _bitmap.AddDirtyRect(sourceArea);
             _bitmap.Unlock();
@@ -143,6 +107,11 @@ namespace Spotlight
             }
             set
             {
+                if(value > 256)
+                {
+                    return;
+                }
+
                 _selectedBlockValue = value;
                 SelectedTileBlock = _tileSet.TileBlocks[value];
 

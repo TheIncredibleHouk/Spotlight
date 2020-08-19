@@ -10,8 +10,6 @@ namespace Spotlight.Models
     public class TileBlockOverlay
     {
         public int PaletteIndex { get; set; }
-        public int OffsetX { get; set; }
-        public int OffsetY { get; set; }
 
         public string UpperLeftTile { get; set; }
 
