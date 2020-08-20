@@ -88,10 +88,16 @@ namespace Spotlight.Services
             }
         }
 
-        public void SaveWorld(World world, string basePath)
+        public void SaveWorld(World world, string basePath = null)
         {
             try
             {
+
+                if (basePath == null)
+                {
+                    basePath = _project.DirectoryPath;
+                }
+
                 string worldDirectory = basePath + @"\worlds";
 
                 if (!Directory.Exists(worldDirectory))

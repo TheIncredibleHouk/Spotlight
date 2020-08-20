@@ -136,7 +136,7 @@ namespace Spotlight
                 MapInteractionList.SelectedValue = _localMapTileInteraction.Where(t => t.HasInteraction(tileBlock.Property)).FirstOrDefault()?.Value;
             }
 
-            _graphicsSetRenderer.Update((tileValue & 0xC0) >> 6);
+            _graphicsSetRenderer.Update(paletteIndex: (tileValue & 0xC0) >> 6);
             UpdateTileBlock();
             UpdateGraphics();
 

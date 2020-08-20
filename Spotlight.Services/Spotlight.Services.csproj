@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accessors\GraphicsAccessor.cs" />
+    <Compile Include="Accessors\WorldDataAccessor.cs" />
     <Compile Include="Accessors\LevelDataAccessor.cs" />
     <Compile Include="ErrorService.cs" />
     <Compile Include="GameObjectService.cs" />

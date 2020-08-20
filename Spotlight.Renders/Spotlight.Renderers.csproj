@@ -46,6 +46,7 @@
     <Compile Include="GameObjectRenderer.cs" />
     <Compile Include="GraphicsRenderer.cs" />
     <Compile Include="GraphicsSetRenderer.cs" />
+    <Compile Include="WorldRenderer.cs" />
     <Compile Include="LevelRenderer.cs" />
     <Compile Include="PaletteRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

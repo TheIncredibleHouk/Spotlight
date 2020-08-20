@@ -70,6 +70,9 @@
     <Compile Include="Controls\ConfirmationWindow.xaml.cs">
       <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\FilePanel.xaml.cs">
+      <DependentUpon>FilePanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GameObjectEditor.xaml.cs">
       <DependentUpon>GameObjectEditor.xaml</DependentUpon>
     </Compile>
@@ -83,9 +86,7 @@
     <Compile Include="Controls\KeyValueTextbox.xaml.cs">
       <DependentUpon>KeyValueTextbox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\LevelPanel.xaml.cs">
-      <DependentUpon>LevelPanel.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Controls\LevelPanel.xaml.cs" />
     <Compile Include="Controls\PaletteEditor.xaml.cs">
       <DependentUpon>PaletteEditor.xaml</DependentUpon>
     </Compile>
@@ -101,6 +102,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ConfirmationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FilePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,8 +126,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LevelPanel.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PaletteEditor.xaml">
       <SubType>Designer</SubType>

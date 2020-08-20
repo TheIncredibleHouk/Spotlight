@@ -29,27 +29,21 @@ namespace Spotlight.Renderers
         }
 
         private Palette _palette;
-        private int _lastPaletteIndex = 0;
+        private int _paletteIndex = 0;
 
-        public void Update(Palette palette)
+        public void Update(Palette palette = null, int? paletteIndex = null)
         {
-            _palette = palette;
+            _palette = palette ?? _palette;
+            _paletteIndex = paletteIndex ?? _paletteIndex;
             Update();
         }
 
-        public void Update(int paletteIndex = -1)
+        public void Update()
         {
             if(_palette == null)
             {
                 return;
             }
-
-            if(paletteIndex < 0)
-            {
-                paletteIndex = _lastPaletteIndex;
-            }
-
-            _lastPaletteIndex = paletteIndex;
 
             int maxRow = 16;
             int maxCol = 16;
@@ -62,7 +56,7 @@ namespace Spotlight.Renderers
                     int tileValue = row * 16 + col;
                     int x = col * 8, y = row * 8;
 
-                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tileValue), _buffer, _palette.RgbColors[paletteIndex]);
+                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tileValue), _buffer, _palette.RgbColors[_paletteIndex]);
                 }
             }
         }

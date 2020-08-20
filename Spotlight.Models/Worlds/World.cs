@@ -10,10 +10,21 @@ namespace Spotlight.Models
 {
     public class World
     {
+        public const int BLOCK_HEIGHT = 9;
+        public const int BLOCK_WIDTH = 4 * 16;
+
         public World()
         {
             TileData = new int[0x40 * 0x1B];
             Pointers = new List<WorldPointer>();
+        }
+
+        public int TileSetIndex
+        {
+            get
+            {
+                return 0;
+            }
         }
 
         public Guid Id { get; set; }

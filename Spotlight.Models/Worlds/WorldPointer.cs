@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace Spotlight.Models
@@ -12,6 +13,20 @@ namespace Spotlight.Models
         public Guid LevelId { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
+
+        public Rect BoundRectangle
+        {
+            get
+            {
+                return new Rect()
+                {
+                    X = X * 16,
+                    Y = Y * 16,
+                    Width = 16,
+                    Height = 16
+                };
+            }
+        }
     }
 
     public class LegacyWorldPointer

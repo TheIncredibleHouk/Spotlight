@@ -120,7 +120,6 @@
             <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 0" DockPanel.Dock="Top">
                 <StackPanel>
                     <local:TileBlockSelector  Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
-                    <local:GameObjectSelector x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>
         </DockPanel>
@@ -134,15 +133,15 @@
                         <Setter Property="Fill" Value="#FF3E3E3E" />
                     </Style>
                 </StackPanel.Resources>
-                <Button x:Name="SaveButton" Click="SaveButton_Click">Save Level</Button>
+                <Button x:Name="SaveButton" Click="SaveButton_Click">Save World</Button>
                 <Rectangle />
                 <TextBlock VerticalAlignment="Center">Edit Mode</TextBlock>
                 <ComboBox Width="80" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
                     <ComboBoxItem>Tiles</ComboBoxItem>
-                    <ComboBoxItem>Sprites</ComboBoxItem>
                     <ComboBoxItem>Pointers</ComboBoxItem>
                 </ComboBox>
                 <TextBlock VerticalAlignment="Center">Draw Mode</TextBlock>
+                <Rectangle />
                 <ComboBox Width="80" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
                     <ComboBoxItem>Default</ComboBoxItem>
                     <ComboBoxItem>Fill</ComboBoxItem>
@@ -152,22 +151,12 @@
                 <Rectangle />
                 <RadioButton GroupName="Grid2" Click="ShowScreenLines_Click" x:Name="ShowScreenLines">Show Screen Lines</RadioButton>
                 <Rectangle />
-                <RadioButton GroupName="Grid4" Click="ShowTerrain_Click" x:Name="ShowTerrain">Show Terrain</RadioButton>
                 <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">Show Interactions</RadioButton>
-                <RadioButton GroupName="Grid4" Click="ShowPSwitch_Click" x:Name="ShowPSwitch">Show P-Switch</RadioButton>
             </StackPanel>
         </Border>
         <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  DockPanel.Dock="Right">
             <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 0" Padding="0, 0, 0, 10">
                 <StackPanel Orientation="Vertical">
-                    <Label>Animation Type</Label>
-                    <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
-
-                    <Label>Effect Type</Label>
-                    <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
-
-                    <Label>Event Type</Label>
-                    <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
 
                     <Label>Graphics Set</Label>
                     <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
@@ -178,17 +167,8 @@
                     <Label>Palette</Label>
                     <ComboBox SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
 
-                    <Label>Palette Effect</Label>
-                    <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
-
                     <Label>Screens</Label>
                     <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
-
-                    <Label>Scroll Type</Label>
-                    <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
-
-                    <Label>Tile Set</Label>
-                    <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
 
                 </StackPanel>
             </Border>
@@ -215,19 +195,15 @@
                     <TextBlock VerticalAlignment="Center">Interaction:</TextBlock>
                     <TextBlock VerticalAlignment="Center" x:Name="InteractionDescription" Width="125">Interacton</TextBlock>
                 </StackPanel>
-                <StackPanel x:Name="SpriteStatus" Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
-                </StackPanel>
             </StackPanel>
         </Border>
-        <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="WorldScroller" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Border x:Name="RenderContainer" BorderThickness="1,0,0,0" BorderBrush="#FF3E3E3E">
                 <Canvas x:Name="CanvasContainer" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Image RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="False" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="LevelRenderSource" />
-                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
+                    <Image RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="WorldRenderSource_MouseDown"  UseLayoutRounding="False" LostKeyboardFocus="WorldRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="WorldRenderSource_KeyDown" MouseMove="WorldRenderSource_MouseMove" MouseUp="WorldRenderSource_MouseUp" VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="WorldRenderSource" />
+                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="WorldRenderSource_MouseDown" MouseMove="WorldRenderSource_MouseMove" MouseUp="WorldRenderSource_MouseUp">
                         <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                     </Border>
-                    <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
                     <local:PointerEditor x:Name="PointerEditor" Visibility="Collapsed" />
                 </Canvas>
             </Border>

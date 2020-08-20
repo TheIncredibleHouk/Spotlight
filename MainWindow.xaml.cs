@@ -169,7 +169,7 @@ namespace Spotlight
             worldInfos.AddRange(project.WorldInfo);
             worldInfos.Add(project.EmptyWorld);
 
-            _WorldPanel.BuildTree(worldInfos);
+            FilePanel.BuildTree(worldInfos);
 
             SplashText.Visibility = Visibility.Collapsed;
         }

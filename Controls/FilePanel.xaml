@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="Spotlight.FilePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Spotlight"
+             Width="300"
+             Background="Black"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="40">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TreeView}">
+            <Setter Property="BorderBrush" Value="#FF3E3E3E" />
+            <Setter Property="BorderThickness">
+                <Setter.Value>
+                    <Thickness Top="0" Left="0" Right="0" Bottom="1" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Foreground" Value="#FFB5B8C1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="#FF363857" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <DockPanel>
+        <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Bottom">
+            <Button HorizontalContentAlignment="Left" DockPanel.Dock="Left" x:Name="Expander" Click="Expander_Click">
+                <Polygon Fill="#FFB5B8C1" Margin="10" x:Name="CollapseIcon">
+                    <Polygon.Points>
+                        <Point X="0" Y="0" />
+                        <Point X="10" Y="5" />
+                        <Point X="0" Y="10" />
+                    </Polygon.Points>
+                </Polygon>
+            </Button>
+            <StackPanel x:Name="ActionPanel" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button Click="Open_Clicked">Open</Button>
+                <Button>Rename</Button>
+                <Button>Delete</Button>
+            </StackPanel>
+        </DockPanel>
+        <TreeView  DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
+            <TreeView.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151515" />
+            </TreeView.Resources>
+        </TreeView>
+    </DockPanel>
+</UserControl>

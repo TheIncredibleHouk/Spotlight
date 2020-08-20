@@ -315,7 +315,7 @@ namespace Spotlight
                 {
                     _dragStartPoint = clickPoint;
                     _isDragging = true;
-                    originalSpritePoint = clickPoint;
+                    originalTilePoint = clickPoint;
                 }
                 else if (_drawMode == DrawMode.Replace)
                 {
@@ -400,7 +400,7 @@ namespace Spotlight
 
                 _dragStartPoint = clickPoint;
                 _isDragging = true;
-                originalSpritePoint = clickPoint;
+                originalTilePoint = clickPoint;
 
                 SetSelectionRectangle(new Rect(x * 16, y * 16, 16, 16));
             }
@@ -451,7 +451,7 @@ namespace Spotlight
                 {
                     _dragStartPoint = tilePoint;
                     SetSelectionRectangle(_selectedObject.BoundRectangle);
-                    originalSpritePoint = new Point(_selectedObject.X * 16, _selectedObject.Y * 16);
+                    originalTilePoint = new Point(_selectedObject.X * 16, _selectedObject.Y * 16);
                     _isDragging = true;
                     _historyService.UndoLevelObjects.Push(new LevelObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.Property, _selectedObject.GameObjectId, LevelObjectChangeType.Update));
 
@@ -605,14 +605,14 @@ namespace Spotlight
             }
         }
 
-        private Point originalSpritePoint;
+        private Point originalTilePoint;
         private void HandleSpriteMove(MouseEventArgs e)
         {
             Point movePoint = Snap(e.GetPosition(LevelRenderSource));
 
             if (_selectedObject != null && _isDragging)
             {
-                Point diffPoint = Snap(new Point(movePoint.X - originalSpritePoint.X, movePoint.Y - originalSpritePoint.Y));
+                Point diffPoint = Snap(new Point(movePoint.X - originalTilePoint.X, movePoint.Y - originalTilePoint.Y));
 
                 List<Rect> updateRects = new List<Rect>();
 
@@ -630,8 +630,8 @@ namespace Spotlight
 
                 updateRects.Add(oldRect);
 
-                int newX = (int)((originalSpritePoint.X + diffPoint.X) / 16);
-                int newY = (int)((originalSpritePoint.Y + diffPoint.Y) / 16);
+                int newX = (int)((originalTilePoint.X + diffPoint.X) / 16);
+                int newY = (int)((originalTilePoint.Y + diffPoint.Y) / 16);
 
 
                 if (newX == _selectedObject.X && newY == _selectedObject.Y)
@@ -1041,10 +1041,10 @@ namespace Spotlight
 
                 if (_selectionMode == SelectionMode.SetTiles)
                 {
-                    int columnStart = (int)(Math.Min(originalSpritePoint.X, mousePoint.X) / 16);
-                    int rowStart = (int)(Math.Min(originalSpritePoint.Y, mousePoint.Y) / 16);
-                    int columnEnd = (int)(Math.Max(originalSpritePoint.X, mousePoint.X) / 16);
-                    int rowEnd = (int)(Math.Max(originalSpritePoint.Y, mousePoint.Y) / 16);
+                    int columnStart = (int)(Math.Min(originalTilePoint.X, mousePoint.X) / 16);
+                    int rowStart = (int)(Math.Min(originalTilePoint.Y, mousePoint.Y) / 16);
+                    int columnEnd = (int)(Math.Max(originalTilePoint.X, mousePoint.X) / 16);
+                    int rowEnd = (int)(Math.Max(originalTilePoint.Y, mousePoint.Y) / 16);
 
                     TileChange tileChange = new TileChange(columnStart, rowStart, (columnEnd - columnStart) + 1, (rowEnd - rowStart) + 1);
 
