@@ -32,20 +32,11 @@ namespace Spotlight.Renderers
         }
 
         private TileSet _tileSet;
-        public void SetTileSet(TileSet tileSet)
+        private Palette _palette;
+        public void Update(Palette palette = null, TileSet tileSet = null)
         {
-            _tileSet = tileSet;
-            if (_rgbPalette != null)
-            {
-                Update();
-            }
-
-        }
-
-        private Color[][] _rgbPalette;
-        public void Update(Palette palette)
-        {
-            _rgbPalette = palette.RgbColors;
+            _tileSet = tileSet ?? _tileSet;
+            _palette = palette ?? _palette;
             if (_tileSet != null)
             {
                 Update();
@@ -74,7 +65,7 @@ namespace Spotlight.Renderers
                 blockWidth = (int)(updateRect.Width / 16),
                 blockHeight = (int)(updateRect.Height / 16);
 
-            if (_initializing)
+            if (_initializing || _tileSet == null || _palette == null)
             {
                 return;
             }
@@ -132,10 +123,10 @@ namespace Spotlight.Renderers
                     TileBlock tile = _tileSet.TileBlocks[tileValue];
                     int x = col * 16, y = row * 16;
 
-                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tile.UpperLeft), _buffer, _rgbPalette[paletteIndex]);
-                    RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight), _buffer, _rgbPalette[paletteIndex]);
-                    RenderTile(x, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerLeft), _buffer, _rgbPalette[paletteIndex]);
-                    RenderTile(x + 8, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerRight), _buffer, _rgbPalette[paletteIndex]);
+                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tile.UpperLeft), _buffer, _palette.RgbColors[paletteIndex]);
+                    RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight), _buffer, _palette.RgbColors[paletteIndex]);
+                    RenderTile(x, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerLeft), _buffer, _palette.RgbColors[paletteIndex]);
+                    RenderTile(x + 8, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerRight), _buffer, _palette.RgbColors[paletteIndex]);
 
                     if (_withTerrainOverlay)
                     {
@@ -146,10 +137,10 @@ namespace Spotlight.Renderers
                             TileBlockOverlay overlay = terrain.Overlay;
                             if (overlay != null)
                             {
-                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
-                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
-                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
-                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
                             }
                         }
                     }
@@ -163,10 +154,10 @@ namespace Spotlight.Renderers
                             TileBlockOverlay overlay = interaction.Overlay;
                             if (overlay != null)
                             {
-                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
-                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
-                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
-                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _rgbPalette[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
+                                RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
                             }
                         }
                     }
@@ -196,8 +187,8 @@ namespace Spotlight.Renderers
                     Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
-                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }
@@ -218,8 +209,8 @@ namespace Spotlight.Renderers
                     Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) :  _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
-                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) :  _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }

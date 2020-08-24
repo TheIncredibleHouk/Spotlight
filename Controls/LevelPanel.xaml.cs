@@ -76,10 +76,9 @@ namespace Spotlight
             _levelRenderer.Initializing();
 
             _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
-            _levelRenderer.SetTileSet(_tileSet);
 
             Palette palette = _palettesService.GetPalette(_level.PaletteId);
-            _levelRenderer.Update(palette);
+            _levelRenderer.Update(tileSet: _tileSet, palette: palette);
 
             LevelRenderSource.Source = _bitmap;
             LevelRenderSource.Width = _bitmap.PixelWidth;
@@ -136,7 +135,7 @@ namespace Spotlight
             }
             else
             {
-                _levelRenderer.Update((Palette)PaletteIndex.SelectedItem);
+                _levelRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
                 TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
                 ObjectSelector.Update((Palette)PaletteIndex.SelectedItem);
                 Update();
@@ -1274,7 +1273,7 @@ namespace Spotlight
             _level.TileSetIndex = int.Parse(TileSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
 
             _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
-            _levelRenderer.SetTileSet(_tileSet);
+            _levelRenderer.Update(tileSet: _tileSet);
             TileSelector.Update(_tileSet);
             Update();
         }
