@@ -21,9 +21,11 @@ namespace Spotlight
     /// </summary>
     public partial class FilePanel : UserControl
     {
-        public delegate void LevelOpenEventHandler(LevelInfo levelInfp);
+        public delegate void LevelOpenEventHandler(LevelInfo levelInfo);
         public event LevelOpenEventHandler LevelOpened;
 
+        public delegate void WorldOpenEventHandler(WorldInfo worldInfo);
+        public event WorldOpenEventHandler WorldOpened;
         public FilePanel()
         {
             InitializeComponent();
@@ -107,6 +109,12 @@ namespace Spotlight
                 if (dataContext is LevelInfo)
                 {
                     LevelOpened((LevelInfo)dataContext);
+                    Expanded = false;
+                    UpdateCollapsedState();
+                }
+                else if(dataContext is WorldInfo)
+                {
+                    WorldOpened((WorldInfo)dataContext);
                     Expanded = false;
                     UpdateCollapsedState();
                 }

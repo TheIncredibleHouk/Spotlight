@@ -13,13 +13,13 @@ namespace Spotlight.Services
         private Tile[] _relativeTable;
         private Tile[] _globalTable;
         private Tile[] _overlayTable;
-        public GraphicsAccessor(Tile[] staticTable, Tile[] animatedTable, Tile[] globalTable, Tile[] overlayTable)
+        public GraphicsAccessor(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
         {
             _relativeTable = new Tile[256];
             for (int i = 0; i < 128; i++)
             {
-                _relativeTable[i] = staticTable[i];
-                _relativeTable[i + 128] = animatedTable[i];
+                _relativeTable[i] = topTable[i];
+                _relativeTable[i + 128] = bottomTable[i];
             }
 
             _globalTable = globalTable;
@@ -52,7 +52,7 @@ namespace Spotlight.Services
             return _overlayTable[bank * 0x40 + tileIndex];
         }
 
-        public void SetStaticTable(Tile[] staticTable)
+        public void SetTopTable(Tile[] staticTable)
         {
             for (int i = 0; i < 128; i++)
             {
@@ -60,7 +60,7 @@ namespace Spotlight.Services
             }
         }
 
-        public void SetAnimatedTable(Tile[] animatedTable)
+        public void SetBottomTable(Tile[] animatedTable)
         {
             for (int i = 0; i < 128; i++)
             {

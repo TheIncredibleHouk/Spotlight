@@ -46,6 +46,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compression\CompressionCommand.cs" />
+    <Compile Include="Compression\CompressionCommandType.cs" />
+    <Compile Include="Compression\CompressionPoint.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\GameObjectTable.cs" />
     <Compile Include="GameObjects\Sprite.cs" />
@@ -57,6 +60,7 @@
     <Compile Include="Project\LevelInfo.cs" />
     <Compile Include="Palette\Palette.cs" />
     <Compile Include="Project\Project.cs" />
+    <Compile Include="Rom\Rom.cs" />
     <Compile Include="Tiles\MapTileInteraction.cs" />
     <Compile Include="Tiles\PSwitchAlteration.cs" />
     <Compile Include="Tiles\Tile.cs" />
@@ -73,6 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\Duke Nukem 64 %28U%29 [!].zip" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

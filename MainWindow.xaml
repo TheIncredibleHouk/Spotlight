@@ -12,7 +12,7 @@
     </Window.Resources>
     <DockPanel LastChildFill="True">
         <local:ProjectPanel x:Name="_ProjectPanel"  DockPanel.Dock="Top" />
-        <local:FilePanel LevelOpened="_OpenLevelEditor" x:Name="FilePanel"  DockPanel.Dock="Right" />
+        <local:FilePanel LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" x:Name="FilePanel"  DockPanel.Dock="Right" />
         <Grid x:Name="DockFill" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <TextBlock HorizontalAlignment="Center" x:Name="SplashText" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>
             <TabControl BorderThickness="0,1,0,0" Padding="0" x:Name="TabsOpen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">

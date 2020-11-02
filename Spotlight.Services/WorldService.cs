@@ -33,13 +33,13 @@ namespace Spotlight.Services
                 PaletteId = legacyProject.paletteinfo[int.Parse(w.palette)].guid,
                 Pointers = w.pointers.Select(p => new WorldPointer()
                 {
-                    LevelId = Guid.Parse(w.guid),
+                    LevelId = Guid.Parse(p.levelguid),
                     X = int.Parse(p.x),
-                    Y = int.Parse(p.y)
+                    Y = int.Parse(p.y) - 0x11
                 }).ToList(),
                 ScreenLength = int.Parse(w.length),
-                TileTableIndex = int.Parse(w.graphicsbank),
-                TileData = w.worlddata.Split(',').Select(d => int.Parse(d)).ToArray()
+                TileTableIndex = int.Parse(w.graphicsbank, System.Globalization.NumberStyles.HexNumber),
+                TileData = w.worlddata.Split(',').Select(d => int.Parse(d)).Skip(0x440).ToArray()
             }).ToList();
         }
 

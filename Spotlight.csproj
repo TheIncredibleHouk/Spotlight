@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Spotlight</RootNamespace>
     <AssemblyName>Spotlight</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -87,11 +87,14 @@
       <DependentUpon>KeyValueTextbox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LevelPanel.xaml.cs" />
+    <Compile Include="Controls\WorldPointerEditor.xaml.cs">
+      <DependentUpon>WorldPointerEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PaletteEditor.xaml.cs">
       <DependentUpon>PaletteEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PointerEditor.xaml.cs">
-      <DependentUpon>PointerEditor.xaml</DependentUpon>
+    <Compile Include="Controls\LevelPointerEditor.xaml.cs">
+      <DependentUpon>LevelPointerEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
@@ -129,11 +132,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\WorldPointerEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\PaletteEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\PointerEditor.xaml">
+    <Page Include="Controls\LevelPointerEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,7 +217,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Save.png" />
+    <Resource Include="Controls\Icons\World.png" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Spotlight.Models\Spotlight.Models.csproj">
       <Project>{5c409beb-9a5f-494e-ae5d-f524e1e9499f}</Project>
@@ -224,6 +234,45 @@
       <Project>{f3b47112-f7fb-4534-9e2f-65bde77fc71e}</Project>
       <Name>Spotlight.Services</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Load.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Level.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\ROM.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Palette.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Object.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Text.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Cursor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Terrain.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Interactions.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\PSwitch.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

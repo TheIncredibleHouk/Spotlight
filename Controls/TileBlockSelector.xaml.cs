@@ -47,7 +47,7 @@ namespace Spotlight
             _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(graphicsAccessor, _terrain, _mapTileInteractions);
 
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
-            TileRenderSource.Width = _bitmap.Width;
+            TileRenderSource.Width = _bitmap.Width + 1;
             TileRenderSource.Height = _bitmap.Height;
 
             TileRenderSource.Source = _bitmap;

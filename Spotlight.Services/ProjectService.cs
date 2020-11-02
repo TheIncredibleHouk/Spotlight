@@ -22,6 +22,18 @@ namespace Spotlight.Services
             _errorService = errorService;
         }
 
+        public string RomFileName
+        {
+            get
+            {
+                return _project.RomFilePath;
+            }
+            set
+            {
+                _project.RomFilePath = value;
+            }
+        }
+
         public ProjectService(ErrorService errorService, Project project)
         {
             _errorService = errorService;

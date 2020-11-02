@@ -9,11 +9,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using Microsoft.Win32;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace Spotlight
 {
@@ -31,6 +33,7 @@ namespace Spotlight
         private TileService _tileService;
         private TextService _textService;
         private GameObjectService _gameObjectService;
+        private RomService _romService;
         public MainWindow()
         {
             _errorService = new ErrorService();
@@ -43,10 +46,44 @@ namespace Spotlight
             _ProjectPanel.TextEditorOpened += _ProjectPanel_TextEditorOpened;
             _ProjectPanel.ObjectEditorOpened += OpenGameObjectEditor;
             _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
+            _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
             Activated += MainWindow_Activated;
 
             GlobalPanels.MainWindow = this;
+        }
+
+        private void _ProjectPanel_RomSaved()
+        {
+            if(_projectService.RomFileName == null || !File.Exists(_projectService.RomFileName))
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    _projectService.RomFileName = openFileDialog.FileName;
+                }
+            }
+
+            if (_projectService.RomFileName != null)
+            {
+                try
+                {
+                    _romService.CompileRom(_projectService.RomFileName);
+
+                    if(_errorService.CurrentLog.Count > 0)
+                    {
+                        AlertWindow.Alert("Rom compiled but with the following errors: " + string.Join("\n-", _errorService.CurrentLog));
+                    }
+                    else
+                    {
+                        AlertWindow.Alert("Rom compiled!");
+                    }
+                }
+                catch (Exception e)
+                {
+                    AlertWindow.Alert("Error occurred when attempting to compile rom. \nException:\n" + e.Message);
+                }
+            }
         }
 
         private void MainWindow_Activated(object sender, EventArgs e)
@@ -163,6 +200,7 @@ namespace Spotlight
             _worldService = new WorldService(_errorService, project);
             _tileService = new TileService(_errorService, project);
             _textService = new TextService(_errorService, project);
+            _romService = new RomService(_errorService, _graphicsService, _palettesService, _tileService, _levelService, _worldService, _textService);
             _gameObjectService = new GameObjectService(_errorService, project);
 
             List<WorldInfo> worldInfos = new List<WorldInfo>();
@@ -197,6 +235,30 @@ namespace Spotlight
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
             return levelPanel;
+        }
+
+        public WorldPanel OpenWorldEditor(WorldInfo worldInfo)
+        {
+            var existingTab = OpenedTabs.Where(t => t.DataContext == worldInfo).FirstOrDefault();
+
+            if (existingTab != null)
+            {
+                TabsOpen.SelectedItem = SelectedTabItem = existingTab;
+                return (WorldPanel)existingTab.Content;
+            }
+
+            TabItem tabItem = new TabItem();
+            WorldPanel worldPanel = new WorldPanel(_graphicsService, _palettesService, _textService, _tileService, _worldService, _levelService, worldInfo);
+
+            tabItem.Header = worldInfo.Name;
+            tabItem.Content = worldPanel;
+            tabItem.DataContext = worldInfo;
+
+            TabsOpen.Items.Add(tabItem);
+            OpenedTabs.Add(tabItem);
+            TabsOpen.Visibility = Visibility.Visible;
+            TabsOpen.SelectedItem = SelectedTabItem = tabItem;
+            return worldPanel;
         }
 
         public void OpenPaletteEditor()
@@ -299,6 +361,11 @@ namespace Spotlight
         private void _OpenLevelEditor(LevelInfo levelInfo)
         {
             OpenLevelEditor(levelInfo);
+        }
+
+        private void FilePanel_WorldOpened(WorldInfo worldInfo)
+        {
+            OpenWorldEditor(worldInfo);
         }
     }
 }

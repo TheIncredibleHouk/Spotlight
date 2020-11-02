@@ -27,6 +27,21 @@ namespace Spotlight.Models
                 };
             }
         }
+
+
+        private static List<Sprite> _overlay = new List<Sprite>()
+        {
+            new Sprite(){ X = 0, Y = 0, Overlay = true, PaletteIndex = 1, TileValueIndex = 0x56, TileTableIndex = 4 },
+            new Sprite(){ X = 8, Y = 0, Overlay = true, PaletteIndex = 1, TileValueIndex = 0x58, TileTableIndex = 4 }
+        };
+
+        public static List<Sprite> Overlay
+        {
+            get
+            {
+                return _overlay;
+            }
+        }
     }
 
     public class LegacyWorldPointer

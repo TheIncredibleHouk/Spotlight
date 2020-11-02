@@ -13,32 +13,42 @@ namespace Spotlight.Renderers
     public class WorldRenderer : Renderer
     {
 
-        public const int BITMAP_HEIGHT = Level.BLOCK_HEIGHT * 16;
-        public const int BITMAP_WIDTH = Level.BLOCK_WIDTH * 16;
+        public const int BITMAP_HEIGHT = World.BLOCK_HEIGHT * 16;
+        public const int BITMAP_WIDTH = World.BLOCK_WIDTH * 16;
 
         private byte[] _buffer;
 
         private WorldDataAccessor _worldDataAccessor;
         private PalettesService _paletteService;
-        private List<TileTerrain> _terrain;
-        public WorldRenderer(GraphicsAccessor graphicsAccessor, WorldDataAccessor worldDataAccessor, PalettesService paletteService, List<TileTerrain> terrain) : base(graphicsAccessor)
+        private List<MapTileInteraction> _terrain;
+        public WorldRenderer(GraphicsAccessor graphicsAccessor, WorldDataAccessor worldDataAccessor, PalettesService paletteService, List<MapTileInteraction> terrain) : base(graphicsAccessor)
         {
             _worldDataAccessor = worldDataAccessor;
             _paletteService = paletteService;
             _terrain = terrain;
             _buffer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * 4];
+
+            BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK_ROW * BLOCKS_PER_SCREEN * 4;
         }
 
 
         private Palette _palette;
         private TileSet _tileSet;
         private bool _withInteractionOverlay;
-        public void Update(Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null)
+        public void Update(Int32Rect? rect = null, Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null)
         {
             _palette = palette ?? _palette;
             _tileSet = tileSet ?? _tileSet;
             _withInteractionOverlay = withInteractionOverlay ?? _withInteractionOverlay;
-           
+
+            if (rect.HasValue)
+            {
+                Update(rect.Value);
+            }
+            else
+            {
+                Update();
+            }
         }
 
         public byte[] GetRectangle(Int32Rect rect)
@@ -72,27 +82,25 @@ namespace Spotlight.Renderers
             Update(new Rect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT));
         }
 
-        public void RenderTiles(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT)
+        public void RenderTiles(int blockX = 0, int blockY = 0, int blockWidth = World.BLOCK_WIDTH, int blockHeight = World.BLOCK_HEIGHT)
         {
             int maxRow = blockY + blockHeight;
             int maxCol = blockX + blockWidth;
 
-            if (maxRow > Level.BLOCK_HEIGHT)
+            if (maxRow > World.BLOCK_HEIGHT)
             {
-                maxRow = Level.BLOCK_HEIGHT;
+                maxRow = World.BLOCK_HEIGHT;
             }
 
-            if (maxCol > Level.BLOCK_WIDTH)
+            if (maxCol > World.BLOCK_WIDTH)
             {
-                maxCol = Level.BLOCK_WIDTH;
+                maxCol = World.BLOCK_WIDTH;
             }
 
             for (int row = blockY; row < maxRow; row++)
             {
                 for (int col = blockX; col < maxCol; col++)
                 {
-
-
                     int tileValue = _worldDataAccessor.GetData(col, row);
 
                     if(tileValue < 0)
@@ -112,7 +120,7 @@ namespace Spotlight.Renderers
 
                     if (_withInteractionOverlay)
                     {
-                        TileInteraction interaction = _terrain.Where(t => t.HasTerrain(tile.Property)).FirstOrDefault()?.Interactions.Where(i => i.HasInteraction(tile.Property)).FirstOrDefault();
+                        MapTileInteraction interaction = _terrain.Where(t => t.HasInteraction(tile.Property)).FirstOrDefault();
 
                         if (interaction != null)
                         {
@@ -131,7 +139,7 @@ namespace Spotlight.Renderers
         }
 
 
-        public void RenderPointers(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT)
+        public void RenderPointers(int blockX = 0, int blockY = 0, int blockWidth = World.BLOCK_WIDTH, int blockHeight = World.BLOCK_HEIGHT)
         {
             Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
 
@@ -139,7 +147,7 @@ namespace Spotlight.Renderers
             {
                 int baseX = pointerObject.X * 16, baseY = pointerObject.Y * 16;
 
-                foreach (var sprite in LevelPointer.Overlay)
+                foreach (var sprite in WorldPointer.Overlay)
                 {
                     int paletteIndex = sprite.PaletteIndex;
 

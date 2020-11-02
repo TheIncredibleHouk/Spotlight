@@ -144,8 +144,8 @@ namespace Spotlight
      
         private void _graphicsService_GraphicsUpdated()
         {
-            _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
-            _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+            _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
+            _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
             _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             TileSelector.Update();
             Update();
@@ -192,8 +192,7 @@ namespace Spotlight
                 return;
             }
 
-            DateTime speedTest = DateTime.Now;
-
+       
             _bitmap.Lock();
 
             foreach (var updateArea in updateAreas.Select(r => new Int32Rect((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height)))
@@ -219,7 +218,6 @@ namespace Spotlight
 
             _bitmap.Unlock();
 
-            Console.WriteLine("Draw time " + (DateTime.Now - speedTest).TotalMilliseconds + " milliseconds.");
         }
 
         private void ClearSelectionRectangle()
@@ -517,7 +515,7 @@ namespace Spotlight
                     PointerEditor.Visibility = Visibility;
 
                     Rect boundRect = _selectedPointer.BoundRectangle;
-                    double leftEdge = boundRect.Left - PointerEditor.Width / 2;
+                    double leftEdge = (boundRect.Left - PointerEditor.ActualWidth / 2) + 16;
 
                     if (leftEdge < 0)
                     {
@@ -526,7 +524,7 @@ namespace Spotlight
 
                     if (leftEdge + PointerEditor.Width >= LevelRenderer.BITMAP_WIDTH)
                     {
-                        leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.Width;
+                        leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.ActualWidth;
                     }
 
                     Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
@@ -1089,31 +1087,37 @@ namespace Spotlight
                         _historyService.RedoLevelObjects.Clear();
                     }
                 }
+
+                if (_selectedObject.GameObject.IsStartObject)
+                {
+                    _level.StartX = _selectedObject.X;
+                    _level.StartY = _selectedObject.Y;
+                }
             }
         }
 
         private void HandlePointerRelease(MouseButtonEventArgs e)
         {
-            if (_selectedPointer != null && _isDragging)
-            {
-                Rect boundRect = _selectedPointer.BoundRectangle;
-                double leftEdge = boundRect.Left - PointerEditor.Width / 2;
+            //if (_selectedPointer != null && _isDragging)
+            //{
+            //    Rect boundRect = _selectedPointer.BoundRectangle;
+            //    double leftEdge = boundRect.Left - PointerEditor.Width / 2;
 
-                if (leftEdge < 0)
-                {
-                    leftEdge = 0;
-                }
+            //    if (leftEdge < 0)
+            //    {
+            //        leftEdge = 0;
+            //    }
 
-                if (leftEdge + PointerEditor.Width >= LevelRenderer.BITMAP_WIDTH)
-                {
-                    leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.Width;
-                }
+            //    if (leftEdge + PointerEditor.Width >= LevelRenderer.BITMAP_WIDTH)
+            //    {
+            //        leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.Width;
+            //    }
 
-                Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
-                Canvas.SetLeft(PointerEditor, leftEdge);
+            //    Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
+            //    Canvas.SetLeft(PointerEditor, leftEdge);
 
-                PointerEditor.Visibility = Visibility.Visible;
-            }
+            //    PointerEditor.Visibility = Visibility.Visible;
+            //}
 
             _isDragging = false;
         }
@@ -1215,7 +1219,7 @@ namespace Spotlight
         private void AnimationType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _level.AnimationType = int.Parse(AnimationType.SelectedValue.ToString());
-            _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+            _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
             TileSelector.Update();
             Update();
         }
@@ -1223,7 +1227,7 @@ namespace Spotlight
         private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _level.GraphicsSet = int.Parse(GraphicsSet.SelectedValue.ToString());
-            _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_level.GraphicsSet));
+            _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_level.GraphicsSet));
             TileSelector.Update();
             Update();
         }
@@ -1501,7 +1505,7 @@ namespace Spotlight
                 }
                 _previousEditMode = _editMode;
                 _editMode = EditMode.PSwitchView;
-                _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_level.PSwitchAnimationTileTableIndex));
+                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.PSwitchAnimationTileTableIndex));
                 ShowPSwitch.IsChecked = true;
             }
             else
@@ -1519,7 +1523,7 @@ namespace Spotlight
                 }
 
                 _editMode = _previousEditMode;
-                _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
                 ShowPSwitch.IsChecked = false;
             }
 

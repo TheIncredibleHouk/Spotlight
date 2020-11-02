@@ -29,28 +29,30 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <DockPanel>
-        <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Bottom">
-            <Button HorizontalContentAlignment="Left" DockPanel.Dock="Left" x:Name="Expander" Click="Expander_Click">
-                <Polygon Fill="#FFB5B8C1" Margin="10" x:Name="CollapseIcon">
-                    <Polygon.Points>
-                        <Point X="0" Y="0" />
-                        <Point X="10" Y="5" />
-                        <Point X="0" Y="10" />
-                    </Polygon.Points>
-                </Polygon>
-            </Button>
-            <StackPanel x:Name="ActionPanel" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <Button Click="Open_Clicked">Open</Button>
-                <Button>Rename</Button>
-                <Button>Delete</Button>
-            </StackPanel>
+    <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 0" >
+        <DockPanel>
+            <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Bottom">
+                <Button HorizontalContentAlignment="Left" DockPanel.Dock="Left" x:Name="Expander" Click="Expander_Click">
+                    <Polygon Fill="#FFB5B8C1" Margin="10" x:Name="CollapseIcon">
+                        <Polygon.Points>
+                            <Point X="0" Y="0" />
+                            <Point X="10" Y="5" />
+                            <Point X="0" Y="10" />
+                        </Polygon.Points>
+                    </Polygon>
+                </Button>
+                <StackPanel x:Name="ActionPanel" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Button Click="Open_Clicked">Open</Button>
+                    <Button>Rename</Button>
+                    <Button>Delete</Button>
+                </StackPanel>
+            </DockPanel>
+            <TreeView  DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
+                <TreeView.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151515" />
+                </TreeView.Resources>
+            </TreeView>
         </DockPanel>
-        <TreeView  DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
-            <TreeView.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151515" />
-            </TreeView.Resources>
-        </TreeView>
-    </DockPanel>
+        </Border>
 </UserControl>

@@ -34,11 +34,14 @@ namespace Spotlight
         public delegate void TextEditorOpenEventHandler();
         public event TextEditorOpenEventHandler TextEditorOpened;
 
+        public delegate void RomSavedEventHandler();
+        public event RomSavedEventHandler RomSaved;
 
         public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
         public event ObjectEditorEventHandler ObjectEditorOpened;
 
         public ProjectService ProjectService { get; set; }
+        public RomService RomService { get; set; }
 
         public ProjectPanel()
         {
@@ -52,7 +55,7 @@ namespace Spotlight
             {
                 Project project = ProjectService.LoadProject(openFileDialog.FileName);
                 ProjectLoaded(project);
-                ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveProjectButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true ;
+                ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true ;
             }
         }
 
@@ -74,7 +77,10 @@ namespace Spotlight
 
         private void SaveRomButton_Click(object sender, RoutedEventArgs e)
         {
-            GlobalPanels.OpenPaletteEditor();
+            if(RomSaved != null)
+            {
+                RomSaved();
+            }
         }
 
         private void TextEditButton_Click(object sender, RoutedEventArgs e)
@@ -90,6 +96,11 @@ namespace Spotlight
         private void TileSetButton_Click(object sender, RoutedEventArgs e)
         {
             TileBlockEditorOpened();
+        }
+
+        private void PaletteButton_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalPanels.OpenPaletteEditor();
         }
     }
 }

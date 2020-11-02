@@ -21,7 +21,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="0" Margin="5">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Width="30" Height="30" Margin="0">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -39,17 +39,35 @@
         </Style>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <Button x:Name="LoadProjectButton" Click="LoadProject">Load Project</Button>
-        <Button x:Name="SaveProjectButton" Click="SaveProjectButton_Click" IsEnabled="False">Save Project</Button>
+        <Button ToolTip="Load Project" x:Name="LoadProjectButton" Click="LoadProject">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Load.png" Height="20" />
+        </Button>
+        <!--<Button ToolTip="Save Project" x:Name="SaveProjectButton" Click="SaveProjectButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="20" />
+        </Button>-->
         <Rectangle />
-        <Button x:Name="NewWorldButton" Click="NewWorldButton_Click" IsEnabled="False">New World</Button>
-        <Button x:Name="NewLevelButton" Click="NewLevelButton_Click" IsEnabled="False">New Level</Button>
+        <Button ToolTip="New Map" x:Name="NewWorldButton" Click="NewWorldButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\World.png" Height="20" />
+        </Button>
+        <Button ToolTip="New Level" x:Name="NewLevelButton" Click="NewLevelButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Level.png" Height="20" />
+        </Button>
         <Rectangle />
-        <Button x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">Save ROM</Button>
+        <Button ToolTip="Save ROM" x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\ROM.png" Height="20" />
+        </Button>
         <Rectangle />
-        <Button x:Name="PaletteButton" Click="SaveRomButton_Click" IsEnabled="False">Palette Editor</Button>
-        <Button x:Name="ObjectButton" Click="ObjectButton_Click" IsEnabled="False">Object Editor</Button>
-        <Button x:Name="TileSetButton" Click="TileSetButton_Click" IsEnabled="False">Tile Set Editor</Button>
-        <Button x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">Text Editor</Button>
+        <Button ToolTip="Palette Editor" x:Name="PaletteButton" Click="PaletteButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Palette.png" Height="20" />
+        </Button>
+        <Button ToolTip="Object Editor" x:Name="ObjectButton" Click="ObjectButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Object.png" Height="20" />
+        </Button>
+        <Button ToolTip="Block Set Editor" x:Name="TileSetButton" Click="TileSetButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Tile.png" Height="20" />
+        </Button>
+        <Button ToolTip="Text Editor" x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="20" />
+        </Button>
     </StackPanel>
 </UserControl>

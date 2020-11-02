@@ -98,13 +98,13 @@ namespace Spotlight
         {
             if (_currentLevel != null)
             {
-                _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex));
-                _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_currentLevel.StaticTileTableIndex));
+                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex));
+                _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_currentLevel.StaticTileTableIndex));
             }
             else if (_currentWorld != null)
             {
-                _graphicsAccessor.SetAnimatedTable(_graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex));
-                _graphicsAccessor.SetStaticTable(_graphicsService.GetTileSection(_currentWorld.TileTableIndex));
+                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex));
+                _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_currentWorld.TileTableIndex));
             }
 
             _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
@@ -119,7 +119,7 @@ namespace Spotlight
             BlockSelector.SelectedBlockValue = tileBlockValue;
         }
 
-        private PSwitchAlteration _pSwitchAlteration = null;
+        private int _pSwitchFrom = 0;
 
         private void BlockSelector_TileBlockSelected(TileBlock tileBlock, int tileValue)
         {
@@ -146,55 +146,81 @@ namespace Spotlight
             {
                 if (Mouse.LeftButton == MouseButtonState.Pressed)
                 {
-                    if (_localTileSet.FireBallInteractions.Contains(BlockSelector.SelectedBlockValue))
+                    if (Keyboard.Modifiers == ModifierKeys.Shift)
                     {
-                        _localTileSet.FireBallInteractions.Remove(BlockSelector.SelectedBlockValue);
+                        _pSwitchFrom = BlockSelector.SelectedBlockValue;
                     }
                     else
                     {
-                        if (_localTileSet.FireBallInteractions.Count < 8)
+                        if (_localTileSet.FireBallInteractions.Contains(BlockSelector.SelectedBlockValue))
                         {
-                            _localTileSet.FireBallInteractions.Add(BlockSelector.SelectedBlockValue);
+                            _localTileSet.FireBallInteractions.Remove(BlockSelector.SelectedBlockValue);
+                        }
+                        else
+                        {
+                            if (_localTileSet.FireBallInteractions.Count < 8)
+                            {
+                                _localTileSet.FireBallInteractions.Add(BlockSelector.SelectedBlockValue);
+                            }
                         }
                     }
                 }
                 else if (Mouse.RightButton == MouseButtonState.Pressed)
                 {
-                    if (_localTileSet.IceBallInteractions.Contains(BlockSelector.SelectedBlockValue))
+                    if (Keyboard.Modifiers == ModifierKeys.Shift)
                     {
-                        _localTileSet.IceBallInteractions.Remove(BlockSelector.SelectedBlockValue);
+                        if (_pSwitchFrom > 0)
+                        {
+                            PSwitchAlteration alteration = _localTileSet.PSwitchAlterations.Where(p => p.From == _pSwitchFrom).FirstOrDefault();
+                            if(alteration == null && _localTileSet.PSwitchAlterations.Count < 8)
+                            {
+                                alteration = new PSwitchAlteration();
+                                alteration.From = _pSwitchFrom;
+                                _localTileSet.PSwitchAlterations.Add(alteration);
+                            }
+
+                            if (alteration != null)
+                            {
+                                alteration.To = BlockSelector.SelectedBlockValue;
+                            }
+                        }
                     }
                     else
                     {
-                        if (_localTileSet.IceBallInteractions.Count < 8)
+                        if (_localTileSet.IceBallInteractions.Contains(BlockSelector.SelectedBlockValue))
                         {
-                            _localTileSet.IceBallInteractions.Add(BlockSelector.SelectedBlockValue);
+                            _localTileSet.IceBallInteractions.Remove(BlockSelector.SelectedBlockValue);
+                        }
+                        else
+                        {
+                            if (_localTileSet.IceBallInteractions.Count < 8)
+                            {
+                                _localTileSet.IceBallInteractions.Add(BlockSelector.SelectedBlockValue);
+                            }
                         }
                     }
                 }
                 else if (Mouse.MiddleButton == MouseButtonState.Pressed)
                 {
-                    if (_pSwitchAlteration != null)
+                    int existingFireInteraction = _localTileSet.FireBallInteractions.Where(f => f == BlockSelector.SelectedBlockValue).FirstOrDefault();
+
+                    if(existingFireInteraction > 0)
                     {
-                        _pSwitchAlteration.To = BlockSelector.SelectedBlockValue;
-                        _localTileSet.PSwitchAlterations.Add(_pSwitchAlteration);
-                        _pSwitchAlteration = null;
+                        _localTileSet.FireBallInteractions.Remove(existingFireInteraction);
                     }
-                    else
+
+                    int existingIceInteraction = _localTileSet.IceBallInteractions.Where(f => f == BlockSelector.SelectedBlockValue).FirstOrDefault();
+
+                    if (existingFireInteraction > 0)
                     {
-                        PSwitchAlteration existingAlteration = _localTileSet.PSwitchAlterations.Where(p => p.From == BlockSelector.SelectedBlockValue).FirstOrDefault();
-                        if (existingAlteration != null)
-                        {
-                            _localTileSet.PSwitchAlterations.Remove(existingAlteration);
-                        }
-                        else
-                        {
-                            if (_localTileSet.PSwitchAlterations.Count < 16)
-                            {
-                                _pSwitchAlteration = new PSwitchAlteration();
-                                _pSwitchAlteration.From = BlockSelector.SelectedBlockValue;
-                            }
-                        }
+                        _localTileSet.IceBallInteractions.Remove(existingIceInteraction);
+                    }
+
+                    PSwitchAlteration existingPSwitchAlteration = _localTileSet.PSwitchAlterations.Where(p => p.From == BlockSelector.SelectedBlockValue).FirstOrDefault();
+
+                    if (existingPSwitchAlteration != null)
+                    {
+                        _localTileSet.PSwitchAlterations.Remove(existingPSwitchAlteration);
                     }
                 }
 
@@ -243,7 +269,7 @@ namespace Spotlight
             if (LevelList.SelectedItem is LevelInfo)
             {
                 _setInteractions = false;
-                _pSwitchAlteration = null;
+                _pSwitchFrom = 0;
                 SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
 
                 SetProjectileInteractions.Visibility = TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Visible;
@@ -257,8 +283,8 @@ namespace Spotlight
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex);
                 Palette palette = _palettesService.GetPalette(_currentLevel.PaletteId);
 
-                _graphicsAccessor.SetAnimatedTable(animatedTiles);
-                _graphicsAccessor.SetStaticTable(staticTiles);
+                _graphicsAccessor.SetBottomTable(animatedTiles);
+                _graphicsAccessor.SetTopTable(staticTiles);
 
                 _localTileSet = JsonConvert.DeserializeObject<TileSet>(JsonConvert.SerializeObject(_tileService.GetTileSet(_currentLevel.TileSetIndex)));
 
@@ -271,7 +297,7 @@ namespace Spotlight
             else if (LevelList.SelectedItem is WorldInfo)
             {
                 _setInteractions = false;
-                _pSwitchAlteration = null;
+                _pSwitchFrom = 0;
                 SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
 
                 SetProjectileInteractions.Visibility = TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Collapsed;
@@ -290,8 +316,8 @@ namespace Spotlight
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex);
                 Palette palette = _palettesService.GetPalette(_currentWorld.PaletteId);
 
-                _graphicsAccessor.SetAnimatedTable(animatedTiles);
-                _graphicsAccessor.SetStaticTable(staticTiles);
+                _graphicsAccessor.SetBottomTable(staticTiles);
+                _graphicsAccessor.SetTopTable(animatedTiles);
 
                 _localTileSet = JsonConvert.DeserializeObject<TileSet>(JsonConvert.SerializeObject(_tileService.GetTileSet(0)));
                 _graphicsSetRenderer.Update(palette);
@@ -624,7 +650,7 @@ namespace Spotlight
             else
             {
                 SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
-                _pSwitchAlteration = null;
+                _pSwitchFrom = 0;
                 _setInteractions = false;
                 BlockSelector.Update(withProjectileInteractions: false);
             }

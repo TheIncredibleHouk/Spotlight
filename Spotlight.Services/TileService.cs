@@ -57,6 +57,11 @@ namespace Spotlight.Services
             }
         }
 
+        public byte[] GetTilePropertyData()
+        {
+            return _project.TileSets.SelectMany(t => t.TileBlocks).Select(b => (byte)b.Property).ToArray();
+        }
+
         public TileSet GetTileSet(int tileSetIndex)
         {
             return _project.TileSets[tileSetIndex];

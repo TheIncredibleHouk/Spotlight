@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Windows;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace Spotlight.Models
 {
@@ -16,6 +17,9 @@ namespace Spotlight.Models
             Sprites = new List<Sprite>();
             Properties = new List<string>();
         }
+
+        [JsonIgnore]
+        public bool IsStartObject { get; set; }
 
         public int GameId { get; set; }
         public GameObjectType GameObjectType { get; set; }

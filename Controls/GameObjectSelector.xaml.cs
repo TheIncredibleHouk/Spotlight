@@ -58,7 +58,7 @@ namespace Spotlight
             _selectedObject = null;
 
             GameObjectImage.Source = _bitmap;
-            GameObjectImage.Width = _bitmap.PixelWidth;
+            GameObjectImage.Width = _bitmap.PixelWidth + 1;
             GameObjectImage.Height = _bitmap.PixelHeight;
 
             GameObjectTypes.ItemsSource = new List<GameObjectType>() { GameObjectType.Global, GameObjectType.TypeA, GameObjectType.TypeB };

@@ -15,6 +15,7 @@ namespace Spotlight.Services
         private List<Tile> _tiles;
         private List<Tile> _extraTiles;
         private Project _project;
+        private byte[] _graphicsData;
 
         private DateTime _lastGraphicsUpdate;
         private DateTime _lastExtraGraphicsUpdated;
@@ -81,13 +82,18 @@ namespace Spotlight.Services
             return rgbPalette;
         }
 
+        public byte[] GetData()
+        {
+            return _graphicsData;
+        }
+
         public void LoadGraphics()
         {
             string fileName = _project.DirectoryPath + @"\" + _project.Name + @".chr";
 
             _lastGraphicsUpdate = File.GetLastWriteTime(fileName);
 
-            byte[] graphicsData = File.ReadAllBytes(fileName);
+            _graphicsData = File.ReadAllBytes(fileName);
             _tiles = new List<Tile>();
 
 
@@ -100,7 +106,7 @@ namespace Spotlight.Services
                     byte[] nextTileChunk = new byte[16];
                     for (int k = 0; k < 16; k++)
                     {
-                        nextTileChunk[k] = graphicsData[dataPointer++];
+                        nextTileChunk[k] = _graphicsData[dataPointer++];
                     }
 
                     _tiles.Add(new Tile(nextTileChunk));

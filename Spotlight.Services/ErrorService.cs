@@ -24,5 +24,10 @@ namespace Spotlight.Services
         {
             CurrentLog.Add("Exception caught at:" + e.StackTrace + "\nAddtional message: " + message);
         }
+
+        public void Reset()
+        {
+            CurrentLog.Clear();
+        }
     }
 }

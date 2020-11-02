@@ -9,7 +9,7 @@
              xmlns:local="clr-namespace:Spotlight"
              mc:Ignorable="d">
     <Canvas VerticalAlignment="Top" SnapsToDevicePixels="True" UseLayoutRounding="false">
-        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Width="256" Height="256"  MouseDown="TileRenderSource_MouseDown" x:Name="TileRenderSource" />
+        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Width="257" Height="256"  MouseDown="TileRenderSource_MouseDown" x:Name="TileRenderSource" />
         <Border MouseDown="TileRenderSource_MouseDown" UseLayoutRounding="true" SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Width="16" Height="16">
             <Border BorderThickness="1" Background="#60FFFFFF" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
         </Border>

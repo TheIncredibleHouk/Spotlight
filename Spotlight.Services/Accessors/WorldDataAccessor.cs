@@ -23,7 +23,7 @@ namespace Spotlight.Services
 
         public int GetData(int x, int y)
         {
-            if(x < 0 || y < 0 || x >= 240 || y >= 27)
+            if(x < 0 || y < 0 || x >= 16 * 4 || y >= 27)
             {
                 return -1;
             }

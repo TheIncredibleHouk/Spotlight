@@ -114,6 +114,30 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FFB5B8C1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Width="30" Height="30" Margin="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF151515"/>
+                    <Setter Property="BorderBrush" Value="#FF363857" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value=".5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <DockPanel>
         <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
@@ -133,25 +157,33 @@
                         <Setter Property="Fill" Value="#FF3E3E3E" />
                     </Style>
                 </StackPanel.Resources>
-                <Button x:Name="SaveButton" Click="SaveButton_Click">Save World</Button>
+                <Button x:Name="SaveButton" Click="SaveButton_Click">
+                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="20" />
+                </Button>
                 <Rectangle />
-                <TextBlock VerticalAlignment="Center">Edit Mode</TextBlock>
+                <TextBlock VerticalAlignment="Center">
+                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Cursor.png" Height="20" />
+                </TextBlock>
                 <ComboBox Width="80" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
                     <ComboBoxItem>Tiles</ComboBoxItem>
                     <ComboBoxItem>Pointers</ComboBoxItem>
                 </ComboBox>
-                <TextBlock VerticalAlignment="Center">Draw Mode</TextBlock>
+                <TextBlock VerticalAlignment="Center">
+                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="20" />
+                </TextBlock>
                 <Rectangle />
                 <ComboBox Width="80" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
                     <ComboBoxItem>Default</ComboBoxItem>
                     <ComboBoxItem>Fill</ComboBoxItem>
                     <ComboBoxItem>Replace</ComboBoxItem>
                 </ComboBox>
-                <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">Show Grid</RadioButton>
+                <RadioButton ToolTip="Toggle Grid" GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">
+                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Grid.png" Height="20" />
+                </RadioButton>
                 <Rectangle />
-                <RadioButton GroupName="Grid2" Click="ShowScreenLines_Click" x:Name="ShowScreenLines">Show Screen Lines</RadioButton>
-                <Rectangle />
-                <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">Show Interactions</RadioButton>
+                <RadioButton ToolTip="Toggle Terrain" GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">
+                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Terrain.png" Height="20" />
+                </RadioButton>
             </StackPanel>
         </Border>
         <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  DockPanel.Dock="Right">
@@ -173,7 +205,7 @@
                 </StackPanel>
             </Border>
         </ScrollViewer>
-        <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 1" DockPanel.Dock="Bottom">
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 1, 0, 0" DockPanel.Dock="Bottom">
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal" >
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Rectangle}">
@@ -197,6 +229,7 @@
                 </StackPanel>
             </StackPanel>
         </Border>
+        <local:WorldPointerEditor HorizontalAlignment="Stretch" x:Name="PointerEditor"  DockPanel.Dock="Bottom" />
         <ScrollViewer x:Name="WorldScroller" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Border x:Name="RenderContainer" BorderThickness="1,0,0,0" BorderBrush="#FF3E3E3E">
                 <Canvas x:Name="CanvasContainer" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -204,7 +237,6 @@
                     <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="WorldRenderSource_MouseDown" MouseMove="WorldRenderSource_MouseMove" MouseUp="WorldRenderSource_MouseUp">
                         <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                     </Border>
-                    <local:PointerEditor x:Name="PointerEditor" Visibility="Collapsed" />
                 </Canvas>
             </Border>
         </ScrollViewer>

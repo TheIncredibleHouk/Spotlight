@@ -140,6 +140,7 @@ namespace Spotlight.Services
         private GameObject _startPointGameObject;
         public GameObject GetStartPointObject()
         {
+            _startPointGameObject.IsStartObject = true;
             return _startPointGameObject;
         }
 

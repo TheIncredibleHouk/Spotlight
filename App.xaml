@@ -25,6 +25,8 @@
                                                 <Border Name="ButtonBorder" 
                                                     BorderThickness="1"
                                                     Margin="3"
+                                                    Width="30"
+                                                    Height="30"
                                                     BorderBrush="Transparent" 
                                                     Background="Transparent">
                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
