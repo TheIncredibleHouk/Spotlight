@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Models
 {
@@ -62,7 +59,6 @@ namespace Spotlight.Models
                     if (Data.Count > 0xFF)
                     {
                         throw new OverflowException("Data length too large for pattern.");
-
                     }
 
                     if (RepeatTimes >= 0x40)
@@ -93,7 +89,6 @@ namespace Spotlight.Models
                     data[0] = (byte)((int)CommandType | Data.Count);
                     break;
             }
-
 
             foreach (byte b in Data)
             {

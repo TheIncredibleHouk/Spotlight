@@ -1,18 +1,11 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
 {
     public class GraphicsSetRender : Renderer
     {
-
         private byte[] _buffer;
 
         public GraphicsSetRender(GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
@@ -40,7 +33,7 @@ namespace Spotlight.Renderers
 
         public void Update()
         {
-            if(_palette == null)
+            if (_palette == null)
             {
                 return;
             }
@@ -52,7 +45,6 @@ namespace Spotlight.Renderers
             {
                 for (int col = 0; col < maxCol; col++)
                 {
-
                     int tileValue = row * 16 + col;
                     int x = col * 8, y = row * 8;
 

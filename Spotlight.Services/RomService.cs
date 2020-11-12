@@ -107,7 +107,7 @@ namespace Spotlight.Services
                     if (level != null)
                     {
                         _levelAddressTable.Add(_levelIndexTable[level.Id], _dataPointer);
-                        _dataPointer = WriteLevel(level, _dataPointer, level.Name);
+                        _dataPointer = WriteLevel(level, _dataPointer);
                         if (_dataPointer >= 0xFC000)
                         {
                             return -1;
@@ -204,15 +204,13 @@ namespace Spotlight.Services
             return true;
         }
 
-        public int WriteLevel(Level level, int levelAddress, string name)
+        public int WriteLevel(Level level, int levelAddress)
         {
             string region = "";
 
             try
             {
-                name = name.ToUpper();
-
-
+                string name = level.Name.ToUpper();
                 
                 if (name.Length > 0x22)
                 {
@@ -228,7 +226,7 @@ namespace Spotlight.Services
 
                 region = "Writing level header";
                 _rom[levelAddress++] = (byte)level.MostCommonTile;
-                _rom[levelAddress++] = (byte)level.GraphicsSet;
+                _rom[levelAddress++] = (byte)level.StaticTileTableIndex;
                 _rom[levelAddress++] = (byte)_paletteIndexTable[level.PaletteId];
                 _rom[levelAddress++] = (byte)((level.AnimationType << 6) | (level.ScreenLength - 1));
                 _rom[levelAddress++] = (byte)(byte)(((level.StartX & 0x0F) << 4) | ((level.StartX & 0xF0) >> 4)); ;

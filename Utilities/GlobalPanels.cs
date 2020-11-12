@@ -1,9 +1,5 @@
 ﻿using Spotlight.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight
 {
@@ -26,9 +22,9 @@ namespace Spotlight
             return MainWindow.OpenLevelEditor(levelInfo);
         }
 
-        public static void OpenPaletteEditor()
+        public static void OpenPaletteEditor(Palette palette = null)
         {
-            MainWindow.OpenPaletteEditor();
+            MainWindow.OpenPaletteEditor(palette);
         }
     }
 }

@@ -4,17 +4,11 @@ using Spotlight.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -39,7 +33,9 @@ namespace Spotlight
         private List<MapTileInteraction> _interactions;
 
         public delegate void WorldEditorExitSelectedHandled(int x, int y);
+
         public event WorldEditorExitSelectedHandled WorldEditorExitSelected;
+
         private bool _initializing = true;
 
         public WorldPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, WorldService worldService, LevelService levelService, WorldInfo worldInfo)
@@ -55,7 +51,6 @@ namespace Spotlight
             _historyService = new HistoryService();
             _interactions = _tileService.GetMapTileInteractions();
             _world = _worldService.LoadWorld(_worldInfo);
-
 
             Tile[] bottomTableSet = _graphicsService.GetTileSection(_world.TileTableIndex);
             Tile[] topTableSet = _graphicsService.GetTileSection(_world.AnimationTileTableIndex);
@@ -75,7 +70,7 @@ namespace Spotlight
             WorldRenderSource.Width = _bitmap.PixelWidth;
             WorldRenderSource.Height = _bitmap.PixelHeight;
             CanvasContainer.Width = RenderContainer.Width = _world.ScreenLength * 16 * 16;
-            
+
             SelectedEditMode.SelectedIndex = 0;
             SelectedDrawMode.SelectedIndex = 0;
 
@@ -88,10 +83,19 @@ namespace Spotlight
             _graphicsService.ExtraGraphicsUpdated += _graphicsService_GraphicsUpdated;
             _palettesService.PalettesChanged += _palettesService_PalettesChanged;
             _tileService.TileSetUpdated += _tileService_TileSetUpdated;
+            _worldService.WorldUpdated += _worldService_WorldUpdated;
 
             _initializing = false;
             _worldRenderer.Ready();
             Update();
+        }
+
+        private void _worldService_WorldUpdated(WorldInfo worldInfo)
+        {
+            if (worldInfo.Id == _world.Id)
+            {
+                _world.Name = worldInfo.Name;
+            }
         }
 
         private void _tileService_TileSetUpdated(int index, TileSet tileSet)
@@ -105,6 +109,7 @@ namespace Spotlight
             _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
             _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
             _palettesService.PalettesChanged -= _palettesService_PalettesChanged;
+            _worldService.WorldUpdated -= _worldService_WorldUpdated;
         }
 
         private void _palettesService_PalettesChanged()
@@ -209,7 +214,6 @@ namespace Spotlight
         {
             Point clickPoint = Snap(e.GetPosition(WorldRenderSource));
 
-
             WorldRenderSource.Focusable = true;
             WorldRenderSource.Focus();
 
@@ -241,10 +245,10 @@ namespace Spotlight
                     HandlePointerClick(e);
                     break;
             }
-
         }
 
         private Point originalTilePoint;
+
         private void HandleTileClick(MouseButtonEventArgs e)
         {
             Point clickPoint = Snap(e.GetPosition(WorldRenderSource));
@@ -390,7 +394,6 @@ namespace Spotlight
                     originalPointerPoint = new Point(_selectedPointer.X * 16, _selectedPointer.Y * 16);
                     _isDragging = true;
 
-
                     PointerEditor.Visibility = Visibility.Visible;
                     PointerEditor.SetPointer(_selectedPointer);
                 }
@@ -421,6 +424,7 @@ namespace Spotlight
         }
 
         private SelectionMode _selectionMode;
+
         private void HandleTileMove(MouseEventArgs e)
         {
             Point tilePoint = Snap(e.GetPosition(WorldRenderSource));
@@ -488,12 +492,10 @@ namespace Spotlight
                 int newX = (int)((originalPointerPoint.X + diffPoint.X) / 16);
                 int newY = (int)((originalPointerPoint.Y + diffPoint.Y) / 16);
 
-
                 if (newX == _selectedPointer.X && newY == _selectedPointer.Y)
                 {
                     return;
                 }
-
 
                 _selectedPointer.X = newX;
                 _selectedPointer.Y = newY;
@@ -531,6 +533,7 @@ namespace Spotlight
         }
 
         private int[,] _copyBuffer;
+
         private void CutSelection()
         {
             if (_selectionMode == SelectionMode.SelectTiles)
@@ -565,7 +568,6 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-
                 _copyBuffer = new int[(int)(SelectionRectangle.Width / 16), (int)(SelectionRectangle.Height / 16)];
 
                 int startX = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
@@ -679,7 +681,6 @@ namespace Spotlight
                     HandleTileRelease(e);
                     break;
 
-
                 case EditMode.Pointers:
                     HandlePointerRelease(e);
                     break;
@@ -709,7 +710,6 @@ namespace Spotlight
             Update(new Rect(columnStart * 16, rowStart * 16, (columnEnd - columnStart) * 16, (rowEnd - rowStart) * 16));
             return reverseTileChange;
         }
-
 
         private void HandleTileRelease(MouseButtonEventArgs e)
         {
@@ -762,7 +762,6 @@ namespace Spotlight
 
             _isDragging = false;
         }
-        
 
         private void UpdateTextTables()
         {
@@ -788,7 +787,6 @@ namespace Spotlight
             Screens.SelectedIndex = _world.ScreenLength - 1;
         }
 
-
         private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _world.TileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
@@ -796,7 +794,6 @@ namespace Spotlight
             TileSelector.Update();
             Update();
         }
-
 
         private void Music_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -833,7 +830,6 @@ namespace Spotlight
 
             AlertWindow.Alert(_world.Name + " has been saved!");
         }
-
 
         private void TileSelector_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -887,7 +883,6 @@ namespace Spotlight
                             RedoTiles();
                         }
                         break;
-
                 }
             }
 
@@ -932,7 +927,6 @@ namespace Spotlight
         {
             if (SelectionRectangle != null) SelectionRectangle.Visibility = Visibility.Collapsed;
 
-
             switch (SelectedEditMode.SelectedIndex)
             {
                 case 0:
@@ -956,7 +950,6 @@ namespace Spotlight
             TileSelector.Update(withMapInteractionOverlay: ShowInteraction.IsChecked.Value);
             Update();
         }
-
 
         private void ShowGrid_Click(object sender, RoutedEventArgs e)
         {

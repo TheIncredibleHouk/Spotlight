@@ -1,9 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Spotlight.Services;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Spotlight.Models;
-using System.Collections.Generic;
-using System.Drawing;
+using Spotlight.Services;
 
 namespace Spotlight.Tests
 {
@@ -19,17 +16,14 @@ namespace Spotlight.Tests
             //string paletteLegacyPath = @"F:\ROM Hacking\Mario Adventure 3\Mario Adventure 3 Project - Main\default.pal";
             string newFilePath = @"F:\ROM Hacking\Mario Adventure 3\Mushroom Mayhem";
 
-
             ErrorService es = new ErrorService();
             ProjectService ps = new ProjectService(es);
-
 
             LegacyProject legacyProject = ps.GetLegacyProject(legacyFilePath);
             //Project project = ps.ConvertProject(legacyProject);
 
             //TileService ts = new TileService(es, project);
             //GameObjectService gos = new GameObjectService(es, project);
-
 
             //foreach(var gameObject in gos.ConvertFromLegacy(spriteLegacyPath))
             //{
@@ -40,7 +34,6 @@ namespace Spotlight.Tests
             //project.Name = "Mushroom Mayhem";
             //project.RomFilePath = newFilePath;
             //project.RgbPalette = ps.GetLegacyPalette(paletteLegacyPath);
-
 
             ////ps.SaveProject(project, newFilePath);
 

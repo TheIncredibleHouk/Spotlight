@@ -49,6 +49,7 @@
     <Compile Include="Compression\CompressionCommand.cs" />
     <Compile Include="Compression\CompressionCommandType.cs" />
     <Compile Include="Compression\CompressionPoint.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\GameObjectTable.cs" />
     <Compile Include="GameObjects\Sprite.cs" />

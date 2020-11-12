@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Services
 {
@@ -14,6 +12,7 @@ namespace Spotlight.Services
         private Project _project;
 
         public delegate void PaletteServiceEventHandler();
+
         public event PaletteServiceEventHandler PalettesChanged;
 
         public PalettesService(ErrorService errorService, Project project)
@@ -37,7 +36,7 @@ namespace Spotlight.Services
 
                 CacheRgbPalettes(commitPalette);
 
-                if(PalettesChanged != null)
+                if (PalettesChanged != null)
                 {
                     PalettesChanged();
                 }
@@ -47,7 +46,7 @@ namespace Spotlight.Services
         public Palette NewPalette(string name, Palette basePalette)
         {
             Palette palette = new Palette();
-            for(int i =0; i < 32; i++)
+            for (int i = 0; i < 32; i++)
             {
                 palette.IndexedColors[i] = basePalette.IndexedColors[i];
             }
@@ -108,7 +107,7 @@ namespace Spotlight.Services
             int paletteIndex = 0;
 
             for (int i = 0; i < 8; i++)
-            {    
+            {
                 for (int j = 0; j < 4; j++)
                 {
                     palette.RgbColors[i][j] = _project.RgbPalette[palette.IndexedColors[paletteIndex++]];
@@ -116,17 +115,17 @@ namespace Spotlight.Services
             }
         }
 
-
         public Palette GetPalette(Guid paletteId)
         {
-            Palette returnedPalette =  _project.Palettes.Where(p => p.Id == paletteId).FirstOrDefault();
-            if(returnedPalette == null)
+            Palette returnedPalette = _project.Palettes.Where(p => p.Id == paletteId).FirstOrDefault();
+            if (returnedPalette == null)
             {
                 returnedPalette = _project.Palettes[0];
             }
 
             return returnedPalette;
         }
+
         public Color[] RgbPalette
         {
             get
@@ -147,13 +146,22 @@ namespace Spotlight.Services
                 }
                 catch
                 {
-
                 }
 
                 rgbPalette[j] = _project.RgbPalette[colorIndex];
             }
 
             return rgbPalette;
+        }
+
+        public void CommitRgbPalette(Color[] rgbPalette)
+        {
+            _project.RgbPalette = rgbPalette;
+            CacheRgbPalettes();
+            if (PalettesChanged != null)
+            {
+                PalettesChanged();
+            }
         }
     }
 }

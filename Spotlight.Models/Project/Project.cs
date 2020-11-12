@@ -1,13 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Xml.Serialization;
 
 namespace Spotlight.Models
 {
-
     public class Project
     {
         public Project()
@@ -150,7 +146,6 @@ namespace Spotlight.Models
         public GameObject[] GameObjects { get; set; }
         public Dictionary<string, List<KeyValuePair<string, string>>> TextTable { get; set; }
         public Color[] RgbPalette { get; set; }
-
     }
 
     [XmlRoot("project")]

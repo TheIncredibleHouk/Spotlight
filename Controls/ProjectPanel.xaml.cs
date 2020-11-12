@@ -1,21 +1,8 @@
 ﻿using Microsoft.Win32;
 using Spotlight.Models;
 using Spotlight.Services;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -24,20 +11,24 @@ namespace Spotlight
     /// </summary>
     public partial class ProjectPanel : UserControl
     {
-
         public delegate void ProjectLoadEventHandler(Project project);
+
         public event ProjectLoadEventHandler ProjectLoaded;
 
         public delegate void TileBlockEditorOpenEventHandler();
+
         public event TileBlockEditorOpenEventHandler TileBlockEditorOpened;
 
         public delegate void TextEditorOpenEventHandler();
+
         public event TextEditorOpenEventHandler TextEditorOpened;
 
         public delegate void RomSavedEventHandler();
+
         public event RomSavedEventHandler RomSaved;
 
         public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
+
         public event ObjectEditorEventHandler ObjectEditorOpened;
 
         public ProjectService ProjectService { get; set; }
@@ -53,10 +44,15 @@ namespace Spotlight
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                Project project = ProjectService.LoadProject(openFileDialog.FileName);
-                ProjectLoaded(project);
-                ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true ;
+                LoadProject(openFileDialog.FileName);
             }
+        }
+
+        public void LoadProject(string filePath)
+        {
+            Project project = ProjectService.LoadProject(filePath);
+            ProjectLoaded(project);
+            ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
         }
 
         private void SaveProjectButton_Click(object sender, RoutedEventArgs e)
@@ -67,17 +63,15 @@ namespace Spotlight
 
         private void NewWorldButton_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void NewLevelButton_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void SaveRomButton_Click(object sender, RoutedEventArgs e)
         {
-            if(RomSaved != null)
+            if (RomSaved != null)
             {
                 RomSaved();
             }

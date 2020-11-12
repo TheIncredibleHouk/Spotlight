@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -15,6 +13,10 @@ namespace Spotlight.Services
     {
         private readonly ErrorService _errorService;
         private readonly Project _project;
+
+        public delegate void WorldUpdatedEventHandler(WorldInfo worldInfo);
+
+        public event WorldUpdatedEventHandler WorldUpdated;
 
         public WorldService(ErrorService errorService, Project project)
         {
@@ -74,6 +76,14 @@ namespace Spotlight.Services
             return legacyWorlds;
         }
 
+        public void NotifyUpdate(WorldInfo worldInfo)
+        {
+            if (WorldUpdated != null)
+            {
+                WorldUpdated(worldInfo);
+            }
+        }
+
         public World LoadWorld(WorldInfo worldInfo)
         {
             try
@@ -92,7 +102,6 @@ namespace Spotlight.Services
         {
             try
             {
-
                 if (basePath == null)
                 {
                     basePath = _project.DirectoryPath;
@@ -111,6 +120,18 @@ namespace Spotlight.Services
             {
                 _errorService.LogError(e);
             }
+        }
+
+        public void RenameWorld(string previousName, string newName)
+        {
+            string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
+            string priorFileName = string.Format(@"{0}\{1}.json", _project.DirectoryPath + @"\worlds", safePriorLevelName);
+
+            World world = JsonConvert.DeserializeObject<World>(File.ReadAllText(safePriorLevelName));
+            world.Name = newName;
+            SaveWorld(world);
+
+            File.Delete(priorFileName);
         }
     }
 }

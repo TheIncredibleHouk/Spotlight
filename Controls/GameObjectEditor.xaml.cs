@@ -2,20 +2,12 @@
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -50,9 +42,8 @@ namespace Spotlight
             _graphicsAccessor = new GraphicsAccessor(graphicsService.GetGlobalTiles(), graphicsService.GetExtraTiles());
             viewObjects.Add(viewObject);
 
-
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
-            _renderer = new GameObjectRenderer(_gameObjectService,_palettesService, _graphicsAccessor);
+            _renderer = new GameObjectRenderer(_gameObjectService, _palettesService, _graphicsAccessor);
             _renderer.RenderGrid = true;
 
             GameObjectRenderer.Source = _bitmap;
@@ -101,6 +92,7 @@ namespace Spotlight
         }
 
         private GameObject _gameObject;
+
         private void ObjectSelector_GameObjectChanged(GameObject gameObject)
         {
             List<string> properties = gameObject.Properties.ToList();
@@ -157,12 +149,11 @@ namespace Spotlight
                 _gameObjectService.UpdateGameTable(viewObject.GameObject);
                 _gameObjectService.CommitGameObject(viewObject.GameObject);
                 _projectService.SaveProject();
-                AlertWindow.Alert("Object data saved.");
-                
             }
         }
 
         private bool _showOverlays;
+
         private void ShowOverlays_Checked(object sender, RoutedEventArgs e)
         {
             _showOverlays = ((CheckBox)sender).IsChecked.Value;
@@ -176,4 +167,3 @@ namespace Spotlight
         }
     }
 }
-

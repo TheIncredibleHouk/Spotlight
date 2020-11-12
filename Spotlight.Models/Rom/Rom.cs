@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Models
 {
@@ -13,7 +9,6 @@ namespace Spotlight.Models
         private byte[] _data;
         private bool[] _dataProtection;
 
-        
         public Rom()
         {
         }
@@ -40,7 +35,7 @@ namespace Spotlight.Models
                 return false;
             }
 
-            if(Path.GetExtension(filename).ToLower() != ".nes")
+            if (Path.GetExtension(filename).ToLower() != ".nes")
             {
                 throw new Exception("Must be saved to an NES ROM only.");
             }

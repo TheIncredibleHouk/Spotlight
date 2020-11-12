@@ -1,19 +1,8 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -29,6 +18,7 @@ namespace Spotlight
 
         private LevelService _levelService;
         private WorldInfo _worldInfo;
+
         public void Initialize(LevelService levelService, WorldInfo worldInfo)
         {
             _levelService = levelService;
@@ -38,6 +28,7 @@ namespace Spotlight
         }
 
         private WorldPointer _pointer;
+
         public void SetPointer(WorldPointer pointer)
         {
             _pointer = pointer;
@@ -50,7 +41,6 @@ namespace Spotlight
             {
                 _pointer.LevelId = (Guid)LevelList.SelectedValue;
             }
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,7 +53,9 @@ namespace Spotlight
                 }
             }
         }
+
         private LevelPanel _levelPanel;
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (LevelList.SelectedItem != null)
@@ -80,7 +72,6 @@ namespace Spotlight
         {
             _levelPanel.LevelEditorExitSelected -= LevelPanel_LevelEditorExitSelected;
             _levelPanel = null;
-            
         }
     }
 }

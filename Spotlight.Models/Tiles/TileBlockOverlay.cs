@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Models
 {
@@ -28,6 +24,7 @@ namespace Spotlight.Models
             get { return Int32.Parse(UpperRightTile, System.Globalization.NumberStyles.HexNumber); }
             set { UpperRightTile = value.ToString("X"); }
         }
+
         public string LowerLeftTile { get; set; }
 
         [JsonIgnore]
@@ -36,6 +33,7 @@ namespace Spotlight.Models
             get { return Int32.Parse(LowerLeftTile, System.Globalization.NumberStyles.HexNumber); }
             set { LowerLeftTile = value.ToString("X"); }
         }
+
         public string LowerRightTile { get; set; }
 
         [JsonIgnore]

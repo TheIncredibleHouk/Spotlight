@@ -87,6 +87,9 @@
       <DependentUpon>KeyValueTextbox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LevelPanel.xaml.cs" />
+    <Compile Include="Controls\PaletteRgbEditor.xaml.cs">
+      <DependentUpon>PaletteRgbEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\WorldPointerEditor.xaml.cs">
       <DependentUpon>WorldPointerEditor.xaml</DependentUpon>
     </Compile>
@@ -131,6 +134,10 @@
     <Page Include="Controls\LevelPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PaletteRgbEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\WorldPointerEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -273,6 +280,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Controls\Icons\PSwitch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Checkboard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Spotlight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Icons\Border.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

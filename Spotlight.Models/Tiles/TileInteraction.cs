@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Spotlight.Models
+﻿namespace Spotlight.Models
 {
     public class TileInteraction
     {
-        public string Name { get;  set; }
+        public string Name { get; set; }
         public int Value { get; set; }
         public TileBlockOverlay Overlay { get; set; }
 
@@ -21,8 +15,6 @@ namespace Spotlight.Models
 
         public TileInteraction()
         {
-
         }
-
     }
 }

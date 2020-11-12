@@ -1,32 +1,31 @@
 ﻿<UserControl x:Class="Spotlight.PaletteEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Spotlight"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              SnapsToDevicePixels="True"
              VerticalAlignment="Stretch"
-             VerticalContentAlignment="Stretch"
-             Background="Black" d:DesignWidth="800" Height="800">
+             Background="Black">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#FFB5B8C1"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#FFB5B8C1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Margin" Value="5" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="0" Margin="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF151515"/>
+                    <Setter Property="Background" Value="#FF151515" />
                     <Setter Property="BorderBrush" Value="#FF363857" />
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
@@ -40,14 +39,14 @@
         <SolidColorBrush x:Key="ComboBoxDisabledBackgroundBrush" Color="#eee" />
         <SolidColorBrush x:Key="ComboBoxDisabledBorderBrush" Color="#888" />
         <Style TargetType="{x:Type ComboBox}">
-            <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
-            <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+            <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
             <Setter Property="Margin" Value="10, 0, 10, 0" />
-            <Setter Property="TextElement.Foreground" Value="Black"/>
-            <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="TextElement.Foreground" Value="Black" />
+            <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Control.Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
@@ -55,20 +54,20 @@
                             <ToggleButton Name="ToggleButton" Grid.Column="2"
                 ClickMode="Press" Focusable="False"
                 IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+                Template="{StaticResource ComboBoxToggleButtonTemplate}" />
 
                             <ContentPresenter Name="ContentSite" Margin="5, 3, 23, 3" IsHitTestVisible="False"
-                              HorizontalAlignment="Left" VerticalAlignment="Center"                              
-                              Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                              Content="{TemplateBinding ComboBox.SelectionBoxItem}"
                               ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
-                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
-                            <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3"                     
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+                            <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3"
                      IsReadOnly="{TemplateBinding IsReadOnly}"
                      Visibility="Hidden" Background="Transparent"
                      HorizontalAlignment="Left" VerticalAlignment="Center"
-                     Focusable="True" >
+                     Focusable="True">
                                 <TextBox.Template>
-                                    <ControlTemplate TargetType="TextBox" >
+                                    <ControlTemplate TargetType="TextBox">
                                         <Border Name="PART_ContentHost" Focusable="False" />
                                     </ControlTemplate>
                                 </TextBox.Template>
@@ -85,18 +84,18 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="ItemsControl.HasItems" Value="False">
-                                <Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
+                                <Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95" />
                             </Trigger>
                             <Trigger Property="UIElement.IsEnabled" Value="False">
-                                <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                                <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}" />
                             </Trigger>
                             <Trigger Property="ItemsControl.IsGrouping" Value="True">
-                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
                             </Trigger>
                             <Trigger Property="ComboBox.IsEditable" Value="True">
-                                <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
-                                <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
-                                <Setter Property="UIElement.Visibility" TargetName="ContentSite" Value="Hidden"/>
+                                <Setter Property="KeyboardNavigation.IsTabStop" Value="False" />
+                                <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible" />
+                                <Setter Property="UIElement.Visibility" TargetName="ContentSite" Value="Hidden" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -104,36 +103,45 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <StackPanel Orientation="Vertical" Width="258">
-        <TextBlock>Palettes</TextBlock>
-        <ComboBox SelectionChanged="PaletteList_SelectionChanged" DisplayMemberPath="Name" SelectedValuePath="Id" Margin="0" x:Name="PaletteList"></ComboBox>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="AddPalette" Click="AddPalette_Click">Add</Button>
-            <Button x:Name="RemovePalette" Click="RemovePalette_Click">Remove</Button>
-            <Button x:Name="RenamePalette">Rename</Button>
+    <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" Width="258">
+            <TextBlock>Palettes</TextBlock>
+            <ComboBox SelectionChanged="PaletteList_SelectionChanged" DisplayMemberPath="Name" SelectedValuePath="Id" Margin="0" x:Name="PaletteList"></ComboBox>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="AddPalette" Click="AddPalette_Click">Add</Button>
+                <Button x:Name="RemovePalette" Click="RemovePalette_Click">Remove</Button>
+                <Button x:Name="RenamePalette">Rename</Button>
+            </StackPanel>
+            <TextBlock x:Name="SectionTextValue">40</TextBlock>
+            <Border BorderThickness="1" HorizontalAlignment="Center" BorderBrush="White">
+                <Canvas Width="256" Height="32">
+                    <Image MouseMove="ImageSection_MouseMove" MouseDown="PaletteSection_MouseDown" x:Name="ImageSection" Width="256" Height="32" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                    <Border Width="16" Height="16" BorderThickness="1" BorderBrush="Red" x:Name="SectionSelectionRectangle" Visibility="Visible">
+                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                    </Border>
+                </Canvas>
+            </Border>
+            <TextBlock x:Name="FullTextValue">40</TextBlock>
+            <Border BorderThickness="1" HorizontalAlignment="Center" BorderBrush="White">
+                <Canvas Width="256" Height="64">
+                    <Image MouseMove="ImageFull_MouseMove" MouseDown="FullSection_MouseDown" x:Name="ImageFull" Width="256" Height="64" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                    <Border Width="16" Height="16" BorderThickness="1" BorderBrush="Red" x:Name="FullSelectionRectangle" Visibility="Visible">
+                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                    </Border>
+                </Canvas>
+            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="ApplyPalette" Click="ApplyPalette_Click">Apply</Button>
+                <Button x:Name="ResetPalette" Click="ResetPalette_Click">Reset</Button>
+            </StackPanel>
+            <StackPanel x:Name="PaletteRgbList" Orientation="Vertical" HorizontalAlignment="Stretch">
+            
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="LoadPalette_Click" HorizontalAlignment="Left">Load</Button>
+                <Button HorizontalAlignment="Right" x:Name="ApplyRgbPalette" Click="ApplyRgbPalette_Click">Apply</Button>
+                <Button HorizontalAlignment="Right" x:Name="ResetRgbPalette" Click="ResetRgbPalette_Click">Reset</Button>
+            </StackPanel>
         </StackPanel>
-        <TextBlock x:Name="SectionTextValue">40</TextBlock>
-        <Border BorderThickness="1" HorizontalAlignment="Center" BorderBrush="White">
-            <Canvas Width="256" Height="32">
-                <Image MouseMove="ImageSection_MouseMove" MouseDown="PaletteSection_MouseDown" x:Name="ImageSection" Width="256" Height="32" RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                <Border Width="16" Height="16" BorderThickness="1" BorderBrush="Red" x:Name="SectionSelectionRectangle" Visibility="Visible">
-                    <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
-                </Border>
-            </Canvas>
-        </Border>
-        <TextBlock x:Name="FullTextValue">40</TextBlock>
-        <Border BorderThickness="1" HorizontalAlignment="Center" BorderBrush="White">
-            <Canvas Width="256" Height="64">
-                <Image MouseMove="ImageFull_MouseMove" MouseDown="FullSection_MouseDown" x:Name="ImageFull" Width="256" Height="64" RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                <Border Width="16" Height="16" BorderThickness="1" BorderBrush="Red" x:Name="FullSelectionRectangle" Visibility="Visible">
-                    <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
-                </Border>
-            </Canvas>
-        </Border>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="ApplyPalette" Click="ApplyPalette_Click">Apply</Button>
-            <Button x:Name="ResetPalette" Click="ResetPalette_Click">Reset</Button>
-        </StackPanel>
-
-    </StackPanel>
+    </ScrollViewer>
 </UserControl>

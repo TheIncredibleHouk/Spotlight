@@ -1,10 +1,6 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight
 {
@@ -36,7 +32,6 @@ namespace Spotlight
                     useCommand = attemptCommand;
                     restoreToPoint = currentPoint;
                 }
-
 
                 RestorePoint();
                 attemptCommand = TryRepeat();
@@ -136,7 +131,6 @@ namespace Spotlight
             c.RepeatTimes = repeatCount;
             PreviousByte();
             return c;
-
         }
 
         private CompressionCommand TryRepeat()
@@ -262,7 +256,6 @@ namespace Spotlight
         {
             savedPoint = currentPoint;
         }
-
 
         private void RestorePoint()
         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Spotlight.Models
+﻿namespace Spotlight.Models
 {
     public class LevelObjectChange
     {
@@ -27,7 +21,7 @@ namespace Spotlight.Models
 
         public bool IsSame()
         {
-            if(OriginalObject.X == X &&
+            if (OriginalObject.X == X &&
                 OriginalObject.Y == Y &&
                 OriginalObject.Property == Property &&
                 OriginalObject.GameObjectId == GameId &&

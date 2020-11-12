@@ -1,11 +1,6 @@
 ﻿using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight
 {
@@ -20,7 +15,7 @@ namespace Spotlight
 
         public void Update(Palette palette, int paletteIndex)
         {
-            for(var i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
                 int x = i % 16;
                 int y = i / 16;

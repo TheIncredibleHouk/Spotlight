@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Spotlight.Models
@@ -21,7 +17,7 @@ namespace Spotlight.Models
         {
             get
             {
-                if(TileTableAddress == null)
+                if (TileTableAddress == null)
                 {
                     return 0;
                 }
@@ -48,6 +44,7 @@ namespace Spotlight.Models
                 TileValue = "0x" + value.ToString("X2");
             }
         }
+
         public bool HorizontalFlip { get; set; }
         public bool VerticalFlip { get; set; }
         public int PaletteIndex { get; set; }

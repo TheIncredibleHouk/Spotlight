@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Services
 {
@@ -21,7 +19,9 @@ namespace Spotlight.Services
         private DateTime _lastExtraGraphicsUpdated;
 
         public delegate void GraphicsUpdatedHandler();
+
         public event GraphicsUpdatedHandler GraphicsUpdated;
+
         public event GraphicsUpdatedHandler ExtraGraphicsUpdated;
 
         public GraphicsService(ErrorService errorService, Project project)
@@ -37,7 +37,7 @@ namespace Spotlight.Services
             string fileName = _project.DirectoryPath + @"\" + _project.Name + @".chr";
             string extraFileName = _project.DirectoryPath + @"\" + _project.Name + @".extra.chr";
 
-            if(File.GetLastWriteTime(fileName) > _lastGraphicsUpdate)
+            if (File.GetLastWriteTime(fileName) > _lastGraphicsUpdate)
             {
                 LoadGraphics();
                 if (GraphicsUpdated != null)
@@ -46,7 +46,7 @@ namespace Spotlight.Services
                 }
             }
 
-            if(File.GetLastWriteTime(extraFileName) > _lastExtraGraphicsUpdated)
+            if (File.GetLastWriteTime(extraFileName) > _lastExtraGraphicsUpdated)
             {
                 LoadExtraGraphics();
                 if (ExtraGraphicsUpdated != null)
@@ -54,8 +54,8 @@ namespace Spotlight.Services
                     ExtraGraphicsUpdated();
                 }
             }
-
         }
+
         public Color[][] GetRgbPalette(Palette palette)
         {
             Color[][] rgbPalette = new Color[4][];
@@ -95,7 +95,6 @@ namespace Spotlight.Services
 
             _graphicsData = File.ReadAllBytes(fileName);
             _tiles = new List<Tile>();
-
 
             int dataPointer = 0;
 
@@ -157,7 +156,7 @@ namespace Spotlight.Services
 
         public Tile GetTile(int tileTableIndex, int tileIndex)
         {
-            return _tiles[tileTableIndex * 0x40 + tileIndex];   
+            return _tiles[tileTableIndex * 0x40 + tileIndex];
         }
 
         public Palette GetPalette(int index)

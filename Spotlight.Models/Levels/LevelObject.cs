@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 
@@ -69,9 +66,9 @@ namespace Spotlight.Models
                 }
             }
 
-            if(minX % 16 != 0)
+            if (minX % 16 != 0)
             {
-                if(minX < 0)
+                if (minX < 0)
                 {
                     minX = ((minX / 16) - 1) * 16;
                 }
@@ -96,7 +93,6 @@ namespace Spotlight.Models
             if (maxX % 16 != 0)
             {
                 maxX = ((maxX / 16) + 1) * 16;
-
             }
 
             if (maxY % 16 != 0)
@@ -122,8 +118,10 @@ namespace Spotlight.Models
 
         [XmlAttribute]
         public string y { get; set; }
+
         [XmlAttribute]
         public string value { get; set; }
+
         [XmlAttribute]
         public string property { get; set; }
     }

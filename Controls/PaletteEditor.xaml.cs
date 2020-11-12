@@ -1,21 +1,16 @@
-﻿using Spotlight.Models;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
+using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Newtonsoft.Json;
 
 namespace Spotlight
 {
@@ -24,10 +19,14 @@ namespace Spotlight
     /// </summary>
     public partial class PaletteEditor : UserControl
     {
-        public PaletteEditor(PalettesService palettesService)
+        private System.Drawing.Color[] _rgbPalette;
+        private List<PaletteRgbEditor> _rgbEditors;
+
+        public PaletteEditor(ProjectService projectService, PalettesService palettesService)
         {
             InitializeComponent();
 
+            _projectService = projectService;
             _palettesService = palettesService;
 
             _bitmapSection = new WriteableBitmap(256, 32, 96, 96, PixelFormats.Bgra32, null);
@@ -43,7 +42,25 @@ namespace Spotlight
             PaletteList.SelectedIndex = 0;
 
             UpdateFull();
+            
             _palettesService.PalettesChanged += _palettesService_PalettesChanged;
+            _rgbPalette = _palettesService.RgbPalette;
+            _rgbEditors = new List<PaletteRgbEditor>();
+
+            for (int i = 0; i < 0x40; i++)
+            {
+                PaletteRgbEditor rgbEditor = new PaletteRgbEditor();
+                rgbEditor.RgbColor = _rgbPalette[i];
+                rgbEditor.PaletteIndex = i;
+
+                _rgbEditors.Add(rgbEditor);
+                PaletteRgbList.Children.Add(rgbEditor);
+            }
+        }
+
+        public void SetPalette(Palette palette)
+        {
+            PaletteList.SelectedItem = palette;
         }
 
         private void _palettesService_PalettesChanged()
@@ -58,6 +75,7 @@ namespace Spotlight
         private PaletteRenderer _rendererFull;
 
         private PalettesService _palettesService;
+        private ProjectService _projectService;
 
         private void Update()
         {
@@ -103,6 +121,7 @@ namespace Spotlight
         }
 
         private int paletteSectionIndex;
+
         private void PaletteSection_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point sectionPoint = Snap(e.GetPosition(ImageSection));
@@ -131,7 +150,7 @@ namespace Spotlight
                 SectionTextValue.Text = paletteFullIndex.ToString("X2");
                 Update();
             }
-            else if(e.RightButton == MouseButtonState.Pressed)
+            else if (e.RightButton == MouseButtonState.Pressed)
             {
                 paletteFullIndex = _editingPalette.IndexedColors[paletteSectionIndex];
                 Canvas.SetTop(FullSelectionRectangle, ((paletteFullIndex / 16) * 16));
@@ -139,8 +158,9 @@ namespace Spotlight
                 FullTextValue.Text = paletteFullIndex.ToString("X2");
             }
         }
-        
+
         private int paletteFullIndex;
+
         private void FullSection_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point sectionPoint = Snap(e.GetPosition(ImageFull));
@@ -162,6 +182,7 @@ namespace Spotlight
         }
 
         private Palette _editingPalette;
+
         private void PaletteList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _editingPalette = JsonConvert.DeserializeObject<Palette>(JsonConvert.SerializeObject(PaletteList.SelectedItem));
@@ -175,6 +196,8 @@ namespace Spotlight
         private void ApplyPalette_Click(object sender, RoutedEventArgs e)
         {
             _palettesService.CommitPalette(_editingPalette);
+            _projectService.SaveProject();
+            _projectService.SaveProject();
         }
 
         private void ResetPalette_Click(object sender, RoutedEventArgs e)
@@ -191,7 +214,7 @@ namespace Spotlight
 
         private void RemovePalette_Click(object sender, RoutedEventArgs e)
         {
-            if(ConfirmationWindow.Confirm("Are you sure you would like to remove this palette?") == System.Windows.Forms.DialogResult.Yes)
+            if (ConfirmationWindow.Confirm("Are you sure you would like to remove this palette?") == System.Windows.Forms.DialogResult.Yes)
             {
                 _palettesService.RemovePalette(_editingPalette);
             }
@@ -200,9 +223,50 @@ namespace Spotlight
         private void AddPalette_Click(object sender, RoutedEventArgs e)
         {
             string paletteName = InputWindow.GetInput("Enter palette name.");
-            if(paletteName != null)
+            if (paletteName != null)
             {
                 PaletteList.SelectedValue = _palettesService.NewPalette(paletteName, _editingPalette).Id;
+            }
+        }
+
+        private void ApplyRgbPalette_Click(object sender, RoutedEventArgs e)
+        {
+            for(int i = 0; i < _rgbPalette.Length; i++)
+            {
+                _rgbPalette[i] = _rgbEditors[i].RgbColor;
+            }
+
+            _palettesService.CommitRgbPalette(_rgbPalette);
+            UpdateFull();
+        }
+
+        private void ResetRgbPalette_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < _rgbPalette.Length; i++)
+            {
+                _rgbEditors[i].RgbColor = _rgbPalette[i];
+            }
+        }
+
+        private void LoadPalette_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    byte[] rgbBytes = File.ReadAllBytes(openFileDialog.FileName);
+                    for(int i = 0; i < 0x40; i++)
+                    {
+                        int byteIndex = i * 3;
+                        int paletteIndex = i;
+                        _rgbEditors[i].RgbColor = System.Drawing.Color.FromArgb(rgbBytes[byteIndex], rgbBytes[byteIndex + 1], rgbBytes[byteIndex + 2]);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                AlertWindow.Alert("Error loading new palette.");
             }
         }
     }

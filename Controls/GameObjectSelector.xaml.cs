@@ -1,20 +1,13 @@
 ﻿using Spotlight.Models;
+using Spotlight.Renderers;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Spotlight.Renderers;
 
 namespace Spotlight
 {
@@ -23,9 +16,10 @@ namespace Spotlight
     /// </summary>
     public partial class GameObjectSelector : UserControl, IDetachEvents
     {
-
         public delegate void GameObjectSelectorEventHandler(GameObject gameObject);
+
         public event GameObjectSelectorEventHandler GameObjectChanged;
+
         public event GameObjectSelectorEventHandler GameObjectDoubleClicked;
 
         public GameObjectSelector()
@@ -102,11 +96,12 @@ namespace Spotlight
         }
 
         private LevelObject _selectedObject;
+
         public GameObject SelectedObject
         {
             get
             {
-                if(_selectedObject == null)
+                if (_selectedObject == null)
                 {
                     return null;
                 }
@@ -180,7 +175,7 @@ namespace Spotlight
             {
                 var position = e.GetPosition(GameObjectImage);
                 LevelObject newObject = _gameObjectService.GetObjects((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.BoundRectangle.Contains(position.X, position.Y)).FirstOrDefault();
-                
+
                 if (newObject != null)
                 {
                     _selectedObject = newObject;
@@ -191,9 +186,9 @@ namespace Spotlight
                     }
                 }
 
-                if(e.ClickCount > 1)
+                if (e.ClickCount > 1)
                 {
-                    if(GameObjectDoubleClicked != null)
+                    if (GameObjectDoubleClicked != null)
                     {
                         GameObjectDoubleClicked(_selectedObject.GameObject);
                     }

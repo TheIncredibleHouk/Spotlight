@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -19,10 +8,11 @@ namespace Spotlight
     /// </summary>
     public partial class InputWindow : Window
     {
-        public static string GetInput(string text)
+        public static string GetInput(string message, string defaultText = "")
         {
             InputWindow window = new InputWindow();
-            window.DisplayText.Text = text;
+            window.DisplayText.Text = message;
+            window.InputText = defaultText;
             window.Owner = GlobalPanels.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
@@ -48,7 +38,7 @@ namespace Spotlight
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            InputText = "";
+            InputText = null;
             this.Close();
         }
 
@@ -70,7 +60,6 @@ namespace Spotlight
         {
             if (e.Key == Key.Enter)
             {
-
                 this.Close();
             }
         }

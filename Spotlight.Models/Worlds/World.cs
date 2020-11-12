@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Spotlight.Models
@@ -38,7 +35,6 @@ namespace Spotlight.Models
         public List<WorldPointer> Pointers { get; set; }
 
         [JsonIgnore]
-
         public int AnimationTileTableIndex
         {
             get { return 0x70; }
@@ -76,5 +72,4 @@ namespace Spotlight.Models
         [XmlIgnore]
         public string name { get; set; }
     }
-
 }

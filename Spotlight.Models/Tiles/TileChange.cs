@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Spotlight.Models
+﻿namespace Spotlight.Models
 {
     public class TileChange
     {
@@ -17,6 +11,7 @@ namespace Spotlight.Models
 
         public int X { get; set; }
         public int Y { get; set; }
+
         public int Width
         {
             get
@@ -24,6 +19,7 @@ namespace Spotlight.Models
                 return Data.GetLength(0);
             }
         }
+
         public int Height
         {
             get
@@ -31,6 +27,7 @@ namespace Spotlight.Models
                 return Data.GetLength(1);
             }
         }
+
         public int[,] Data { get; private set; }
     }
 }

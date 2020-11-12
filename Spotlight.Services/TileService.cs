@@ -4,17 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Services
 {
     public class TileService
     {
-
         public delegate void TileSetEventHandler(int index, TileSet tileSet);
-        public event TileSetEventHandler TileSetUpdated;
 
+        public event TileSetEventHandler TileSetUpdated;
 
         private readonly ErrorService _errorService;
         private readonly Project _project;
@@ -114,7 +111,6 @@ namespace Spotlight.Services
                     tileSets.Add(tileSet);
                 }
 
-
                 var propertyOffset = 0x4000;
                 for (int i = 0; i < 16; i++)
                 {
@@ -123,7 +119,6 @@ namespace Spotlight.Services
                         tileSets[i].TileBlocks[j].Property = data[propertyOffset++];
                     }
                 }
-
 
                 for (int i = 0; i < 16; i++)
                 {

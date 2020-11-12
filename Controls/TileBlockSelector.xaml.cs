@@ -3,18 +3,11 @@ using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -24,9 +17,11 @@ namespace Spotlight
     public partial class TileBlockSelector : UserControl
     {
         public delegate void TileBlockSelectorEventHandler(TileBlock tileBlock, int tileBlockValue);
+
         public event TileBlockSelectorEventHandler TileBlockSelected;
 
         public TileBlock SelectedTileBlock { get; private set; }
+
         public TileBlockSelector()
         {
             InitializeComponent();
@@ -38,6 +33,7 @@ namespace Spotlight
         private TileSet _tileSet;
         private List<TileTerrain> _terrain;
         private List<MapTileInteraction> _mapTileInteractions;
+
         public void Initialize(GraphicsAccessor graphicsAccessor, TileService tileService, TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
         {
             _graphicsAccessor = graphicsAccessor;
@@ -48,14 +44,13 @@ namespace Spotlight
 
             _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
             TileRenderSource.Width = _bitmap.Width + 1;
-            TileRenderSource.Height = _bitmap.Height;
+            TileRenderSource.Height = _bitmap.Height + 1;
 
             TileRenderSource.Source = _bitmap;
 
             Update(tileSet, palette);
             SelectedBlockValue = 0;
         }
-
 
         public void Update(TileSet tileSet = null, Palette palette = null, int? tileIndex = null, bool? withTerrainOverlay = null, bool? withInteractionOverlay = null, bool? withMapInteractionOverlay = null, bool? withProjectileInteractions = null)
         {
@@ -66,7 +61,6 @@ namespace Spotlight
                 Update();
             }
         }
-
 
         public void Update()
         {
@@ -80,9 +74,8 @@ namespace Spotlight
             {
                 return;
             }
-            
-            _bitmap.Lock();
 
+            _bitmap.Lock();
 
             Int32Rect sourceArea = new Int32Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 
@@ -91,7 +84,6 @@ namespace Spotlight
             _bitmap.Unlock();
         }
 
-
         private void TileRenderSource_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point clickPoint = Snap(e.GetPosition(this));
@@ -99,6 +91,7 @@ namespace Spotlight
         }
 
         private int _selectedBlockValue;
+
         public int SelectedBlockValue
         {
             get
@@ -107,7 +100,7 @@ namespace Spotlight
             }
             set
             {
-                if(value > 256)
+                if (value > 256)
                 {
                     return;
                 }
@@ -116,12 +109,13 @@ namespace Spotlight
                 SelectedTileBlock = _tileSet.TileBlocks[value];
 
                 UpdateSelectionRectangle();
-                if(TileBlockSelected != null)
+                if (TileBlockSelected != null)
                 {
                     TileBlockSelected(_tileSet.TileBlocks[value], value);
                 }
             }
         }
+
         private void UpdateSelectionRectangle()
         {
             Canvas.SetTop(SelectionRectangle, ((int)(_selectedBlockValue / 16)) * 16);

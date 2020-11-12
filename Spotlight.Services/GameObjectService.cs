@@ -2,7 +2,6 @@
 using Spotlight.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
@@ -13,6 +12,7 @@ namespace Spotlight.Services
     public class GameObjectService
     {
         public delegate void GameObjectEventHandler(GameObject gameObject);
+
         public event GameObjectEventHandler GameObjectUpdated;
 
         private readonly ErrorService _errorService;
@@ -37,6 +37,7 @@ namespace Spotlight.Services
             {'E', Int32.Parse("68", System.Globalization.NumberStyles.HexNumber) },
             {'F', Int32.Parse("6A", System.Globalization.NumberStyles.HexNumber) }
         };
+
         public List<Sprite> FallBackSprites(GameObject gameObject)
         {
             List<Sprite> sprites = new List<Sprite>();
@@ -92,7 +93,7 @@ namespace Spotlight.Services
                 }
             }
             RefreshGameObjectTable();
-            _startPointPalette = new string[4]{ "00","0F", "36", "16" };
+            _startPointPalette = new string[4] { "00", "0F", "36", "16" };
             _startPointGameObject = new GameObject()
             {
                 GameId = 0,
@@ -138,6 +139,7 @@ namespace Spotlight.Services
 
         private string[] _startPointPalette;
         private GameObject _startPointGameObject;
+
         public GameObject GetStartPointObject()
         {
             _startPointGameObject.IsStartObject = true;
@@ -154,7 +156,6 @@ namespace Spotlight.Services
 
             foreach (GameObject gameObject in localGameObjects.Where(g => g != null).OrderBy(g => g.Name))
             {
-
                 if (!nextX.ContainsKey(gameObject.GameObjectType))
                 {
                     nextX[gameObject.GameObjectType] = new Dictionary<string, int>();

@@ -1,11 +1,5 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
@@ -22,6 +16,7 @@ namespace Spotlight.Renderers
 
         private PalettesService _palettesService;
         private PaletteType _paletteType;
+
         public PaletteRenderer(PalettesService paletteService, PaletteType paletteType) : base(null)
         {
             _buffer = new byte[256 * (paletteType == PaletteType.Full ? 64 : 32) * BYTES_PER_BLOCK];
@@ -34,6 +29,7 @@ namespace Spotlight.Renderers
         {
             return GetRectangle(rect, _buffer);
         }
+
         private Palette _palette;
 
         public void Update(Palette palette)
@@ -44,7 +40,6 @@ namespace Spotlight.Renderers
 
         public void Update()
         {
-
             int maxRow = _paletteType == PaletteType.Full ? 4 : 2;
             int maxCol = 16;
 
@@ -54,7 +49,7 @@ namespace Spotlight.Renderers
                 {
                     int x = col * 16, y = row * 16;
 
-                    if(_paletteType == PaletteType.Full)
+                    if (_paletteType == PaletteType.Full)
                     {
                         DrawColorTile(x, y, _palettesService.RgbPalette[row * 16 + col], _buffer);
                     }
@@ -62,7 +57,6 @@ namespace Spotlight.Renderers
                     {
                         DrawColorTile(x, y, _palette.RgbColors[row * 4 + (col / 4)][col % 4], _buffer);
                     }
-                    
                 }
             }
         }

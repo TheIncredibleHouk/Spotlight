@@ -5,14 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Spotlight"
         mc:Ignorable="d"
+        Icon="Controls\Icons\Spotlight.png"
+        Closed="Window_Closed"
+        SizeChanged="Window_SizeChanged"
+        LocationChanged="Window_LocationChanged"
+        KeyDown="Window_KeyDown"
         Background="Black"
         Title="Spotlight" Height="800" Width="1200">
     <Window.Resources>
-       
     </Window.Resources>
     <DockPanel LastChildFill="True">
         <local:ProjectPanel x:Name="_ProjectPanel"  DockPanel.Dock="Top" />
-        <local:FilePanel LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" x:Name="FilePanel"  DockPanel.Dock="Right" />
+        <local:FilePanel LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" NameUpdated="FilePanel_NameUpdated" x:Name="FilePanel"  DockPanel.Dock="Right" />
         <Grid x:Name="DockFill" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <TextBlock HorizontalAlignment="Center" x:Name="SplashText" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>
             <TabControl BorderThickness="0,1,0,0" Padding="0" x:Name="TabsOpen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
@@ -53,4 +57,3 @@
         </Grid>
     </DockPanel>
 </Window>
-

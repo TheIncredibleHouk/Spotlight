@@ -1,14 +1,12 @@
-﻿using Spotlight.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Spotlight.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Drawing;
 
 namespace Spotlight.Services
 {
@@ -116,7 +114,6 @@ namespace Spotlight.Services
                         SublevelsInfo = GetBonusLevels(l.levelguid, legacyProject.levelinfo.Where(b => b.bonusfor != Guid.Empty.ToString().ToLower()).ToList())
                     }).ToList()
                 }).First(),
-
             };
         }
 
@@ -140,15 +137,12 @@ namespace Spotlight.Services
 
         public Project LoadProject(string path)
         {
-
             Project project = JsonConvert.DeserializeObject<Project>(File.ReadAllText(path));
             project.DirectoryPath = new FileInfo(path).DirectoryName;
-
 
             _project = project;
 
             return project;
-
         }
 
         public void SaveProject(Project project, string basePath)

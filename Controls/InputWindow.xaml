@@ -15,7 +15,7 @@
     <StackPanel Orientation="Vertical">
         <TextBlock HorizontalAlignment="Left" x:Name="DisplayText" >This is a sample display text!</TextBlock>
         <TextBox Height="40" VerticalContentAlignment="Center" Foreground="#FFB5B8C1" Margin="10, 0, 10, 0" KeyDown="InputTextbox_KeyDown" x:Name="InputTextbox" />
-        <Border BorderThickness="0, 1, 0, 0" BorderBrush="White" Margin="10, 10, 10, 0" Padding="0, 10, 0, 0">
+        <Border BorderThickness="0" BorderBrush="White" Margin="10, 10, 10, 0" Padding="0, 10, 0, 0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button x:Name="OkButton" Click="OkButton_Click">Okay</Button>
                 <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>

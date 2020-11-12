@@ -1,18 +1,12 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
 {
     public class Renderer
     {
-
         public bool RenderGrid { get; set; }
         public bool ScreenBorders { get; set; }
 
@@ -24,6 +18,7 @@ namespace Spotlight.Renderers
         }
 
         protected bool _initializing;
+
         public void Initializing()
         {
             _initializing = true;
@@ -46,7 +41,6 @@ namespace Spotlight.Renderers
                 for (int x = rect.X; x < rect.Width + rect.X; x++)
                 {
                     int xOffset = yOffset + (x * 4);
-
 
                     copyData[copyDataPointer++] = buffer[xOffset];
                     copyData[copyDataPointer++] = buffer[xOffset + 1];
@@ -134,6 +128,7 @@ namespace Spotlight.Renderers
                 }
             }
         }
+
         protected void Clear(Color color, byte[] buffer)
         {
             for (int i = 0; i < buffer.Length; i += 4)

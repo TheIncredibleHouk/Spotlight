@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Spotlight.Models
@@ -62,7 +59,7 @@ namespace Spotlight.Models
                 return _mostCommonTile;
             }
         }
-        
+
         [JsonIgnore]
         public int AnimationTileTableIndex
         {
@@ -106,6 +103,7 @@ namespace Spotlight.Models
                 }
             }
         }
+
         public int AnimationType { get; set; }
         public int ScrollType { get; set; }
         public int Effects { get; set; }
@@ -170,7 +168,6 @@ namespace Spotlight.Models
         [XmlAttribute]
         public string dpadtiles { get; set; }
 
-
         [XmlAttribute]
         public string leveldata { get; set; }
 
@@ -187,7 +184,6 @@ namespace Spotlight.Models
 
         [XmlIgnore]
         public string name { get; set; }
-
 
         public static List<string> MusicValues = new List<string>() {
             "0",

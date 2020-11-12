@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Spotlight.Models
 {
@@ -19,6 +15,7 @@ namespace Spotlight.Models
         public static new byte Mask = 0xF0;
 
         public List<TileInteraction> Interactions { get; set; }
+
         public bool HasTerrain(int property)
         {
             return Value == (int)(property & Mask);

@@ -1,19 +1,8 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -29,6 +18,7 @@ namespace Spotlight
 
         private LevelService _levelService;
         private LevelInfo _levelInfo;
+
         public void Initialize(LevelService levelService, LevelInfo levelInfo)
         {
             _levelService = levelService;
@@ -38,6 +28,7 @@ namespace Spotlight
         }
 
         private LevelPointer _pointer;
+
         public void SetPointer(LevelPointer pointer)
         {
             _pointer = pointer;
@@ -78,7 +69,9 @@ namespace Spotlight
                 }
             }
         }
+
         private LevelPanel _levelPanel;
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (LevelList.SelectedItem != null)
@@ -103,7 +96,7 @@ namespace Spotlight
         private void ExitX_TextChanged(object sender, TextChangedEventArgs e)
         {
             int x;
-            if(Int32.TryParse(ExitX.Text, System.Globalization.NumberStyles.HexNumber,System.Threading.Thread.CurrentThread.CurrentCulture, out x))
+            if (Int32.TryParse(ExitX.Text, System.Globalization.NumberStyles.HexNumber, System.Threading.Thread.CurrentThread.CurrentCulture, out x))
             {
                 _pointer.ExitX = x;
             }

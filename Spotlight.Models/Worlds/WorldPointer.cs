@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 
@@ -27,7 +24,6 @@ namespace Spotlight.Models
                 };
             }
         }
-
 
         private static List<Sprite> _overlay = new List<Sprite>()
         {
@@ -54,6 +50,5 @@ namespace Spotlight.Models
 
         [XmlAttribute]
         public string y { get; set; }
-
     }
 }

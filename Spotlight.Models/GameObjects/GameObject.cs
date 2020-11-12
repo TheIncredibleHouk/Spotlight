@@ -1,12 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Windows;
-using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace Spotlight.Models
 {
@@ -25,7 +21,7 @@ namespace Spotlight.Models
         public GameObjectType GameObjectType { get; set; }
         public string Name { get; set; }
         public List<Sprite> Sprites { get; set; }
-        public List<string> Properties{ get; set; }
+        public List<string> Properties { get; set; }
         public string Group { get; set; }
 
         public class SpriteDefinition
@@ -92,7 +88,6 @@ namespace Spotlight.Models
                     SpriteInfo s = new SpriteInfo();
                     s.LoadFromElement(x);
                     Sprites.Add(s);
-
                 }
 
                 foreach (var p in e.Elements("property"))
@@ -118,7 +113,6 @@ namespace Spotlight.Models
 
             #region IXmlIO Members
 
-
             public bool LoadFromElement(XElement e)
             {
                 X = e.Attribute("x").Value;
@@ -137,7 +131,7 @@ namespace Spotlight.Models
                 return true;
             }
 
-            #endregion
+            #endregion IXmlIO Members
         }
     }
 

@@ -5,17 +5,11 @@ using Spotlight.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -24,8 +18,7 @@ namespace Spotlight
     /// </summary>
     public partial class TileBlockEditor : UserControl, IDetachEvents
     {
-
-
+        private ProjectService _projectService;
         private GraphicsService _graphicsService;
         private TileService _tileService;
         private TextService _textService;
@@ -38,11 +31,12 @@ namespace Spotlight
         private WriteableBitmap _graphicsSetBitmap;
         private WriteableBitmap _tileBlockBitmap;
 
-        public TileBlockEditor(WorldService worldService, LevelService levelService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, TextService textService)
+        public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, TextService textService)
         {
             _ignoreChanges = true;
             InitializeComponent();
 
+            _projectService = projectService;
             _palettesService = palettesService;
             _graphicsService = graphicsService;
             _worldService = worldService;
@@ -50,9 +44,7 @@ namespace Spotlight
             _tileService = tileService;
             _textService = textService;
 
-
             List<KeyValuePair<string, string>> tileSetText = _textService.GetTable("tile_sets");
-
 
             tileSetText.Insert(0, new KeyValuePair<string, string>("0", "Map"));
 
@@ -73,8 +65,8 @@ namespace Spotlight
             GraphicsSetImage.Height = _graphicsSetBitmap.PixelHeight * 2;
 
             TileBlockImage.Source = _tileBlockBitmap;
-            TileBlockImage.Width = _tileBlockBitmap.PixelWidth * 2;
-            TileBlockImage.Height = _tileBlockBitmap.PixelHeight * 2;
+            TileBlockImage.Width = _tileBlockBitmap.PixelWidth * 2 + 1;
+            TileBlockImage.Height = _tileBlockBitmap.PixelHeight * 2 + 1;
 
             BlockSelector.Initialize(_graphicsAccessor, _tileService, _tileService.GetTileSet(0), _graphicsService.GetPalette(0), _tileSetRenderer);
             BlockSelector.TileBlockSelected += BlockSelector_TileBlockSelected;
@@ -125,7 +117,6 @@ namespace Spotlight
         {
             _ignoreChanges = true;
 
-
             if (_currentLevel != null)
             {
                 TerrainList.SelectedValue = _localTileTerrain.Where(t => t.HasTerrain(tileBlock.Property)).FirstOrDefault()?.Value;
@@ -172,7 +163,7 @@ namespace Spotlight
                         if (_pSwitchFrom > 0)
                         {
                             PSwitchAlteration alteration = _localTileSet.PSwitchAlterations.Where(p => p.From == _pSwitchFrom).FirstOrDefault();
-                            if(alteration == null && _localTileSet.PSwitchAlterations.Count < 8)
+                            if (alteration == null && _localTileSet.PSwitchAlterations.Count < 8)
                             {
                                 alteration = new PSwitchAlteration();
                                 alteration.From = _pSwitchFrom;
@@ -204,7 +195,7 @@ namespace Spotlight
                 {
                     int existingFireInteraction = _localTileSet.FireBallInteractions.Where(f => f == BlockSelector.SelectedBlockValue).FirstOrDefault();
 
-                    if(existingFireInteraction > 0)
+                    if (existingFireInteraction > 0)
                     {
                         _localTileSet.FireBallInteractions.Remove(existingFireInteraction);
                     }
@@ -263,6 +254,7 @@ namespace Spotlight
         private List<MapTileInteraction> _localMapTileInteraction;
         private World _currentWorld;
         private Level _currentLevel;
+
         private void LevelList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _ignoreChanges = true;
@@ -329,7 +321,6 @@ namespace Spotlight
                 UpdateGraphics();
                 UpdateTileBlock();
             }
-
         }
 
         private void UpdateGraphics()
@@ -415,7 +406,7 @@ namespace Spotlight
         private void ShowInteractions_Click(object sender, RoutedEventArgs e)
         {
             BlockSelector.Update(withInteractionOverlay: _currentLevel != null ? ShowInteractions.IsChecked.Value : false,
-                                 withMapInteractionOverlay: _currentWorld != null ? ShowInteractions.IsChecked.Value: false);
+                                 withMapInteractionOverlay: _currentWorld != null ? ShowInteractions.IsChecked.Value : false);
             UpdateTileBlock();
         }
 
@@ -431,14 +422,15 @@ namespace Spotlight
             BlockSelector.Update();
             UpdateTileBlock();
             SetSaved();
+            _projectService.SaveProject();
         }
 
         private int _graphicTileIndexSelected = 0;
         private bool _isQuadSelected = false;
+
         private void GraphicsSetImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point clickPoint = Snap(e.GetPosition((Image)GraphicsSetImage));
-
 
             TileSelectionRectangle.Height = TileSelectionRectangle.Width = 16;
             _isQuadSelected = false;
@@ -554,6 +546,7 @@ namespace Spotlight
         }
 
         private bool _ignoreChanges = false;
+
         private void SetUnsaved()
         {
             if (!_ignoreChanges)
@@ -616,6 +609,7 @@ namespace Spotlight
         }
 
         private TileBlock _copiedblock;
+
         private void BlockSelectorBorder_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -639,6 +633,7 @@ namespace Spotlight
         }
 
         private bool _setInteractions;
+
         private void SetProjectileInteractions_Click(object sender, RoutedEventArgs e)
         {
             if (_setInteractions == false)

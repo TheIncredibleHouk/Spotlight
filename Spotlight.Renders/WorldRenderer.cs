@@ -1,18 +1,13 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
 {
     public class WorldRenderer : Renderer
     {
-
         public const int BITMAP_HEIGHT = World.BLOCK_HEIGHT * 16;
         public const int BITMAP_WIDTH = World.BLOCK_WIDTH * 16;
 
@@ -21,6 +16,7 @@ namespace Spotlight.Renderers
         private WorldDataAccessor _worldDataAccessor;
         private PalettesService _paletteService;
         private List<MapTileInteraction> _terrain;
+
         public WorldRenderer(GraphicsAccessor graphicsAccessor, WorldDataAccessor worldDataAccessor, PalettesService paletteService, List<MapTileInteraction> terrain) : base(graphicsAccessor)
         {
             _worldDataAccessor = worldDataAccessor;
@@ -31,10 +27,10 @@ namespace Spotlight.Renderers
             BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK_ROW * BLOCKS_PER_SCREEN * 4;
         }
 
-
         private Palette _palette;
         private TileSet _tileSet;
         private bool _withInteractionOverlay;
+
         public void Update(Int32Rect? rect = null, Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null)
         {
             _palette = palette ?? _palette;
@@ -103,7 +99,7 @@ namespace Spotlight.Renderers
                 {
                     int tileValue = _worldDataAccessor.GetData(col, row);
 
-                    if(tileValue < 0)
+                    if (tileValue < 0)
                     {
                         continue;
                     }
@@ -116,7 +112,6 @@ namespace Spotlight.Renderers
                     RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight), _buffer, _palette.RgbColors[paletteIndex]);
                     RenderTile(x, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerLeft), _buffer, _palette.RgbColors[paletteIndex]);
                     RenderTile(x + 8, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerRight), _buffer, _palette.RgbColors[paletteIndex]);
-
 
                     if (_withInteractionOverlay)
                     {
@@ -138,7 +133,6 @@ namespace Spotlight.Renderers
             }
         }
 
-
         public void RenderPointers(int blockX = 0, int blockY = 0, int blockWidth = World.BLOCK_WIDTH, int blockHeight = World.BLOCK_HEIGHT)
         {
             Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
@@ -155,7 +149,7 @@ namespace Spotlight.Renderers
                     Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
-                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) :  _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                     RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }

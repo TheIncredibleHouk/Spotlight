@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -15,6 +13,10 @@ namespace Spotlight.Services
     {
         private readonly ErrorService _errorService;
         private readonly Project _project;
+
+        public delegate void LevelUpdatedEventHandler(LevelInfo levelInfo);
+
+        public event LevelUpdatedEventHandler LevelUpdated;
 
         public LevelService(ErrorService errorService, Project project)
         {
@@ -143,6 +145,14 @@ namespace Spotlight.Services
             return infos;
         }
 
+        public void NotifyUpdate(LevelInfo levelInfo)
+        {
+            if (LevelUpdated != null)
+            {
+                LevelUpdated(levelInfo);
+            }
+        }
+
         public List<WorldInfo> AllWorlds()
         {
             return _project.WorldInfo.ToList();
@@ -182,7 +192,7 @@ namespace Spotlight.Services
                 string safeFileName = levelInfo.Name.Replace("!", "").Replace("?", "");
 
                 string fileName = _project.DirectoryPath + @"\levels\" + safeFileName + ".json";
-                return  JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
+                return JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
             }
             catch (Exception e)
             {
@@ -191,11 +201,23 @@ namespace Spotlight.Services
             }
         }
 
+        public void RenameLevel(string previousName, string newName)
+        {
+            string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
+            string priorFileName = string.Format(@"{0}\{1}.json", _project.DirectoryPath + @"\levels", safePriorLevelName);
+
+            Level level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(priorFileName));
+            level.Name = newName;
+            SaveLevel(level);
+
+            File.Delete(priorFileName);
+        }
+
         public void SaveLevel(Level Level, string basePath = null)
         {
             try
             {
-                if(basePath == null)
+                if (basePath == null)
                 {
                     basePath = _project.DirectoryPath;
                 }

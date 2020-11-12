@@ -1,18 +1,8 @@
 ﻿using Spotlight.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -22,17 +12,19 @@ namespace Spotlight
     public partial class TextPanel : UserControl
     {
         private TextService _textService;
-
+        private ProjectService _projectService;
         public TextPanel()
         {
             InitializeComponent();
         }
 
-        public TextPanel(TextService textService)
+        public TextPanel(ProjectService projectService, TextService textService)
         {
             InitializeComponent();
 
+            _projectService = projectService;
             _textService = textService;
+
             TextTables.ItemsSource = _textService.TableNames();
             NewKeyValueButton.IsEnabled = false;
         }
@@ -54,12 +46,13 @@ namespace Spotlight
         {
             List<KeyValuePair<string, string>> textTable = new List<KeyValuePair<string, string>>();
 
-            foreach(KeyValueTextbox kvTextbox in KeyValueList.Children)
+            foreach (KeyValueTextbox kvTextbox in KeyValueList.Children)
             {
                 textTable.Add(kvTextbox.KeyValue);
             }
 
             _textService.SetTable((string)TextTables.SelectedItem, textTable);
+            _projectService.SaveProject();
         }
 
         private void KvTextbox_DeleteButtonClicked(KeyValueTextbox sender)

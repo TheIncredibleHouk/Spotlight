@@ -1,18 +1,13 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
 {
     public class TileSetRenderer : Renderer
     {
-
         private byte[] _buffer;
 
         private List<TileTerrain> _terrain;
@@ -34,12 +29,12 @@ namespace Spotlight.Renderers
 
         private TileSet _tileSet;
         private Palette _palette;
+
         private bool _withTerrainOverlay,
                      _withInteractionOverlay,
                      _withMapInteractionOverlay,
                      _withProjectileInteractions;
 
-        
         public void Update(TileSet tileSet = null, Palette palette = null, bool? withTerrainOverlay = null, bool? withInteractionOverlay = null, bool? withMapInteractionOverlay = null, bool? withProjectileInteractions = null)
         {
             _tileSet = tileSet ?? _tileSet;
@@ -48,17 +43,17 @@ namespace Spotlight.Renderers
             _withTerrainOverlay = withTerrainOverlay ?? _withTerrainOverlay;
             _withInteractionOverlay = withInteractionOverlay ?? _withInteractionOverlay;
             _withMapInteractionOverlay = withMapInteractionOverlay ?? _withMapInteractionOverlay;
-            
+
             Update();
         }
 
         public void Update()
         {
-            if(_tileSet == null || _palette == null)
+            if (_tileSet == null || _palette == null)
             {
                 return;
             }
-            
+
             int maxRow = 16;
             int maxCol = 16;
 
@@ -66,7 +61,6 @@ namespace Spotlight.Renderers
             {
                 for (int col = 0; col < maxCol; col++)
                 {
-
                     int tileValue = row * 16 + col;
                     int PaletteIndex = tileValue / 0x40;
 
@@ -74,11 +68,10 @@ namespace Spotlight.Renderers
                     int paletteIndex = (tileValue & 0XC0) >> 6;
                     int x = col * 16, y = row * 16;
 
-                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tile.UpperLeft),  _buffer, _palette.RgbColors[paletteIndex]);
-                    RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight),  _buffer, _palette.RgbColors[paletteIndex]);
+                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tile.UpperLeft), _buffer, _palette.RgbColors[paletteIndex]);
+                    RenderTile(x + 8, y, _graphicsAccessor.GetRelativeTile(tile.UpperRight), _buffer, _palette.RgbColors[paletteIndex]);
                     RenderTile(x, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerLeft), _buffer, _palette.RgbColors[paletteIndex]);
                     RenderTile(x + 8, y + 8, _graphicsAccessor.GetRelativeTile(tile.LowerRight), _buffer, _palette.RgbColors[paletteIndex]);
-
 
                     if (_withTerrainOverlay)
                     {

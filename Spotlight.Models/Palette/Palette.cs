@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Xml.Serialization;
 
 namespace Spotlight.Models
 {
-
     public class Palette
     {
         public Palette()
@@ -18,11 +16,11 @@ namespace Spotlight.Models
                 RgbColors[i] = new Color[4];
             }
         }
+
         public int[] IndexedColors { get; set; }
         public string Name { get; set; }
 
-        public Guid Id { get; set;  }
-
+        public Guid Id { get; set; }
 
         [JsonIgnore]
         public int BackgroundColor

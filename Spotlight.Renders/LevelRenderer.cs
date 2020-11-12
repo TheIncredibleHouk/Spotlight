@@ -1,18 +1,13 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
 {
     public class LevelRenderer : Renderer
     {
-
         public const int BITMAP_HEIGHT = Level.BLOCK_HEIGHT * 16;
         public const int BITMAP_WIDTH = Level.BLOCK_WIDTH * 16;
 
@@ -22,6 +17,7 @@ namespace Spotlight.Renderers
         private GameObjectService _gameObjectService;
         private PalettesService _paletteService;
         private List<TileTerrain> _terrain;
+
         public LevelRenderer(GraphicsAccessor graphicsAccessor, LevelDataAccessor levelDataAccessor, PalettesService paletteService, GameObjectService gameObjectService, List<TileTerrain> terrain) : base(graphicsAccessor)
         {
             _levelDataAccessor = levelDataAccessor;
@@ -33,6 +29,7 @@ namespace Spotlight.Renderers
 
         private TileSet _tileSet;
         private Palette _palette;
+
         public void Update(Palette palette = null, TileSet tileSet = null)
         {
             _tileSet = tileSet ?? _tileSet;
@@ -76,6 +73,7 @@ namespace Spotlight.Renderers
         }
 
         private bool _withSpriteOverlays, _withTerrainOverlay, _withInteractionOverlay;
+
         public void Update(bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
         {
             _withSpriteOverlays = withSpriteOverlays;
@@ -110,11 +108,9 @@ namespace Spotlight.Renderers
             {
                 for (int col = blockX; col < maxCol; col++)
                 {
-
-
                     int tileValue = _levelDataAccessor.GetData(col, row);
 
-                    if(tileValue < 0)
+                    if (tileValue < 0)
                     {
                         continue;
                     }

@@ -1,10 +1,4 @@
 ﻿using Spotlight.Models;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Services
 {
@@ -13,6 +7,7 @@ namespace Spotlight.Services
         private Tile[] _relativeTable;
         private Tile[] _globalTable;
         private Tile[] _overlayTable;
+
         public GraphicsAccessor(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
         {
             _relativeTable = new Tile[256];
@@ -65,7 +60,6 @@ namespace Spotlight.Services
             for (int i = 0; i < 128; i++)
             {
                 _relativeTable[i + 128] = animatedTable[i];
-
             }
         }
 

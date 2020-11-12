@@ -1,18 +1,14 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Renderers
 {
     public class GameObjectRenderer : Renderer
     {
-
         private byte[] _buffer;
         private GameObjectService _gameObjectService;
         private PalettesService _palettesService;
@@ -26,6 +22,7 @@ namespace Spotlight.Renderers
         }
 
         private Color[][] _rgbPalette;
+
         public void Update(Palette palette)
         {
             _rgbPalette = palette.RgbColors;
@@ -42,7 +39,6 @@ namespace Spotlight.Renderers
 
         public byte[] GetRectangle(Int32Rect rect)
         {
-
             return GetRectangle(rect, _buffer);
         }
 
@@ -70,13 +66,13 @@ namespace Spotlight.Renderers
                         _buffer[xOffset + 1] = (byte)color.G;
                         _buffer[xOffset + 2] = (byte)color.R;
                         _buffer[xOffset + 3] = 255;
-
                     }
                 }
             }
         }
 
         private bool _lastWithOverlays;
+
         public void Update(List<LevelObject> _levelObjects, bool withOverlays)
         {
             if (_levelObjects == null)
@@ -110,6 +106,5 @@ namespace Spotlight.Renderers
                 }
             }
         }
-
     }
 }

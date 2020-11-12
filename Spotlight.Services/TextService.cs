@@ -1,9 +1,6 @@
 ﻿using Spotlight.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spotlight.Services
 {
@@ -11,6 +8,7 @@ namespace Spotlight.Services
     {
         private readonly ErrorService _errorService;
         private readonly Project _project;
+
         public TextService(ErrorService errorService, Project project)
         {
             _errorService = errorService;
@@ -19,7 +17,6 @@ namespace Spotlight.Services
 
         public List<KeyValuePair<string, string>> GetTable(string tableName)
         {
-
             if (_project.TextTable.ContainsKey(tableName))
             {
                 return _project.TextTable[tableName].ToList();

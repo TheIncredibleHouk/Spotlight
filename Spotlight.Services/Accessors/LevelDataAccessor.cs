@@ -1,9 +1,6 @@
 ﻿using Spotlight.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Spotlight.Services
@@ -24,7 +21,7 @@ namespace Spotlight.Services
 
         public int GetData(int x, int y)
         {
-            if(x < 0 || y < 0 || x >= 240 || y >= 27)
+            if (x < 0 || y < 0 || x >= 240 || y >= 27)
             {
                 return -1;
             }
