@@ -111,7 +111,9 @@
     </UserControl.Resources>
     <Border HorizontalAlignment="Stretch" BorderBrush="#FF3E3E3E" Padding="4" BorderThickness="1, 1, 0, 1">
         <StackPanel Orientation="Horizontal" Margin="5">
-            <Button Width="50" Click="Button_Click">Open</Button>
+            <Button Width="50" Click="Button_Click">
+                <Image Source=".\Icons\Level.png" Width="20" Height="20" />
+            </Button>
             <ComboBox Margin="0" SelectionChanged="LevelList_SelectionChanged" SelectedValuePath="Id" DisplayMemberPath="DisplayName" Width="290" x:Name="LevelList" />
         </StackPanel>
     </Border>

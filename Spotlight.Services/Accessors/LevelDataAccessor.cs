@@ -11,13 +11,20 @@ namespace Spotlight.Services
         private List<LevelObject> _gameObjects;
         private List<LevelPointer> _pointers;
         private const int DATA_ROW_LENGTH = 15 * 16;
+        private Level _level;
+        private TileSet _tileSet;
 
-        public LevelDataAccessor(Level _level)
+        public LevelDataAccessor(Level level, TileSet tileSet = null)
         {
+            _level = level;
+            _tileSet = tileSet;
+
             _tileData = _level.TileData;
             _gameObjects = _level.ObjectData;
             _pointers = _level.LevelPointers;
         }
+
+        public bool PSwitchActive { get; set; }
 
         public int GetData(int x, int y)
         {
@@ -32,7 +39,18 @@ namespace Spotlight.Services
                 return -1;
             }
 
-            return _tileData[dataOffset];
+            int tileValue = _tileData[dataOffset];
+
+            if (PSwitchActive)
+            {
+                PSwitchAlteration alteration = _tileSet.PSwitchAlterations.Where(p => p.From == tileValue).FirstOrDefault();
+                if(alteration != null)
+                {
+                    tileValue = alteration.To;
+                }
+            }
+
+            return tileValue;
         }
 
         public void SetData(int x, int y, int tileValue)

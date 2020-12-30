@@ -34,16 +34,23 @@ namespace Spotlight
         {
             _levelService = levelService;
             _worldService = worldService;
+            _levelService.LevelsUpdated += _levelService_LevelsUpdated;
+            BuildTree();
         }
 
-        public void BuildTree(List<WorldInfo> worldInfos)
+        private void _levelService_LevelsUpdated()
+        {
+            BuildTree();
+        }
+
+        public void BuildTree()
         {
             WorldTree.Items.Clear();
             Expanded = true;
 
             UpdateCollapsedState();
 
-            foreach (var worldInfo in worldInfos)
+            foreach (var worldInfo in _worldService.AllWorlds())
             {
                 WorldTree.Items.Add(BuildTreeViewItem(worldInfo));
             }
@@ -163,7 +170,7 @@ namespace Spotlight
                     string newName = InputWindow.GetInput("Rename map", worldInfo.Name);
                     if(newName != null)
                     {
-                        WorldInfo existingInfo = _levelService.AllWorlds().Where(w => w.Name.Equals(newName, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        WorldInfo existingInfo = _worldService.AllWorlds().Where(w => w.Name.Equals(newName, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (existingInfo == null)
                         {
                             _worldService.RenameWorld(worldInfo.Name, newName);

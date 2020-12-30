@@ -1,0 +1,28 @@
+﻿<Window x:Class="Spotlight.NewLevelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Spotlight"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Background="Black"
+        Padding="10"
+        Width="400"
+       
+        Title="New Level" Height="199.688">
+    <StackPanel Width="250" Orientation="Vertical">
+        <TextBlock>Name</TextBlock>
+        <TextBox x:Name="LevelNameText" Margin="10"></TextBox>
+        <TextBlock>World</TextBlock>
+        <ComboBox x:Name="WorldList" DisplayMemberPath="DisplayName"></ComboBox>
+        <TextBlock>Level Base</TextBlock>
+        <ComboBox x:Name="LevelList" DisplayMemberPath="DisplayName"></ComboBox>
+        <Border BorderThickness="00" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+                <Button x:Name="OkButton" Click="OkButton_Click">OK</Button>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</Window>

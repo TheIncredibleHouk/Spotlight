@@ -15,7 +15,7 @@
     <Window.Resources>
     </Window.Resources>
     <DockPanel LastChildFill="True">
-        <local:ProjectPanel x:Name="_ProjectPanel"  DockPanel.Dock="Top" />
+        <local:ProjectPanel x:Name="_ProjectPanel" NewLevelClicked="_ProjectPanel_NewLevelClicked" DockPanel.Dock="Top" />
         <local:FilePanel LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" NameUpdated="FilePanel_NameUpdated" x:Name="FilePanel"  DockPanel.Dock="Right" />
         <Grid x:Name="DockFill" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <TextBlock HorizontalAlignment="Center" x:Name="SplashText" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>

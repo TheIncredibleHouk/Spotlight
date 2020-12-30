@@ -108,7 +108,6 @@ namespace Spotlight.Models
         public int ScrollType { get; set; }
         public int Effects { get; set; }
         public int EventType { get; set; }
-        public int GraphicsSet { get; set; }
         public int[] TileData { get; set; }
         public List<LevelObject> ObjectData { get; set; }
         public List<LevelPointer> LevelPointers { get; set; }

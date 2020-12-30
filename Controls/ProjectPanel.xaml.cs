@@ -31,6 +31,10 @@ namespace Spotlight
 
         public event ObjectEditorEventHandler ObjectEditorOpened;
 
+        public delegate void NewLevelEventHandler();
+
+        public event NewLevelEventHandler NewLevelClicked;
+
         public ProjectService ProjectService { get; set; }
         public RomService RomService { get; set; }
 
@@ -67,6 +71,10 @@ namespace Spotlight
 
         private void NewLevelButton_Click(object sender, RoutedEventArgs e)
         {
+            if(NewLevelClicked != null)
+            {
+                NewLevelClicked();
+            }
         }
 
         private void SaveRomButton_Click(object sender, RoutedEventArgs e)

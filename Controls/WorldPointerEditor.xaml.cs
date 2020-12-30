@@ -24,7 +24,7 @@ namespace Spotlight
             _levelService = levelService;
             _worldInfo = worldInfo;
 
-            LevelList.ItemsSource = _levelService.AllWorldsLevels();
+            LevelList.ItemsSource = _levelService.AllLevels();
         }
 
         private WorldPointer _pointer;

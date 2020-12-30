@@ -24,6 +24,13 @@ namespace Spotlight.Services
             _project = project;
         }
 
+        public List<WorldInfo> AllWorlds()
+        {
+            List<WorldInfo> worldList = _project.WorldInfo.ToList();
+            worldList.Add(_project.EmptyWorld);
+            return worldList;
+        }
+
         public List<World> ConvertFromLegacy(List<LegacyWorld> legacyWorld, LegacyProject legacyProject)
         {
             return legacyWorld.Select(w => new World()

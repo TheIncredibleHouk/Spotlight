@@ -156,41 +156,40 @@ namespace Spotlight.Services
             try
             {
               
-                foreach (WorldInfo worldInfo in _levelService.AllWorlds().OrderBy(w => w.Number))
+                foreach (WorldInfo worldInfo in _worldService.AllWorlds().OrderBy(w => w.Number))
                 {
-                    region = "Loading world";
-                    world = _worldService.LoadWorld(worldInfo);
-
-                    if (world != null)
+                    if (worldInfo.Name != "No World")
                     {
-                        _worldIndexTable.Add(worldInfo.Id, (byte)worldInfo.Number);
+                        region = "Loading world";
+                        world = _worldService.LoadWorld(worldInfo);
 
-                        bank = (byte)(_dataPointer / 0x2000);
-                        address = (_dataPointer - 0x10 - (bank * 0x2000) + 0xA000);
-
-                        _rom[0x0D810 + ((worldInfo.Number) * 4)] = (byte)bank;
-                        _rom[0x0D811 + ((worldInfo.Number) * 4)] = (byte)(address & 0x00FF);
-
-                        _rom[0x0D812 + ((worldInfo.Number) * 4)] = (byte)((address & 0xFF00) >> 8);
-
-                        region = "Writing world";
-
-                        _dataPointer = WriteWorld(world, _dataPointer);
-
-                        if (_dataPointer > 0x26010)
+                        if (world != null)
                         {
-                            throw new Exception("World data overflow!");
-                        }
+                            _worldIndexTable.Add(worldInfo.Id, (byte)worldInfo.Number);
 
-                        if (_dataPointer >= 0xFC000)
-                        {
-                            return false;
+                            bank = (byte)(_dataPointer / 0x2000);
+                            address = (_dataPointer - 0x10 - (bank * 0x2000) + 0xA000);
 
+                            _rom[0x0D810 + ((worldInfo.Number) * 4)] = (byte)bank;
+                            _rom[0x0D811 + ((worldInfo.Number) * 4)] = (byte)(address & 0x00FF);
+
+                            _rom[0x0D812 + ((worldInfo.Number) * 4)] = (byte)((address & 0xFF00) >> 8);
+
+                            region = "Writing world";
+
+                            _dataPointer = WriteWorld(world, _dataPointer);
+
+                            if (_dataPointer > 0x26010)
+                            {
+                                throw new Exception("World data overflow!");
+                            }
+
+                            if (_dataPointer >= 0xFC000)
+                            {
+                                return false;
+
+                            }
                         }
-                    }
-                    else
-                    {
-                        _errorService.LogError("Unable to load world " + world.Name);
                     }
                 }
             }

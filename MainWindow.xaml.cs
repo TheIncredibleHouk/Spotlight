@@ -230,12 +230,12 @@ namespace Spotlight
 
             _levelService.LevelUpdated += _levelService_LevelUpdated;
             _worldService.WorldUpdated += _worldService_WorldUpdated;
+            
 
             List<WorldInfo> worldInfos = new List<WorldInfo>();
             worldInfos.AddRange(project.WorldInfo);
             worldInfos.Add(project.EmptyWorld);
 
-            FilePanel.BuildTree(worldInfos);
             FilePanel.Initialize(_levelService, _worldService);
 
             SplashText.Visibility = Visibility.Collapsed;
@@ -464,6 +464,15 @@ namespace Spotlight
 
             _projectService.SaveProject();
             
-        }     
+        }
+
+        private void _ProjectPanel_NewLevelClicked()
+        {
+            NewLevelResult newLevelResult = NewLevelWindow.Show(_levelService, _worldService);
+            if(newLevelResult != null)
+            {
+                _levelService.AddLevel(newLevelResult.Level, newLevelResult.WorldInfo);
+            }
+        }
     }
 }

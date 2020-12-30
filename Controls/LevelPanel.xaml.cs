@@ -30,6 +30,7 @@ namespace Spotlight
         private GraphicsAccessor _graphicsAccessor;
         private LevelDataAccessor _levelDataAccessor;
         private WriteableBitmap _bitmap;
+        private WriteableBitmap _cursorBitmap;
         private HistoryService _historyService;
         private List<TileTerrain> _terrain;
 
@@ -64,14 +65,17 @@ namespace Spotlight
 
             Tile[] staticSet = _graphicsService.GetTileSection(_level.StaticTileTableIndex);
             Tile[] animationSet = _graphicsService.GetTileSection(_level.AnimationTileTableIndex);
+            
             _graphicsAccessor = new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
-            _levelDataAccessor = new LevelDataAccessor(_level);
+            _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
+
+            _levelDataAccessor = new LevelDataAccessor(_level, _tileSet);
 
             _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, 96, 96, PixelFormats.Bgra32, null);
             _levelRenderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _palettesService, _gameObjectService, _tileService.GetTerrain());
             _levelRenderer.Initializing();
 
-            _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
+            
 
             Palette palette = _palettesService.GetPalette(_level.PaletteId);
             _levelRenderer.Update(tileSet: _tileSet, palette: palette);
@@ -79,7 +83,12 @@ namespace Spotlight
             LevelRenderSource.Source = _bitmap;
             LevelRenderSource.Width = _bitmap.PixelWidth;
             LevelRenderSource.Height = _bitmap.PixelHeight;
-            CanvasContainer.Width = RenderContainer.Width = _level.ScreenLength * 16 * 16;
+            CanvasContainer.Width = RenderContainer.Width = 4096;
+            LevelClip.Width = _level.ScreenLength * 16 * 16;
+
+            _cursorBitmap = new WriteableBitmap(16, 16, 96, 96, PixelFormats.Bgra32, null);
+            CursorImage.ImageSource = _cursorBitmap;
+
             _level.ObjectData.ForEach(o =>
             {
                 o.CalcBoundBox();
@@ -231,11 +240,11 @@ namespace Spotlight
 
         private void SetSelectionRectangle(Rect rect)
         {
-            Canvas.SetLeft(SelectionRectangle, rect.X);
-            Canvas.SetTop(SelectionRectangle, rect.Y);
+            Canvas.SetLeft(SelectionRectangle, rect.X - 2);
+            Canvas.SetTop(SelectionRectangle, rect.Y - 2);
 
-            SelectionRectangle.Width = rect.Width;
-            SelectionRectangle.Height = rect.Height;
+            SelectionRectangle.Width = rect.Width + 4;
+            SelectionRectangle.Height = rect.Height + 4;
             SelectionRectangle.Visibility = Visibility.Visible;
         }
 
@@ -266,15 +275,24 @@ namespace Spotlight
                 if (_level.LevelPointers.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
                 {
                     SelectedEditMode.SelectedIndex = 2;
+                    CursorImage.Opacity = 0;
+                    _editMode = EditMode.Pointers;
                 }
                 else if (_level.ObjectData.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
                 {
                     SelectedEditMode.SelectedIndex = 1;
+                    CursorImage.Opacity = 0;
+                    _editMode = EditMode.Objects;
+                    PointerEditor.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
                     SelectedEditMode.SelectedIndex = 0;
-                    _selectionMode = SelectionMode.SelectTiles;
+                    _selectionMode = SelectionMode.SetTiles;
+                    CursorImage.Opacity = .75;
+                    _editMode = EditMode.Tiles;
+                    SelectionRectangle.Visibility = Visibility.Visible;
+                    PointerEditor.Visibility = Visibility.Collapsed;
                 }
             }
 
@@ -300,6 +318,8 @@ namespace Spotlight
 
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                CursorImage.Opacity = .75;
+
                 int x = (int)(clickPoint.X / 16), y = (int)(clickPoint.Y / 16);
                 int tileValue = _levelDataAccessor.GetData(x, y);
 
@@ -401,6 +421,7 @@ namespace Spotlight
                 _dragStartPoint = clickPoint;
                 _isDragging = true;
                 originalTilePoint = clickPoint;
+                CursorImage.Opacity = 0;
 
                 SetSelectionRectangle(new Rect(x * 16, y * 16, 16, 16));
             }
@@ -557,19 +578,27 @@ namespace Spotlight
         {
             Point tilePoint = Snap(e.GetPosition(LevelRenderSource));
 
-            switch (_editMode)
+            if (_isDragging && Mouse.LeftButton != MouseButtonState.Pressed && Mouse.RightButton != MouseButtonState.Pressed)
             {
-                case EditMode.Tiles:
-                    HandleTileMove(e);
-                    break;
+                MouseButtonEventArgs args = new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left);
+                LevelRenderSource_MouseUp(sender, args);
+            }
+            else
+            {
+                switch (_editMode)
+                {
+                    case EditMode.Tiles:
+                        HandleTileMove(e);
+                        break;
 
-                case EditMode.Objects:
-                    HandleSpriteMove(e);
-                    break;
+                    case EditMode.Objects:
+                        HandleSpriteMove(e);
+                        break;
 
-                case EditMode.Pointers:
-                    HandlePointerMove(e);
-                    break;
+                    case EditMode.Pointers:
+                        HandlePointerMove(e);
+                        break;
+                }
             }
         }
 
@@ -794,13 +823,13 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                _copyBuffer = new int[(int)(SelectionRectangle.Width / 16), (int)(SelectionRectangle.Height / 16)];
+                _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
                 
-                int startX = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
-                int endX = (int)(SelectionRectangle.Width / 16) + startX;
-                int startY = (int)(Canvas.GetTop(SelectionRectangle) / 16);
-                int endY = (int)(SelectionRectangle.Height / 16) + startY;
+                int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
+                int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
+                int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
+                int endY = (int)((SelectionRectangle.Height - 4) / 16) + startY;
 
                 TileChange tileChange = new TileChange(startX, startY, endX - startX, endY - startY);
 
@@ -815,14 +844,15 @@ namespace Spotlight
 
                 _historyService.UndoTiles.Push(tileChange);
 
-                Update(new Rect(Canvas.GetLeft(SelectionRectangle),
-                                Canvas.GetTop(SelectionRectangle),
-                                SelectionRectangle.Width,
-                                SelectionRectangle.Height));
+                Update(new Rect(Canvas.GetLeft(SelectionRectangle) + 2,
+                                Canvas.GetTop(SelectionRectangle) + 2,
+                                (SelectionRectangle.Width - 4),
+                                (SelectionRectangle.Height - 4)));
 
                 SetSelectionRectangle(new Rect((endX - 1) * 16, (endY - 1) * 16, 16, 16));
 
                 _selectionMode = SelectionMode.SetTiles;
+                CursorImage.Opacity = .75;
             }
         }
 
@@ -830,10 +860,10 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                int startX = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
-                int endX = (int)(SelectionRectangle.Width / 16) + startX;
-                int startY = (int)(Canvas.GetTop(SelectionRectangle) / 16);
-                int endY = (int)(SelectionRectangle.Height / 16) + startY;
+                int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
+                int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
+                int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
+                int endY = (int)((SelectionRectangle.Height - 4) / 16) + startY;
 
                 TileChange tileChange = new TileChange(startX, startY, endX - startX, endY - startY);
 
@@ -850,8 +880,8 @@ namespace Spotlight
 
                 Update(new Rect(Canvas.GetLeft(SelectionRectangle),
                                 Canvas.GetTop(SelectionRectangle),
-                                SelectionRectangle.Width,
-                                SelectionRectangle.Height));
+                                (SelectionRectangle.Width - 4),
+                                (SelectionRectangle.Height - 4)));
 
                 _selectionMode = SelectionMode.SetTiles;
             }
@@ -861,12 +891,12 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                _copyBuffer = new int[(int)(SelectionRectangle.Width / 16), (int)(SelectionRectangle.Height / 16)];
+                _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
-                int startX = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
-                int endX = (int)(SelectionRectangle.Width / 16) + startX;
-                int startY = (int)(Canvas.GetTop(SelectionRectangle) / 16);
-                int endY = (int)(SelectionRectangle.Height / 16) + startY;
+                int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
+                int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
+                int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
+                int endY = (int)((SelectionRectangle.Height - 4) / 16) + startY;
                 for (int r = startY, y = 0; r < endY; r++, y++)
                 {
                     for (int c = startX, x = 0; c < endX; c++, x++)
@@ -876,6 +906,8 @@ namespace Spotlight
                 }
 
                 _selectionMode = SelectionMode.SetTiles;
+                CursorImage.Opacity = .75;
+                SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
             }
         }
 
@@ -883,10 +915,10 @@ namespace Spotlight
         {
             if (_copyBuffer != null)
             {
-                int startX = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
-                int endX = (int)(SelectionRectangle.Width / 16) + startX;
-                int startY = (int)(Canvas.GetTop(SelectionRectangle) / 16);
-                int endY = (int)(SelectionRectangle.Height / 16) + startY;
+                int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
+                int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
+                int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
+                int endY = (int)((SelectionRectangle.Height - 4) / 16) + startY;
                 int bufferWidth = _copyBuffer.GetLength(0);
                 int bufferHeight = _copyBuffer.GetLength(1);
 
@@ -902,8 +934,8 @@ namespace Spotlight
                     bufferHeight = Level.BLOCK_HEIGHT - startY;
                 }
 
-                if (SelectionRectangle.Width == 16 &&
-                    SelectionRectangle.Height == 16)
+                if (SelectionRectangle.Width == 20 &&
+                    SelectionRectangle.Height == 20)
                 {
                     tileChange = new TileChange(startX, startY, bufferWidth, bufferHeight);
 
@@ -932,15 +964,17 @@ namespace Spotlight
                         }
                     }
 
-                    Update(new Rect(Canvas.GetLeft(SelectionRectangle),
-                                    Canvas.GetTop(SelectionRectangle),
-                                    SelectionRectangle.Width,
-                                    SelectionRectangle.Height));
+                    Update(new Rect(Canvas.GetLeft(SelectionRectangle) + 2,
+                                    Canvas.GetTop(SelectionRectangle) + 2,
+                                    (SelectionRectangle.Width - 4),
+                                    (SelectionRectangle.Height - 4)));
                 }
 
                 _historyService.UndoTiles.Push(tileChange);
 
                 _selectionMode = SelectionMode.SetTiles;
+                CursorImage.Opacity = .75;
+                SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
             }
         }
 
@@ -1145,26 +1179,26 @@ namespace Spotlight
 
         private void HandlePointerRelease(MouseButtonEventArgs e)
         {
-            //if (_selectedPointer != null && _isDragging)
-            //{
-            //    Rect boundRect = _selectedPointer.BoundRectangle;
-            //    double leftEdge = boundRect.Left - PointerEditor.Width / 2;
+            if (_selectedPointer != null && _isDragging)
+            {
+                PointerEditor.Visibility = Visibility.Visible;
 
-            //    if (leftEdge < 0)
-            //    {
-            //        leftEdge = 0;
-            //    }
+                Rect boundRect = _selectedPointer.BoundRectangle;
+                double leftEdge = (boundRect.Left - PointerEditor.ActualWidth / 2) + 16;
 
-            //    if (leftEdge + PointerEditor.Width >= LevelRenderer.BITMAP_WIDTH)
-            //    {
-            //        leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.Width;
-            //    }
+                if (leftEdge < 0)
+                {
+                    leftEdge = 0;
+                }
 
-            //    Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
-            //    Canvas.SetLeft(PointerEditor, leftEdge);
+                if (leftEdge + PointerEditor.Width >= LevelRenderer.BITMAP_WIDTH)
+                {
+                    leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.ActualWidth;
+                }
 
-            //    PointerEditor.Visibility = Visibility.Visible;
-            //}
+                Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
+                Canvas.SetLeft(PointerEditor, leftEdge);
+            }
 
             _isDragging = false;
         }
@@ -1188,43 +1222,6 @@ namespace Spotlight
             GameObjectProperty.SelectedIndex = _selectedObject.Property;
         }
 
-        //private void EditTiles_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    EditMode = EditMode.Tiles;
-        //    if (SelectionRectangle != null)
-        //    {
-        //        SelectionRectangle.Visibility = Visibility.Collapsed;
-        //    }
-
-        //    selectedObject = null;
-        //    if (GameObjectProperty != null)
-        //    {
-        //        GameObjectProperty.Visibility = Visibility.Collapsed;
-        //    }
-
-        //    if (TileStatus != null)
-        //    {
-        //        TileStatus.Visibility = Visibility.Visible;
-        //        SpriteStatus.Visibility = Visibility.Collapsed;
-        //    }
-
-        //}
-
-        //private void EditSprites_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    EditMode = EditMode.Objects;
-        //    if (SelectionRectangle != null) SelectionRectangle.Visibility = Visibility.Collapsed;
-
-        //    TileStatus.Visibility = Visibility.Collapsed;
-        //    SpriteStatus.Visibility = Visibility.Visible;
-        //    DrawModeStatus.Visibility = Visibility.Collapsed;
-        //}
-
-        //private void EditPointers_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    EditMode = EditMode.Pointers;
-        //    if (SelectionRectangle != null) SelectionRectangle.Visibility = Visibility.Collapsed;
-        //}
 
         private void UpdateTextTables()
         {
@@ -1250,7 +1247,7 @@ namespace Spotlight
             EffectType.SelectedValue = _level.Effects.ToString("X");
             EventType.SelectedValue = _level.EventType.ToString("X");
             PaletteIndex.SelectedValue = _level.PaletteId;
-            GraphicsSet.SelectedValue = _level.GraphicsSet.ToString("X");
+            GraphicsSet.SelectedValue = _level.StaticTileTableIndex.ToString("X");
             PaletteEffect.SelectedValue = _level.PaletteEffect.ToString();
             Screens.SelectedIndex = _level.ScreenLength - 1;
             ScrollType.SelectedValue = _level.ScrollType.ToString("X");
@@ -1267,8 +1264,8 @@ namespace Spotlight
 
         private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _level.GraphicsSet = int.Parse(GraphicsSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
-            _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_level.GraphicsSet));
+            _level.StaticTileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
+            _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
             TileSelector.Update();
             Update();
         }
@@ -1305,7 +1302,7 @@ namespace Spotlight
         private void Screens_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _level.ScreenLength = int.Parse(Screens.SelectedValue.ToString());
-            CanvasContainer.Width = RenderContainer.Width = _level.ScreenLength * 16 * 16;
+            LevelClip.Width = _level.ScreenLength * 16 * 16;
         }
 
         private void ScrollType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1388,15 +1385,24 @@ namespace Spotlight
                         break;
 
                     case Key.C:
-                        CopySelection();
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            CopySelection();
+                        }
                         break;
 
                     case Key.V:
-                        PasteSelection();
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            PasteSelection();
+                        }
                         break;
 
                     case Key.X:
-                        CutSelection();
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            CutSelection();
+                        }
                         break;
 
                     case Key.Z:
@@ -1439,6 +1445,16 @@ namespace Spotlight
                         DeleteSection();
                     }
                     break;
+
+                case Key.Escape:
+                    if(_editMode == EditMode.Tiles)
+                    {
+                        _isDragging = false;
+                        _selectionMode = SelectionMode.SetTiles;
+                        CursorImage.Opacity = .75;
+                        SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
+                    }
+                    break;
             }
         }
 
@@ -1446,7 +1462,7 @@ namespace Spotlight
         {
             if (!GameObjectProperty.IsMouseOver && !PointerEditor.IsMouseOver && LevelScroller.IsMouseOver)
             {
-                LevelRenderSource.Focus();
+                LevelScroller.Focus();
             }
         }
 
@@ -1488,6 +1504,8 @@ namespace Spotlight
                         TileStatus.Visibility = Visibility.Visible;
                         SpriteStatus.Visibility = Visibility.Collapsed;
                     }
+
+                    CursorImage.Opacity = .75;
                     break;
 
                 case 1:
@@ -1498,6 +1516,8 @@ namespace Spotlight
                         TileStatus.Visibility = Visibility.Collapsed;
                         SpriteStatus.Visibility = Visibility.Visible;
                     }
+
+                    CursorImage.Opacity = 0;
                     break;
 
                 case 2:
@@ -1508,6 +1528,7 @@ namespace Spotlight
                         GameObjectProperty.Visibility = Visibility.Collapsed;
                     }
                     _selectedObject = null;
+                    CursorImage.Opacity = 0;
                     break;
             }
         }
@@ -1535,38 +1556,14 @@ namespace Spotlight
         {
             if (_editMode != EditMode.PSwitchView)
             {
-                for (int i = 0; i < _level.TileData.Length; i++)
-                {
-                    int tileValue = _level.TileData[i];
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (_tileSet.PSwitchAlterations[j].From == tileValue)
-                        {
-                            _level.TileData[i] = _tileSet.PSwitchAlterations[j].To;
-                        }
-                    }
-                }
-                _previousEditMode = _editMode;
                 _editMode = EditMode.PSwitchView;
-                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.PSwitchAnimationTileTableIndex));
+                _levelDataAccessor.PSwitchActive = true;
                 ShowPSwitch.IsChecked = true;
             }
             else
             {
-                for (int i = 0; i < _level.TileData.Length; i++)
-                {
-                    int tileValue = _level.TileData[i];
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (_tileSet.PSwitchAlterations[j].To == tileValue)
-                        {
-                            _level.TileData[i] = _tileSet.PSwitchAlterations[j].From;
-                        }
-                    }
-                }
-
-                _editMode = _previousEditMode;
-                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+                _editMode = EditMode.Tiles;
+                _levelDataAccessor.PSwitchActive = false;
                 ShowPSwitch.IsChecked = false;
             }
 
@@ -1588,6 +1585,15 @@ namespace Spotlight
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             GlobalPanels.OpenPaletteEditor((Palette)PaletteIndex.SelectedItem);
+        }
+
+        private void TileSelector_TileBlockSelected(TileBlock tileBlock, int tileBlockValue)
+        {
+            Int32Rect updateRect = new Int32Rect(0, 0, 16, 16);
+            _cursorBitmap.Lock();
+            _cursorBitmap.WritePixels(updateRect, TileSelector.GetTileBlockImage(), 16 * 4, 0, 0);
+            _cursorBitmap.AddDirtyRect(updateRect);
+            _cursorBitmap.Unlock();
         }
     }
 

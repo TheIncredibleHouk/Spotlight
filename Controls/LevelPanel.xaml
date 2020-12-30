@@ -143,12 +143,12 @@
         <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
             <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 1, 0" DockPanel.Dock="Top">
                 <StackPanel>
-                    <local:TileBlockSelector  Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
+                    <local:TileBlockSelector TileBlockSelected="TileSelector_TileBlockSelected" Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
                     <local:GameObjectSelector x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>
         </DockPanel>
-        <Border  BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 1" DockPanel.Dock="Top">
+        <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 1" DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Rectangle}">
@@ -264,15 +264,21 @@
                 </StackPanel>
             </StackPanel>
         </Border>
-        <ScrollViewer  x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer  x:Name="LevelScroller"  LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Border x:Name="RenderContainer" BorderThickness="1,0,0,0" BorderBrush="#FF3E3E3E">
                 <Canvas x:Name="CanvasContainer" HorizontalAlignment="Left" VerticalAlignment="Stretch">
                     <Canvas.Background>
                         <ImageBrush ImageSource="Icons\Checkboard.png" Stretch="UniformtoFill" TileMode="Tile" ViewportUnits="Absolute" Viewport="0, 0, 16, 16"/>
                     </Canvas.Background>
-                    <Image x:Name="LevelRenderSource" RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="False" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" />
+                    <Border x:Name="LevelClip" BorderThickness="0">
+                        <Image x:Name="LevelRenderSource" RenderOptions.BitmapScalingMode="NearestNeighbor" MouseDown="LevelRenderSource_MouseDown"  UseLayoutRounding="False" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp" />
+                    </Border>
                     <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Visibility="Collapsed" MouseDown="LevelRenderSource_MouseDown" MouseMove="LevelRenderSource_MouseMove" MouseUp="LevelRenderSource_MouseUp">
-                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White">
+                            <Border.Background>
+                                <ImageBrush Opacity=".75" x:Name="CursorImage" Stretch="UniformtoFill" TileMode="Tile" ViewportUnits="Absolute" Viewport="1, 1, 16, 16"/>
+                            </Border.Background>
+                        </Border>
                     </Border>
                     <ComboBox Margin="0" x:Name="GameObjectProperty" SelectionChanged="GameObjectProperty_SelectionChanged" Visibility="Collapsed" />
                     <local:LevelPointerEditor x:Name="PointerEditor" Visibility="Hidden" />

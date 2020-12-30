@@ -15,13 +15,29 @@ namespace Spotlight.Services
         private readonly Project _project;
 
         public delegate void LevelUpdatedEventHandler(LevelInfo levelInfo);
-
         public event LevelUpdatedEventHandler LevelUpdated;
+
+        public delegate void LevelsUpdatedHandler();
+        public event LevelsUpdatedHandler LevelsUpdated;
 
         public LevelService(ErrorService errorService, Project project)
         {
             _errorService = errorService;
             _project = project;
+        }
+
+        public void AddLevel(Level level, WorldInfo worldInfo)
+        {
+            SaveLevel(level);
+
+            LevelInfo levelInfo = new LevelInfo();
+            levelInfo.Id = level.Id;
+            levelInfo.Name = level.Name;
+            levelInfo.SublevelsInfo = new List<LevelInfo>();
+            levelInfo.TileSet = level.TileSetIndex;
+
+            worldInfo.LevelsInfo.Add(levelInfo);
+            LevelsUpdated();
         }
 
         public List<Level> ConvertFromLegacy(List<LegacyLevel> legacyLevels, LegacyProject legacyProject)
@@ -31,7 +47,7 @@ namespace Spotlight.Services
                 AnimationType = int.Parse(l.animationtype),
                 ClearTileIndex = int.Parse(l.clearvalue),
                 EventType = int.Parse(l.misc1),
-                GraphicsSet = int.Parse(l.graphicsbank, System.Globalization.NumberStyles.HexNumber),
+                StaticTileTableIndex = int.Parse(l.graphicsbank, System.Globalization.NumberStyles.HexNumber),
                 Id = Guid.Parse(l.guid),
                 Name = l.name,
                 MusicValue = int.Parse(LegacyLevel.MusicValues[int.Parse(l.music)], System.Globalization.NumberStyles.HexNumber),
@@ -42,7 +58,6 @@ namespace Spotlight.Services
                 ScrollType = int.Parse(l.scrolltype),
                 StartX = int.Parse(l.xstart),
                 StartY = int.Parse(l.ystart),
-                StaticTileTableIndex = int.Parse(l.graphicsbank),
                 TileSetIndex = int.Parse(l.type),
                 TileData = l.leveldata.Split(',').Select(d => int.Parse(d)).ToArray(),
                 LevelPointers = l.pointers.Select(p => new LevelPointer()
@@ -102,7 +117,11 @@ namespace Spotlight.Services
         public List<IInfo> AllWorldsLevels()
         {
             List<IInfo> infos = new List<IInfo>();
-            foreach (var world in _project.WorldInfo)
+            List<WorldInfo> worldInfos = _project.WorldInfo.ToList();
+            
+            worldInfos.Add(_project.EmptyWorld);
+
+            foreach (var world in worldInfos)
             {
                 infos.Add(world);
 
@@ -153,15 +172,12 @@ namespace Spotlight.Services
             }
         }
 
-        public List<WorldInfo> AllWorlds()
-        {
-            return _project.WorldInfo.ToList();
-        }
-
         public List<LevelInfo> AllLevels()
         {
             List<LevelInfo> levelInfos = new List<LevelInfo>();
-            foreach (var worldInfo in _project.WorldInfo)
+            List<WorldInfo> worldInfos = _project.WorldInfo.ToList();
+            worldInfos.Add(_project.EmptyWorld);
+            foreach (var worldInfo in worldInfos)
             {
                 levelInfos.AddRange(LevelInfoFromLevel(worldInfo.LevelsInfo));
             }

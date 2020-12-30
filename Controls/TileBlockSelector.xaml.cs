@@ -131,5 +131,11 @@ namespace Spotlight
         {
             return (int)(Math.Floor(value / 16) * 16);
         }
+
+        public byte[] GetTileBlockImage()
+        {
+            Int32Rect selectedArea = new Int32Rect(((int)(_selectedBlockValue % 16)) * 16, ((int)(_selectedBlockValue / 16)) * 16, 16, 16);
+            return _tileSetRenderer.GetRectangle(selectedArea);
+        }
     }
 }
