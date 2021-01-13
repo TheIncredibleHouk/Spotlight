@@ -109,8 +109,8 @@
             <StackPanel Orientation="Vertical">
                 <TextBlock Margin="0" x:Name="GraphicsCoordinate">00</TextBlock>
                 <Border VerticalAlignment="Center" BorderThickness="1" BorderBrush="#FF3E3E3E">
-                    <Canvas SnapsToDevicePixels="True" Width="256" Height="256">
-                        <Image MouseMove="GraphicsSetImage_MouseMove" MouseDown="GraphicsSetImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GraphicsSetImage" UseLayoutRounding="False" Width="256" Height="256" />
+                    <Canvas SnapsToDevicePixels="True" Width="257" Height="257">
+                        <Image MouseMove="GraphicsSetImage_MouseMove" MouseDown="GraphicsSetImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GraphicsSetImage" UseLayoutRounding="False" Width="257" Height="257" />
                         <Border MouseMove="GraphicsSetImage_MouseMove" MouseDown="GraphicsSetImage_MouseDown" SnapsToDevicePixels="True" UseLayoutRounding="True" BorderThickness="1" BorderBrush="Red" x:Name="TileSelectionRectangle" Width="16" Height="16">
                             <Border MouseDown="GraphicsSetImage_MouseDown" SnapsToDevicePixels="True" UseLayoutRounding="True" BorderThickness="1" Background="#60FFFFFF" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                         </Border>
