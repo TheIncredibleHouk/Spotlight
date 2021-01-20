@@ -52,8 +52,14 @@
             </Setter>
         </Style>
         <Style TargetType="{x:Type Button}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Image}">
+                    <Setter Property="Margin" Value="4, 0, 0, 0" />
+                </Style>
+            </Style.Resources>
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#FFB5B8C1" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Foreground" Value="#E0E0FF" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -66,15 +72,20 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF151515" />
-                    <Setter Property="BorderBrush" Value="#FF363857" />
+                    <Setter Property="Background" Value="#10FFFFFF" />
+                    <Setter Property="BorderBrush" Value="#808080" />
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value=".5" />
                 </Trigger>
             </Style.Triggers>
         </Style>
-
+        <Style TargetType="{x:Type Border}" x:Key="Section">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Background" Value="#101018" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
         <Style TargetType="{x:Type Button}" x:Key="CloseButton">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="#FFB5B8C1" />
