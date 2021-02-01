@@ -6,9 +6,7 @@
              xmlns:local="clr-namespace:Spotlight"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-    </UserControl.Resources>
-    <ScrollViewer VerticalAlignment="Stretch" Background="Black">
+    <ScrollViewer VerticalAlignment="Stretch">
         <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
             <Label>Text Tables</Label>
 

@@ -81,9 +81,8 @@ namespace Spotlight
             _levelRenderer.Update(tileSet: _tileSet, palette: palette);
 
             LevelRenderSource.Source = _bitmap;
-            LevelRenderSource.Width = _bitmap.PixelWidth;
-            LevelRenderSource.Height = _bitmap.PixelHeight;
-            CanvasContainer.Width = RenderContainer.Width = 4096;
+            CanvasContainer.Width = LevelRenderSource.Width = _bitmap.PixelWidth;
+            CanvasContainer.Height = LevelRenderSource.Height = _bitmap.PixelHeight;
             LevelClip.Width = _level.ScreenLength * 16 * 16;
 
             _cursorBitmap = new WriteableBitmap(16, 16, 96, 96, PixelFormats.Bgra32, null);
@@ -608,8 +607,7 @@ namespace Spotlight
         {
             Point tilePoint = Snap(e.GetPosition(LevelRenderSource));
 
-            if (_isDragging && ((_selectionMode == SelectionMode.SetTiles && _drawMode == DrawMode.Default) ||
-                               _selectionMode == SelectionMode.SelectTiles))
+            if (_isDragging && ((_selectionMode == SelectionMode.SetTiles && _drawMode == DrawMode.Default) || _selectionMode == SelectionMode.SelectTiles))
             {
                 int x = (int)Math.Min(tilePoint.X, _dragStartPoint.X);
                 int y = (int)Math.Min(tilePoint.Y, _dragStartPoint.Y);
@@ -814,7 +812,7 @@ namespace Spotlight
 
         private Point Snap(Point value)
         {
-            return new Point(Snap(value.X), Snap(value.Y));
+            return new Point(Snap(Math.Min(value.X, LevelRenderer.BITMAP_WIDTH - 1)), Snap(Math.Min(value.Y, LevelRenderer.BITMAP_HEIGHT - 1)));
         }
 
         private int[,] _copyBuffer;

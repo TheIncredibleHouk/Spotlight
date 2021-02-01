@@ -7,21 +7,19 @@
              mc:Ignorable="d"
              SnapsToDevicePixels="True"
              VerticalAlignment="Stretch"
-             VerticalContentAlignment="Stretch"
-             Background="Black">
-    <UserControl.Resources>
-
-    </UserControl.Resources>
-    <StackPanel Margin="10" Orientation="Horizontal" HorizontalAlignment="Center">
-        <Border BorderThickness="1" BorderBrush="White">
-            <Rectangle x:Name="ColorPreview" Width="25" Height="25"></Rectangle>
-        </Border>
-        <TextBlock x:Name="ColorHex"></TextBlock>
-        <TextBlock>R</TextBlock>
-        <TextBox KeyUp="TextBlock_KeyUp" MaxLength="3" Padding="5" x:Name="R" Width="40" VerticalAlignment="Center" />
-        <TextBlock>G</TextBlock>
-        <TextBox KeyUp="TextBlock_KeyUp" MaxLength="3" Padding="5" x:Name="G" Width="40" VerticalAlignment="Center" />
-        <TextBlock>B</TextBlock>
-        <TextBox KeyUp="TextBlock_KeyUp" MaxLength="3" Padding="5" x:Name="B" Width="40" VerticalAlignment="Center" />
-    </StackPanel>
+             VerticalContentAlignment="Stretch">
+    <Border Style="{StaticResource Subsection}">
+        <StackPanel Margin="10" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Border BorderThickness="1" BorderBrush="White">
+                <Rectangle x:Name="ColorPreview" Width="25" Height="25"></Rectangle>
+            </Border>
+            <TextBlock x:Name="ColorHex"></TextBlock>
+            <TextBlock>R</TextBlock>
+            <TextBox KeyUp="TextBlock_KeyUp" MaxLength="3" Padding="5" x:Name="R" Width="40" VerticalAlignment="Center" />
+            <TextBlock>G</TextBlock>
+            <TextBox KeyUp="TextBlock_KeyUp" MaxLength="3" Padding="5" x:Name="G" Width="40" VerticalAlignment="Center" />
+            <TextBlock>B</TextBlock>
+            <TextBox KeyUp="TextBlock_KeyUp" MaxLength="3" Padding="5" x:Name="B" Width="40" VerticalAlignment="Center" />
+        </StackPanel>
+    </Border>
 </UserControl>

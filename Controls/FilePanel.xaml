@@ -5,49 +5,32 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Spotlight"
              Width="300"
-             Background="Black"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="40">
-    <UserControl.Resources>
-        <Style TargetType="{x:Type TreeView}">
-            <Setter Property="BorderBrush" Value="#FF3E3E3E" />
-            <Setter Property="BorderThickness">
-                <Setter.Value>
-                    <Thickness Top="0" Left="0" Right="0" Bottom="1" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="{x:Type TreeViewItem}">
-            <Setter Property="Foreground" Value="#FFB5B8C1" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="BorderBrush" Value="#FF363857" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
-    <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 0">
+  
+    <Border Style="{StaticResource Section}">
         <DockPanel>
             <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Bottom">
-                <Button HorizontalContentAlignment="Left" DockPanel.Dock="Left" x:Name="Expander" Click="Expander_Click">
-                    <Polygon Fill="#FFB5B8C1" Margin="10" x:Name="CollapseIcon">
-                        <Polygon.Points>
-                            <Point X="0" Y="0" />
-                            <Point X="10" Y="5" />
-                            <Point X="0" Y="10" />
-                        </Polygon.Points>
-                    </Polygon>
-                </Button>
-                <StackPanel x:Name="ActionPanel" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <Button Click="Open_Clicked">Open</Button>
-                    <Button Click="Rename_Click">Rename</Button>
-                    <Button>Delete</Button>
-                </StackPanel>
+                <Border DockPanel.Dock="Right" BorderBrush="#303038" BorderThickness="0, 2, 0, 0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Button HorizontalContentAlignment="Left" DockPanel.Dock="Left" x:Name="Expander" Click="Expander_Click">
+                            <Polygon Fill="#FFB5B8C1" Margin="10" x:Name="CollapseIcon">
+                                <Polygon.Points>
+                                    <Point X="0" Y="0" />
+                                    <Point X="10" Y="5" />
+                                    <Point X="0" Y="10" />
+                                </Polygon.Points>
+                            </Polygon>
+                        </Button>
+                        <StackPanel Orientation="Horizontal"  x:Name="ActionPanel">
+                            <Button Click="Open_Clicked">Open</Button>
+                            <Button Click="Rename_Click">Rename</Button>
+                            <Button>Delete</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
             </DockPanel>
-            <TreeView  DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
+            <TreeView BorderThickness="0" DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
                 <TreeView.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151515" />

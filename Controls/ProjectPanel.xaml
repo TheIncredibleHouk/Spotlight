@@ -5,20 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Spotlight"
              BorderThickness="0"
-             Background="#202028"
+             Margin="5, 0, 0, 0"
              mc:Ignorable="d"
              Padding="2"
              d:DesignHeight="50" d:DesignWidth="800">
     <StackPanel Orientation="Horizontal">
         <Border Style="{StaticResource Section}">
             <StackPanel Orientation="Horizontal">
-                <Button ToolTip="Load Project" x:Name="LoadProjectButton" Click="LoadProject">
+                <Button x:Name="LoadProjectButton" Click="LoadProject">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Load.png" Height="16" />
                         <TextBlock>Open Project</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button ToolTip="Save ROM" x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">
+                <Button x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\ROM.png" Height="16" />
                         <TextBlock>Save ROM</TextBlock>
@@ -28,13 +28,13 @@
         </Border>
         <Border Style="{StaticResource Section}">
             <StackPanel Orientation="Horizontal">
-                <Button ToolTip="New Map" x:Name="NewWorldButton" Click="NewWorldButton_Click" IsEnabled="False">
+                <Button x:Name="NewWorldButton" Click="NewWorldButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\World.png" Height="16" />
                         <TextBlock>New Map</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button ToolTip="New Level" x:Name="NewLevelButton" Click="NewLevelButton_Click" IsEnabled="False">
+                <Button x:Name="NewLevelButton" Click="NewLevelButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Level.png" Height="16" />
                         <TextBlock>New Level</TextBlock>
@@ -45,26 +45,26 @@
         </Border>
         <Border Style="{StaticResource Section}">
             <StackPanel Orientation="Horizontal">
-                <Button ToolTip="Palette Editor" x:Name="PaletteButton" Click="PaletteButton_Click" IsEnabled="False">
+                <Button x:Name="PaletteButton" Click="PaletteButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Palette.png" Height="16" />
                         <TextBlock>Edit Palettes</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button ToolTip="Object Editor" x:Name="ObjectButton" Click="ObjectButton_Click" IsEnabled="False">
+                <Button x:Name="ObjectButton" Click="ObjectButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Object.png" Height="16" />
                         <TextBlock>Edit Objects</TextBlock>
                     </StackPanel>
 
                 </Button>
-                <Button ToolTip="Block Set Editor" x:Name="TileSetButton" Click="TileSetButton_Click" IsEnabled="False">
+                <Button x:Name="TileSetButton" Click="TileSetButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Tile.png" Height="16" />
                         <TextBlock>Edit Block Sets</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button ToolTip="Text Editor" x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">
+                <Button  x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="16" />
                         <TextBlock>Edit Text</TextBlock>

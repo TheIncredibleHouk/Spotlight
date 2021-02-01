@@ -8,7 +8,7 @@
         Padding="5"
         Icon="Controls\Icons\Spotlight.png"
         Closed="Window_Closed"
-        Background="#202028"
+        Background="#303038"
         SizeChanged="Window_SizeChanged"
         LocationChanged="Window_LocationChanged"
         KeyDown="Window_KeyDown"
@@ -16,47 +16,57 @@
     <DockPanel LastChildFill="True">
         <local:ProjectPanel x:Name="_ProjectPanel" NewLevelClicked="_ProjectPanel_NewLevelClicked" DockPanel.Dock="Top" />
         <local:FilePanel LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" NameUpdated="FilePanel_NameUpdated" x:Name="FilePanel"  DockPanel.Dock="Right" />
-        <Grid x:Name="DockFill" Margin="2, 1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Border Style="{StaticResource Section}">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
-                <TextBlock HorizontalAlignment="Center" x:Name="SplashText" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>
-                <TabControl Padding="0" x:Name="TabsOpen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
-                    <TabControl.Resources>
-                        <Style TargetType="TabItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="TabItem">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Name="Panel" MouseDown="TabItemHeader_MouseDown" MouseUp="TabItemHeader_MouseUp">
-                                                <Border.BorderThickness>
-                                                    <Thickness Top="1" Left="1" Right="1" Bottom="0" />
-                                                </Border.BorderThickness>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <ContentPresenter ContentSource="Header" />
-                                                    <Button Click="CloseButton_Clicked" Style="{StaticResource CloseButton}" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}" Content="×" />
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Panel" Property="BorderBrush" Value="#FF363857" />
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Panel" Property="BorderBrush" Value="#FFB5B8C1" />
-                                                <Setter TargetName="Panel" Property="Background" Value="#FF151515" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                        <Style TargetType="ContentPresenter">
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                        </Style>
-                    </TabControl.Resources>
-                </TabControl>
-                </StackPanel>
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Border Style="{StaticResource Section}" x:Name="SplashText">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>
             </Border>
+            <TabControl Margin="4" Padding="0" x:Name="TabsOpen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Padding="4" CornerRadius="5, 5, 0, 0" Name="Panel" MouseDown="TabItemHeader_MouseDown" MouseUp="TabItemHeader_MouseUp">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ContentPresenter ContentSource="Header" />
+                                                <Button Click="CloseButton_Clicked" Style="{StaticResource CloseButton}" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}" Content="×" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Panel" Property="Background" Value="#181820" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Panel" Property="Background" Value="#181820" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="{x:Type TabControl}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabControl">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Border Margin="0" Padding="2" Style="{StaticResource TabSection}" Grid.Row="1">
+                                            <ContentPresenter Grid.Row="1" ContentSource="SelectedContent"/>
+                                        </Border>
+                                        <TabPanel Margin="5, 0" Grid.Row="0" IsItemsHost="true"/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+            </TabControl>
         </Grid>
     </DockPanel>
 </Window>
