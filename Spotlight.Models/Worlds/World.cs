@@ -34,6 +34,8 @@ namespace Spotlight.Models
         public int[] TileData { get; set; }
         public List<WorldPointer> Pointers { get; set; }
 
+        public byte[] CompressedData { get; set; }
+
         [JsonIgnore]
         public int AnimationTileTableIndex
         {

@@ -111,6 +111,7 @@ namespace Spotlight.Models
         public int[] TileData { get; set; }
         public List<LevelObject> ObjectData { get; set; }
         public List<LevelPointer> LevelPointers { get; set; }
+        public byte[] CompressedData { get; set; }
     }
 
     [XmlRoot("level")]

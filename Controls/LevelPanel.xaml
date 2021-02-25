@@ -18,46 +18,7 @@
                 </StackPanel>
             </Border>
         </DockPanel>
-        <Border Padding="5" Style="{StaticResource Section}" DockPanel.Dock="Right">
-            <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden" >
-                <StackPanel Orientation="Vertical">
-                    <Label>Animation Type</Label>
-                    <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
-
-                    <Label>Effect Type</Label>
-                    <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
-
-                    <Label>Event Type</Label>
-                    <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
-
-                    <Label>Graphics Set</Label>
-                    <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
-
-                    <Label>Music</Label>
-                    <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
-
-                    <Label>Palette</Label>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <ComboBox Width="160" SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
-                        <Button Click="Button_Click" Width="48" >
-                            <Image Source="Icons\Palette.png" HorizontalAlignment="Center" Margin="0" Width="16" />
-                        </Button>
-                    </StackPanel>
-
-                    <Label>Palette Effect</Label>
-                    <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
-
-                    <Label>Screens</Label>
-                    <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
-
-                    <Label>Scroll Type</Label>
-                    <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
-
-                    <Label>Tile Set</Label>
-                    <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
-                </StackPanel>
-            </ScrollViewer>
-        </Border>
+        
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <Border Style="{StaticResource Section}">
                 <Button x:Name="SaveButton" Click="SaveButton_Click">
@@ -126,6 +87,7 @@
                 </StackPanel>
             </Border>
         </StackPanel>
+        
         <Border Style="{StaticResource Section}" DockPanel.Dock="Bottom">
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                 <StackPanel.Resources>
@@ -152,6 +114,46 @@
                     <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
                 </StackPanel>
             </StackPanel>
+        </Border>
+        <Border Padding="5" Style="{StaticResource Section}" DockPanel.Dock="Right">
+            <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden" >
+                <StackPanel Orientation="Vertical">
+                    <Label>Animation Type</Label>
+                    <ComboBox SelectionChanged="AnimationType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="AnimationType" />
+
+                    <Label>Effect Type</Label>
+                    <ComboBox SelectionChanged="EffectType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EffectType" />
+
+                    <Label>Event Type</Label>
+                    <ComboBox SelectionChanged="EventType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="EventType" />
+
+                    <Label>Graphics Set</Label>
+                    <ComboBox SelectionChanged="GraphicsSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="GraphicsSet" />
+
+                    <Label>Music</Label>
+                    <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
+
+                    <Label>Palette</Label>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <ComboBox Width="160" SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
+                        <Button Click="Button_Click" Width="48" >
+                            <Image Source="Icons\Palette.png" HorizontalAlignment="Center" Margin="0" Width="16" />
+                        </Button>
+                    </StackPanel>
+
+                    <Label>Palette Effect</Label>
+                    <ComboBox SelectionChanged="PaletteEffect_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="PaletteEffect" />
+
+                    <Label>Screens</Label>
+                    <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />
+
+                    <Label>Scroll Type</Label>
+                    <ComboBox SelectionChanged="ScrollType_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="ScrollType" />
+
+                    <Label>Tile Set</Label>
+                    <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
+                </StackPanel>
+            </ScrollViewer>
         </Border>
         <Border BorderBrush="#000000" BorderThickness="1" Margin="2" HorizontalAlignment="Stretch">
             <ScrollViewer x:Name="LevelScroller" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

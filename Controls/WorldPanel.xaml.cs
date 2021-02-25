@@ -25,6 +25,7 @@ namespace Spotlight
         private TileSet _tileSet;
         private TextService _textService;
         private GraphicsService _graphicsService;
+        private CompressionService _compressionService;
         private TileService _tileService;
         private GraphicsAccessor _graphicsAccessor;
         private WorldDataAccessor _worldDataAccessor;
@@ -51,7 +52,7 @@ namespace Spotlight
             _historyService = new HistoryService();
             _interactions = _tileService.GetMapTileInteractions();
             _world = _worldService.LoadWorld(_worldInfo);
-
+            _compressionService = new CompressionService();
             Tile[] bottomTableSet = _graphicsService.GetTileSection(_world.TileTableIndex);
             Tile[] topTableSet = _graphicsService.GetTileSection(_world.AnimationTileTableIndex);
             _graphicsAccessor = new GraphicsAccessor(topTableSet, bottomTableSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
@@ -826,6 +827,7 @@ namespace Spotlight
 
         private void SaveWorld()
         {
+            _world.CompressedData = _compressionService.CompressWorld(_world);
             _worldService.SaveWorld(_world);
 
             AlertWindow.Alert(_world.Name + " has been saved!");

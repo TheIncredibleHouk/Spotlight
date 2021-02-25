@@ -26,6 +26,7 @@ namespace Spotlight
         private TextService _textService;
         private GraphicsService _graphicsService;
         private TileService _tileService;
+        private CompressionService _compressionService;
         private GameObjectService _gameObjectService;
         private GraphicsAccessor _graphicsAccessor;
         private LevelDataAccessor _levelDataAccessor;
@@ -52,6 +53,7 @@ namespace Spotlight
             _palettesService = palettesService;
             _levelService = levelService;
             _historyService = new HistoryService();
+            _compressionService = new CompressionService();
             _terrain = _tileService.GetTerrain();
             _level = _levelService.LoadLevel(_levelInfo);
 
@@ -438,7 +440,7 @@ namespace Spotlight
                     _selectedObject = _level.ObjectData.Where(o => o.BoundRectangle.Contains(tilePoint.X, tilePoint.Y)).FirstOrDefault();
                     if (_selectedObject != _level.ObjectData[0])
                     {
-                        if (_selectedObject != null)
+                        if (_selectedObject != null && ObjectSelector.SelectedObject != null)
                         {
                             _historyService.UndoLevelObjects.Push(new LevelObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.Property, _selectedObject.GameObjectId, LevelObjectChangeType.Update));
                             updatedRects.Add(_selectedObject.VisualRectangle);
@@ -496,7 +498,7 @@ namespace Spotlight
 
                     Rect boundRect = _selectedObject.BoundRectangle;
                     Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
-                    Canvas.SetLeft(GameObjectProperty, boundRect.Left);
+                    Canvas.SetLeft(GameObjectProperty, boundRect.Left - 10);
 
                     GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
                     GameObjectProperty.SelectedIndex = _selectedObject.Property;
@@ -1214,7 +1216,7 @@ namespace Spotlight
 
             Rect boundRect = _selectedObject.BoundRectangle;
             Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
-            Canvas.SetLeft(GameObjectProperty, boundRect.Left);
+            Canvas.SetLeft(GameObjectProperty, boundRect.Left - 10);
 
             GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
             GameObjectProperty.SelectedIndex = _selectedObject.Property;
@@ -1327,6 +1329,7 @@ namespace Spotlight
         {
             LevelObject startPointObject = _level.ObjectData[0];
             _level.ObjectData.RemoveAt(0);
+            _level.CompressedData = _compressionService.CompressLevel(_level);
             _levelService.SaveLevel(_level);
             _level.ObjectData.Insert(0, startPointObject);
 

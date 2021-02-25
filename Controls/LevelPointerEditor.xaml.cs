@@ -117,5 +117,10 @@ namespace Spotlight
             _pointer.RedrawsLevel = RedrawLevel.IsChecked.Value;
             _pointer.KeepObjects = KeepObjectData.IsChecked.Value;
         }
+
+        private void ExitAction_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _pointer.ExitActionType = ExitAction.SelectedIndex;
+        }
     }
 }

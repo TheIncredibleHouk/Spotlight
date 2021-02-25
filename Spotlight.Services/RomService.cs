@@ -234,7 +234,7 @@ namespace Spotlight.Services
                 _rom[levelAddress++] = (byte)0;
                 _rom[levelAddress++] = (byte)((level.LevelPointers.Count << 4) | level.ScrollType);
                 _rom[levelAddress++] = (byte)(level.Effects | level.PaletteEffect);
-                _rom[levelAddress++] = (byte)0;
+                _rom[levelAddress++] = (byte)level.EventType;
                 _rom[levelAddress++] = (byte)0;
                 _rom[levelAddress++] = (byte)0;
 
@@ -305,8 +305,13 @@ namespace Spotlight.Services
 
                 region = "Compressing level data";
 
-                byte[] levelData = _compressionService.CompressLevel(level);
+                byte[] levelData = level.CompressedData ?? _compressionService.CompressLevel(level);
 
+                if(level.CompressedData == null)
+                {
+                    level.CompressedData = levelData;
+                    _levelService.SaveLevel(level);
+                }
                 region = "Writing compressed level data";
                 for (int i = 0; i < levelData.Length; i++)
                 {
@@ -364,8 +369,13 @@ namespace Spotlight.Services
                 }
 
                 region = "Compressing world data";
-                byte[] levelData = _compressionService.CompressWorld(world);
+                byte[] levelData = world.CompressedData ?? _compressionService.CompressWorld(world);
 
+                if(world.CompressedData == null)
+                {
+                    world.CompressedData = levelData;
+                    _worldService.SaveWorld(world);
+                }
                 region = "Writing compressed world data";
                 for (int i = 0; i < levelData.Length; i++)
                 {

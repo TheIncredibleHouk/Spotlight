@@ -217,7 +217,7 @@
                                 </TextBox.Template>
                             </TextBox>
                             <!-- Popup showing items -->
-                            <Popup Name="ComboBoxPopup" Width="{Binding ActualWidth, ElementName=ToggleButton, Converter={StaticResource WidthConverter}}" SnapsToDevicePixels="True" Placement="Bottom" HorizontalOffset="5" VerticalOffset="-7"  Focusable="False" AllowsTransparency="True" IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}" PopupAnimation="Fade">
+                            <Popup Name="ComboBoxPopup" Width="{Binding ActualWidth, ElementName=ToggleButton, Converter={StaticResource WidthConverter}}" SnapsToDevicePixels="True" Placement="Bottom" HorizontalOffset="-5" VerticalOffset="-7"  Focusable="False" AllowsTransparency="True" IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}" PopupAnimation="Fade">
                                 <Grid Name="DropDown" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
                                     <Border CornerRadius="0, 0, 5, 5" BorderBrush="#10FFFFFF" BorderThickness="1, 0, 1, 1" Name="DropDownBorder" Background="#101018" />
                                     <ScrollViewer Margin="0" SnapsToDevicePixels="True" Padding="4">
