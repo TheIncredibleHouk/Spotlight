@@ -8,7 +8,6 @@ namespace Spotlight.Models
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
-        public int TileSet { get; set; }
         public DateTime LastModified { get; set; }
         public List<LevelInfo> SublevelsInfo { get; set; }
         public InfoType InfoType { get { return InfoType.Level; } }

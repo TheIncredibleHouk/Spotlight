@@ -266,7 +266,7 @@ namespace Spotlight
             }
             catch(Exception ex)
             {
-                AlertWindow.Alert("Error loading new palette.");
+                AlertWindow.Alert("Error loading new palette: " + ex.Message);
             }
         }
     }

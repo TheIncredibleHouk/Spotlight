@@ -95,7 +95,6 @@ namespace Spotlight.Services
                         Id = Guid.Parse(l.levelguid),
                         LastModified = DateTime.Parse(l.lastmodified),
                         Name = l.name,
-                        TileSet = Int32.Parse(l.leveltype),
                         SublevelsInfo = GetBonusLevels(l.levelguid, legacyProject.levelinfo.Where(b => b.bonusfor != Guid.Empty.ToString().ToLower()).ToList())
                     }).ToList()
                 }).ToList(),
@@ -110,7 +109,6 @@ namespace Spotlight.Services
                         Id = Guid.Parse(l.levelguid),
                         LastModified = DateTime.Parse(l.lastmodified),
                         Name = l.name,
-                        TileSet = Int32.Parse(l.leveltype),
                         SublevelsInfo = GetBonusLevels(l.levelguid, legacyProject.levelinfo.Where(b => b.bonusfor != Guid.Empty.ToString().ToLower()).ToList())
                     }).ToList()
                 }).First(),
@@ -130,7 +128,6 @@ namespace Spotlight.Services
                 Id = Guid.Parse(l.levelguid),
                 LastModified = DateTime.Parse(l.lastmodified),
                 Name = l.name,
-                TileSet = Int32.Parse(l.leveltype),
                 SublevelsInfo = GetBonusLevels(l.levelguid, levels)
             }).ToList();
         }

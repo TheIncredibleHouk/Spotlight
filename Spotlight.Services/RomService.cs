@@ -68,17 +68,6 @@ namespace Spotlight.Services
             WritePalettes(_palettesService.GetPalettes());
             WriteTileBlockData();
 
-            byte levelIndex = 0;
-            
-            _levelIndexTable.Clear();
-            _levelTypeTable.Clear();
-
-            foreach (LevelInfo levelInfo in _levelService.AllLevels())
-            {
-                _levelIndexTable.Add(levelInfo.Id, levelIndex);
-                _levelTypeTable.Add(levelIndex++, levelInfo.TileSet);
-            }
-
             _dataPointer = 0x24010;
             CompileWorlds();
 
@@ -96,17 +85,30 @@ namespace Spotlight.Services
 
             try
             {
+                _levelIndexTable.Clear();
+                _levelTypeTable.Clear();
                 _levelAddressTable.Clear();
+
+                byte levelIndex = 0;
+                foreach(LevelInfo levelInfo in _levelService.AllLevels())
+                {
+                    _levelIndexTable.Add(levelInfo.Id, levelIndex++);
+                }
+
+                levelIndex = 0;
 
                 foreach (LevelInfo levelInfo in _levelService.AllLevels())
                 {
                     region = "Loading level " + levelInfo.Name;
 
                     Level level = _levelService.LoadLevel(levelInfo);
-                    
+
+                    _levelTypeTable[levelIndex++] = level.TileSetIndex;
+
                     if (level != null)
                     {
                         _levelAddressTable.Add(_levelIndexTable[level.Id], _dataPointer);
+
                         _dataPointer = WriteLevel(level, _dataPointer);
                         if (_dataPointer >= 0xFC000)
                         {

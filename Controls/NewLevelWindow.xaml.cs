@@ -51,7 +51,7 @@ namespace Spotlight
 
                 newLevelResult = new NewLevelResult();
                 newLevelResult.Level = newLevel;
-                newLevelResult.LevelInfo = new LevelInfo() { Name = newLevel.Name, TileSet = newLevel.TileSetIndex, SublevelsInfo = new List<LevelInfo>() };
+                newLevelResult.LevelInfo = new LevelInfo() { Name = newLevel.Name,SublevelsInfo = new List<LevelInfo>() };
                 newLevelResult.WorldInfo = window.HostWorld;
 
                 return newLevelResult;

@@ -1534,8 +1534,6 @@ namespace Spotlight
             }
         }
 
-        private EditMode _previousEditMode;
-
         private void ShowPSwitch_Checked(object sender, RoutedEventArgs e)
         {
             Update();
