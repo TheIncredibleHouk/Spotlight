@@ -1,17 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Data;
 
-namespace Reuben
+namespace Spotlight
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
+    }
+
+    public class ComboBoxWidthConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((double)value) -10;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((double)value) + 10;        }
     }
 }

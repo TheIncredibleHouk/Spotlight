@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="Spotlight.ProjectPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Spotlight"
+             BorderThickness="0"
+             Margin="5, 0, 0, 0"
+             mc:Ignorable="d"
+             Padding="2"
+             d:DesignHeight="50" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal">
+        <Border Style="{StaticResource Section}">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="LoadProjectButton" Click="LoadProject">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Load.png" Height="16" />
+                        <TextBlock>Open Project</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="SaveRomButton" Click="SaveRomButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\ROM.png" Height="16" />
+                        <TextBlock>Save ROM</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Section}">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="NewWorldButton" Click="NewWorldButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\World.png" Height="16" />
+                        <TextBlock>New Map</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="NewLevelButton" Click="NewLevelButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Level.png" Height="16" />
+                        <TextBlock>New Level</TextBlock>
+                    </StackPanel>
+
+                </Button>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Section}">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="PaletteButton" Click="PaletteButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Palette.png" Height="16" />
+                        <TextBlock>Edit Palettes</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ObjectButton" Click="ObjectButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Object.png" Height="16" />
+                        <TextBlock>Edit Objects</TextBlock>
+                    </StackPanel>
+
+                </Button>
+                <Button x:Name="TileSetButton" Click="TileSetButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Tile.png" Height="16" />
+                        <TextBlock>Edit Block Sets</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button  x:Name="TextEditButton" Click="TextEditButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="16" />
+                        <TextBlock>Edit Text</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

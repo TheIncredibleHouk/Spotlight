@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Spotlight.KeyValueTextbox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Spotlight"
+             mc:Ignorable="d"
+             Height="30"
+             Margin="4"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="40" />
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="KeyTextbox" TextAlignment="Right" VerticalContentAlignment="Center" Foreground="#FFB5B8C1" Grid.Column="0" />
+        <TextBox x:Name="ValueTextbox" Foreground="#FFB5B8C1" VerticalContentAlignment="Center" Grid.Column="1" />
+        <Button Grid.Column="2" Width="25" Height="25" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="DeleteButton" Click="DeleteButton_Click" Style="{StaticResource CloseButton}" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}" Content="×" />
+    </Grid>
+</UserControl>

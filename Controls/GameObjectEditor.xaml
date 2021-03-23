@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="Spotlight.GameObjectEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Spotlight"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <Border Padding="0, 10, 0, 0" DockPanel.Dock="Right" BorderThickness="1, 0, 0, 0" BorderBrush="#FF3E3E3E">
+            <StackPanel>
+                <local:GameObjectSelector x:Name="ObjectSelector" GameObjectChanged="ObjectSelector_GameObjectChanged" />
+            </StackPanel>
+        </Border>
+        <DockPanel VerticalAlignment="Stretch" LastChildFill="True" Margin="10">
+            <ComboBox x:Name="PaletteSelector" SelectedValuePath="Id" DisplayMemberPath="Name" HorizontalAlignment="Center" Width="256" SelectionChanged="PaletteSelector_SelectionChanged" DockPanel.Dock="Top" />
+            <Border Margin="10" HorizontalAlignment="Center" DockPanel.Dock="Top" BorderBrush="#FF3E3E3E" BorderThickness="1">
+                <Canvas HorizontalAlignment="Center" VerticalAlignment="Center" Width="257" Height="256">
+                    <Image UseLayoutRounding="true" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GameObjectRenderer" Width="258" Height="258" />
+                    <Rectangle Opacity=".5" Width="256" Height="1" Fill="Red" Canvas.Left="0" Canvas.Top="128" />
+                    <Rectangle Opacity=".5" Width="1" Height="256" Fill="Red" Canvas.Left="128" Canvas.Top="0" />
+                </Canvas>
+            </Border>
+            <DockPanel DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <ComboBox SelectionChanged="Properties_SelectionChanged" VerticalAlignment="Center" x:Name="Properties" />
+                    <TextBlock VerticalAlignment="Center">Show Overlays</TextBlock>
+                    <CheckBox VerticalAlignment="Center" Background="Black" Checked="ShowOverlays_Checked" Unchecked="ShowOverlays_Checked" x:Name="ShowOverlays" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right" DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button x:Name="ResetButton" Click="ResetButton_Click">Reset</Button>
+                    <Button x:Name="SaveButton" Click="SaveButton_Click">Save</Button>
+                </StackPanel>
+            </DockPanel>
+            <TextBox AcceptsReturn="True" Margin="5,5,5,0" VerticalScrollBarVisibility="Visible" Padding="5" TextChanged="ObjectDefinition_TextChanged" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="ObjectDefinition" Background="Black" VerticalAlignment="Stretch"></TextBox>
+        </DockPanel>
+    </DockPanel>
+</UserControl>
