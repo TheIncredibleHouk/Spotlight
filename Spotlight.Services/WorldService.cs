@@ -121,7 +121,7 @@ namespace Spotlight.Services
                     Directory.CreateDirectory(worldDirectory);
                 }
 
-                File.WriteAllText(string.Format(@"{0}\{1}.json", worldDirectory, world.Name), JsonConvert.SerializeObject(world));
+                File.WriteAllText(string.Format(@"{0}\{1}.json", worldDirectory, world.Name), JsonConvert.SerializeObject(world, Newtonsoft.Json.Formatting.Indented));
             }
             catch (Exception e)
             {

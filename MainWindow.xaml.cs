@@ -443,7 +443,7 @@ namespace Spotlight
 
         private void SaveConfiguration()
         {
-            File.WriteAllText("config.json", JsonConvert.SerializeObject(_config));
+            File.WriteAllText("config.json", JsonConvert.SerializeObject(_config, Newtonsoft.Json.Formatting.Indented));
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -473,6 +473,12 @@ namespace Spotlight
             {
                 _levelService.AddLevel(newLevelResult.Level, newLevelResult.WorldInfo);
             }
+            _projectService.SaveProject();
+        }
+
+        private void FilePanel_LevelTreeUpdated()
+        {
+            _projectService.SaveProject();
         }
     }
 }

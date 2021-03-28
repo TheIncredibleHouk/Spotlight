@@ -25,12 +25,13 @@
                         <StackPanel Orientation="Horizontal"  x:Name="ActionPanel">
                             <Button Click="Open_Clicked">Open</Button>
                             <Button Click="Rename_Click">Rename</Button>
+                            <Button x:Name="MoveButton" Click="Move_Click">Move</Button>
                             <Button>Delete</Button>
                         </StackPanel>
                     </StackPanel>
                 </Border>
             </DockPanel>
-            <TreeView BorderThickness="0" DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
+            <TreeView BorderThickness="0" SelectedItemChanged="WorldTree_SelectedItemChanged" DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
                 <TreeView.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151515" />

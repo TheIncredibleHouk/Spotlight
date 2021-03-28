@@ -17,7 +17,7 @@ namespace Spotlight.Services
         public delegate void LevelUpdatedEventHandler(LevelInfo levelInfo);
         public event LevelUpdatedEventHandler LevelUpdated;
 
-        public delegate void LevelsUpdatedHandler();
+        public delegate void LevelsUpdatedHandler(LevelInfo newLevel);
         public event LevelsUpdatedHandler LevelsUpdated;
 
         public LevelService(ErrorService errorService, Project project)
@@ -36,7 +36,7 @@ namespace Spotlight.Services
             levelInfo.SublevelsInfo = new List<LevelInfo>();
 
             worldInfo.LevelsInfo.Add(levelInfo);
-            LevelsUpdated();
+            LevelsUpdated(levelInfo);
         }
 
         public List<Level> ConvertFromLegacy(List<LegacyLevel> legacyLevels, LegacyProject legacyProject)
@@ -178,13 +178,13 @@ namespace Spotlight.Services
             worldInfos.Add(_project.EmptyWorld);
             foreach (var worldInfo in worldInfos)
             {
-                levelInfos.AddRange(LevelInfoFromLevel(worldInfo.LevelsInfo));
+                levelInfos.AddRange(FlattenLevelInfos(worldInfo.LevelsInfo));
             }
 
             return levelInfos;
         }
 
-        private List<LevelInfo> LevelInfoFromLevel(List<LevelInfo> levelInfos)
+        public List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos)
         {
             List<LevelInfo> returnLevelInfos = new List<LevelInfo>();
             foreach (var levelInfo in levelInfos)
@@ -246,7 +246,7 @@ namespace Spotlight.Services
 
                 string safeFileName = Level.Name.Replace("!", "").Replace("?", "");
 
-                File.WriteAllText(string.Format(@"{0}\{1}.json", LevelDirectory, safeFileName), JsonConvert.SerializeObject(Level));
+                File.WriteAllText(string.Format(@"{0}\{1}.json", LevelDirectory, safeFileName), JsonConvert.SerializeObject(Level, Newtonsoft.Json.Formatting.Indented));
             }
             catch (Exception e)
             {

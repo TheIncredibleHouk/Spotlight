@@ -6,6 +6,7 @@ namespace Spotlight.Models
     public class GameObjectTable
     {
         public Dictionary<GameObjectType, Dictionary<string, List<LevelObject>>> ObjectTable { get; set; }
+        public List<LevelObject> AllObjects { get; set; }
 
         public GameObjectTable()
         {
@@ -14,9 +15,17 @@ namespace Spotlight.Models
 
         public void UpdateGameObject(GameObject gameObject)
         {
-            LevelObject existingLevelObject = ObjectTable[gameObject.GameObjectType][gameObject.Group].Where(g => g.GameObjectId == gameObject.GameId).FirstOrDefault();
+            LevelObject existingLevelObject = AllObjects.Where(g => g.GameObjectId == gameObject.GameId).FirstOrDefault();
+            
             if (existingLevelObject != null)
             {
+                if (gameObject.GameObjectType != existingLevelObject.GameObject.GameObjectType ||
+                    gameObject.Group != existingLevelObject.GameObject.Group)
+                {
+                    ObjectTable[existingLevelObject.GameObject.GameObjectType][existingLevelObject.GameObject.Group].Remove(existingLevelObject);
+                    AddObject(gameObject.GameObjectType, gameObject.Group, existingLevelObject);
+                }
+
                 existingLevelObject.GameObject = gameObject;
             }
         }
@@ -24,6 +33,7 @@ namespace Spotlight.Models
         public void Clear()
         {
             ObjectTable = new Dictionary<GameObjectType, Dictionary<string, List<LevelObject>>>();
+            AllObjects = new List<LevelObject>();
         }
 
         public void AddObject(GameObjectType type, string group, LevelObject levelObject)
@@ -39,6 +49,7 @@ namespace Spotlight.Models
             }
 
             ObjectTable[type][group].Add(levelObject);
+            AllObjects.Add(levelObject);
         }
     }
 }

@@ -154,7 +154,7 @@ namespace Spotlight.Services
             Dictionary<GameObjectType, Dictionary<string, int>> nextY = new Dictionary<GameObjectType, Dictionary<string, int>>();
             Dictionary<GameObjectType, Dictionary<string, int>> maxHeight = new Dictionary<GameObjectType, Dictionary<string, int>>();
 
-            foreach (GameObject gameObject in localGameObjects.Where(g => g != null).OrderBy(g => g.Name))
+            foreach (GameObject gameObject in _project.GameObjects.Where(g => g != null).OrderBy(g => g.Name))
             {
                 if (!nextX.ContainsKey(gameObject.GameObjectType))
                 {
@@ -231,8 +231,11 @@ namespace Spotlight.Services
         {
             GameObject globalGameObject = _project.GameObjects[gameObject.GameId];
             globalGameObject.Name = gameObject.Name;
+            globalGameObject.Group = gameObject.Group;
+            globalGameObject.GameObjectType = gameObject.GameObjectType;
             globalGameObject.Properties = gameObject.Properties;
             globalGameObject.Sprites = gameObject.Sprites;
+            RefreshGameObjectTable();
 
             if (GameObjectUpdated != null)
             {

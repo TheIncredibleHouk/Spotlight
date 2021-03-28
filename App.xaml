@@ -267,10 +267,17 @@
         </Style>
       
         <Style TargetType="TextBox">
-            <Setter Property="Background" Value="Black" />
+            <Setter Property="Background" Value="#000000" />
             <Setter Property="BorderBrush" Value="#FF151515" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Margin" Value="4,0" />
+            <Setter Property="Padding" Value="10" />
             <Setter Property="Foreground" Value="#FFB5B8C1" />
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
         </Style>
         <Style TargetType="{x:Type TreeView}">
             <Setter Property="BorderThickness" Value="0" />

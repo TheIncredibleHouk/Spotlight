@@ -72,6 +72,7 @@ namespace Spotlight
 
         private void GameObjectsUpdated(GameObject gameObject)
         {
+            GameObjectType_SelectionChanged(null, null);
             Update();
         }
 

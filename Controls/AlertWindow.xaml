@@ -6,18 +6,20 @@
         xmlns:local="clr-namespace:Spotlight"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Background="Black"
+        Background="#303038"
         Padding="10"
         Width="400"
         Height="135"
         KeyDown="Window_KeyDown"
         Title="Alert Window" d:DesignHeight="134.688">
-    <StackPanel Orientation="Vertical">
-        <TextBlock HorizontalAlignment="Center" x:Name="DisplayText" Margin="0, 10, 0, 10" >This is a sample display text!</TextBlock>
-        <Border BorderThickness="00" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button x:Name="OkButton" Click="OkButton_Click">OK</Button>
-            </StackPanel>
-        </Border>
-    </StackPanel>
+    <Border  Style="{StaticResource Section}">
+        <StackPanel Orientation="Vertical">
+            <TextBlock HorizontalAlignment="Center" x:Name="DisplayText" Margin="0, 10, 0, 10" >This is a sample display text!</TextBlock>
+            <Border BorderThickness="00" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button x:Name="OkButton" Click="OkButton_Click">OK</Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Border>
 </Window>

@@ -118,6 +118,9 @@
       <DependentUpon>KeyValueTextbox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LevelPanel.xaml.cs" />
+    <Compile Include="Controls\MoveLevelWindowl.xaml.cs">
+      <DependentUpon>MoveLevelWindowl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NewLevelWindow.xaml.cs">
       <DependentUpon>NewLevelWindow.xaml</DependentUpon>
     </Compile>
@@ -168,6 +171,10 @@
     <Page Include="Controls\LevelPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\MoveLevelWindowl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\NewLevelWindow.xaml">
       <SubType>Designer</SubType>

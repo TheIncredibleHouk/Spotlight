@@ -72,7 +72,6 @@ namespace Spotlight
             _levelService = levelService;
             _worldService = worldService;
 
-            LevelList.ItemsSource = _levelService.AllLevels();
             WorldList.ItemsSource = _worldService.AllWorlds();
         }
         public string LevelName
@@ -110,6 +109,11 @@ namespace Spotlight
             this.DialogResult = true;
             this.Close();
 
+        }
+
+        private void WorldList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LevelList.ItemsSource = HostWorld.LevelsInfo;
         }
     }
 

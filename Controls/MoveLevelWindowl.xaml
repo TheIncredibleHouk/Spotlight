@@ -1,4 +1,4 @@
-﻿<Window x:Class="Spotlight.InputWindow"
+﻿<Window x:Class="Spotlight.MoveLevelWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,18 +7,20 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         Background="#303038"
+        ResizeMode="NoResize"
         Padding="10"
-        Width="400"
-        Height="165"
-        KeyDown="Window_KeyDown"
-        Title="InputWindow" d:DesignHeight="167">
-    <StackPanel Orientation="Vertical">
-        <TextBlock HorizontalAlignment="Left" x:Name="DisplayText" >This is a sample display text!</TextBlock>
-        <TextBox KeyDown="InputTextbox_KeyDown" x:Name="InputTextbox" />
-        <Border BorderThickness="0" BorderBrush="White" Margin="10, 10, 10, 0" Padding="0, 10, 0, 0">
+        Height="250"
+        Width="300"
+        Title="New Level">
+    <StackPanel Width="250" Orientation="Vertical">
+        <TextBlock>Parent World</TextBlock>
+        <ComboBox x:Name="WorldList" SelectionChanged="WorldList_SelectionChanged" DisplayMemberPath="DisplayName"></ComboBox>
+        <TextBlock>Parent Leve</TextBlock>
+        <ComboBox x:Name="LevelList" DisplayMemberPath="DisplayName"></ComboBox>
+        <Border BorderThickness="00" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button x:Name="OkButton" Click="OkButton_Click">Okay</Button>
                 <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+                <Button x:Name="OkButton" Click="OkButton_Click">OK</Button>
             </StackPanel>
         </Border>
     </StackPanel>

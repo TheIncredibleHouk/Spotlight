@@ -146,7 +146,7 @@ namespace Spotlight.Services
         {
             try
             {
-                File.WriteAllText(string.Format(@"{0}\{1}.json", basePath, project.Name), JsonConvert.SerializeObject(project));
+                File.WriteAllText(string.Format(@"{0}\{1}.json", basePath, project.Name), JsonConvert.SerializeObject(project, Newtonsoft.Json.Formatting.Indented));
             }
             catch (Exception e)
             {
@@ -158,7 +158,7 @@ namespace Spotlight.Services
         {
             try
             {
-                File.WriteAllText(string.Format(@"{0}\{1}.json", _project.DirectoryPath, _project.Name), JsonConvert.SerializeObject(_project));
+                File.WriteAllText(string.Format(@"{0}\{1}.json", _project.DirectoryPath, _project.Name), JsonConvert.SerializeObject(_project, Newtonsoft.Json.Formatting.Indented));
             }
             catch (Exception e)
             {

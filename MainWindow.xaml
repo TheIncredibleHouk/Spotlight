@@ -15,7 +15,7 @@
         Title="Spotlight" Height="800" Width="1200">
     <DockPanel LastChildFill="True">
         <local:ProjectPanel x:Name="_ProjectPanel" NewLevelClicked="_ProjectPanel_NewLevelClicked" DockPanel.Dock="Top" />
-        <local:FilePanel LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" NameUpdated="FilePanel_NameUpdated" x:Name="FilePanel"  DockPanel.Dock="Right" />
+        <local:FilePanel LevelTreeUpdated="FilePanel_LevelTreeUpdated" LevelOpened="_OpenLevelEditor" WorldOpened="FilePanel_WorldOpened" NameUpdated="FilePanel_NameUpdated" x:Name="FilePanel"  DockPanel.Dock="Right" />
         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Border Style="{StaticResource Section}" x:Name="SplashText">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>

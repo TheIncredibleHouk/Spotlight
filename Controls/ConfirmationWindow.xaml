@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Spotlight"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Background="Black"
+        Background="#303038"
         Padding="10"
         Height="135"
         Width="400"

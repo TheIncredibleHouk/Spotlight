@@ -185,7 +185,7 @@ namespace Spotlight
 
         private void PaletteList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _editingPalette = JsonConvert.DeserializeObject<Palette>(JsonConvert.SerializeObject(PaletteList.SelectedItem));
+            _editingPalette = JsonConvert.DeserializeObject<Palette>(JsonConvert.SerializeObject(PaletteList.SelectedItem, Newtonsoft.Json.Formatting.Indented));
             if (_editingPalette != null)
             {
                 _rendererSection.Update(_editingPalette);

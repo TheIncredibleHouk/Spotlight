@@ -22,6 +22,9 @@ namespace Spotlight
         public delegate void NameUpdatedHandler(NameUpdate nameUpdate);
         public event NameUpdatedHandler NameUpdated;
 
+        public delegate void LevelTreeUpdatedHandler();
+        public event LevelTreeUpdatedHandler LevelTreeUpdated;
+
         public FilePanel()
         {
             InitializeComponent();
@@ -38,12 +41,12 @@ namespace Spotlight
             BuildTree();
         }
 
-        private void _levelService_LevelsUpdated()
+        private void _levelService_LevelsUpdated(LevelInfo levelInfo)
         {
-            BuildTree();
+            BuildTree(levelInfo);
         }
 
-        public void BuildTree()
+        public void BuildTree(LevelInfo defaultSelection = null)
         {
             WorldTree.Items.Clear();
             Expanded = true;
@@ -53,6 +56,11 @@ namespace Spotlight
             foreach (var worldInfo in _worldService.AllWorlds())
             {
                 WorldTree.Items.Add(BuildTreeViewItem(worldInfo));
+            }
+
+            if(defaultSelection != null)
+            {
+                SetSelectedItem(defaultSelection);
             }
         }
 
@@ -186,6 +194,69 @@ namespace Spotlight
                     }
                 }
             }
+        }
+
+        private void Move_Click(object sender, RoutedEventArgs e)
+        {
+            TreeViewItem parentWorldItem = (TreeViewItem)((TreeViewItem)WorldTree.SelectedItem).Parent;
+            TreeViewItem parentLevelItem = (TreeViewItem)((TreeViewItem)WorldTree.SelectedItem).Parent;
+
+            LevelInfo levelInfo = (LevelInfo)((TreeViewItem)WorldTree.SelectedItem).DataContext;
+            IInfo parentInfo = (IInfo) parentLevelItem.DataContext;
+            LevelInfo parentLevelInfo = parentLevelItem.DataContext is LevelInfo ? (LevelInfo)parentLevelItem.DataContext : null;
+
+            while (parentWorldItem.Parent is TreeViewItem)
+            {
+                parentWorldItem = (TreeViewItem)parentWorldItem.Parent;
+            }
+
+            WorldInfo hostWorldInfo = (WorldInfo) parentWorldItem.DataContext;
+
+            MoveLevelResult result = MoveLevelWindow.Show(_levelService, _worldService, hostWorldInfo, parentLevelInfo);
+
+            if (result != null)
+            {
+                parentInfo.SublevelsInfo.Remove(levelInfo);
+                if(result.InfoNode.SublevelsInfo == null)
+                {
+                    result.InfoNode.SublevelsInfo = new List<LevelInfo>();
+                }
+
+                result.InfoNode.SublevelsInfo.Add(levelInfo);
+
+                BuildTree();
+                LevelTreeUpdated();
+                SetSelectedItem(levelInfo);
+            }
+        }
+
+        private void WorldTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            MoveButton.IsEnabled = WorldTree.SelectedItem != null && ((TreeViewItem)WorldTree.SelectedItem).DataContext is LevelInfo;
+        }
+
+        private void SetSelectedItem(IInfo info)
+        {
+            SelectItem(WorldTree.Items, info);
+        }
+
+        private bool SelectItem(ItemCollection treeViewItems, IInfo info)
+        {
+            foreach (TreeViewItem item in treeViewItems)
+            {
+                if (item.DataContext == info)
+                {
+                    item.IsSelected = true;
+                    return true;
+                }
+
+                if(item.IsExpanded = SelectItem(item.Items, info))
+                {
+                    return true; ;
+                }
+            }
+
+            return false;
         }
     }
 

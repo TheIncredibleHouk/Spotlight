@@ -6,16 +6,17 @@
         xmlns:local="clr-namespace:Spotlight"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Background="Black"
+        Background="#303038"
+        ResizeMode="NoResize"
         Padding="10"
-        Width="400"
-       
-        Title="New Level" Height="199.688">
+        Height="325"
+        Width="300"
+        Title="New Level">
     <StackPanel Width="250" Orientation="Vertical">
         <TextBlock>Name</TextBlock>
-        <TextBox x:Name="LevelNameText" Margin="10"></TextBox>
+        <TextBox x:Name="LevelNameText"></TextBox>
         <TextBlock>World</TextBlock>
-        <ComboBox x:Name="WorldList" DisplayMemberPath="DisplayName"></ComboBox>
+        <ComboBox x:Name="WorldList" SelectionChanged="WorldList_SelectionChanged" DisplayMemberPath="DisplayName"></ComboBox>
         <TextBlock>Level Base</TextBlock>
         <ComboBox x:Name="LevelList" DisplayMemberPath="DisplayName"></ComboBox>
         <Border BorderThickness="00" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
