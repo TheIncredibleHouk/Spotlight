@@ -18,103 +18,6 @@
                 </StackPanel>
             </Border>
         </DockPanel>
-        
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <Border Style="{StaticResource Section}">
-                <Button x:Name="SaveButton" Click="SaveButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="16" />
-                        <TextBlock>Save Level</TextBlock>
-                    </StackPanel>
-                </Button>
-            </Border>
-            <Border Style="{StaticResource Section}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center">
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Cursor.png" Height="16" />
-                    </TextBlock>
-                    <ComboBox Width="100" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
-                        <ComboBoxItem>Tiles</ComboBoxItem>
-                        <ComboBoxItem>Sprites</ComboBoxItem>
-                        <ComboBoxItem>Pointers</ComboBoxItem>
-                    </ComboBox>
-                    <TextBlock VerticalAlignment="Center">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="16" />
-                    </TextBlock>
-                    <ComboBox Width="100" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
-                        <ComboBoxItem>Default</ComboBoxItem>
-                        <ComboBoxItem>Fill</ComboBoxItem>
-                        <ComboBoxItem>Replace</ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
-            </Border>
-            <Border Style="{StaticResource Section}">
-                <StackPanel Orientation="Horizontal">
-                    <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">
-                        <StackPanel Orientation="Horizontal">
-                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Grid.png" Height="16" />
-                            <TextBlock>Grid</TextBlock>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton GroupName="Grid2" Click="ShowScreenLines_Click" x:Name="ShowScreenLines">
-                        <StackPanel Orientation="Horizontal">
-                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Border.png" Height="16" />
-                            <TextBlock>Screen Borders</TextBlock>
-                        </StackPanel>
-                    </RadioButton>
-                </StackPanel>
-            </Border>
-            <Border Style="{StaticResource Section}">
-                <StackPanel Orientation="Horizontal">
-                    <RadioButton GroupName="Grid4" Click="ShowTerrain_Click" x:Name="ShowTerrain">
-                        <StackPanel Orientation="Horizontal">
-                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Terrain.png" Height="16" />
-                            <TextBlock>Terrain</TextBlock>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">
-                        <StackPanel Orientation="Horizontal">
-                            <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Interactions.png" Height="16" />
-                            <TextBlock>Interactions</TextBlock>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton GroupName="Grid4" Click="ShowPSwitch_Click" x:Name="ShowPSwitch">
-                        <StackPanel Orientation="Horizontal">
-                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\PSwitch.png" Height="16" />
-                            <TextBlock>P-Switch</TextBlock>
-                        </StackPanel>
-                    </RadioButton>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-        
-        <Border Style="{StaticResource Section}" DockPanel.Dock="Bottom">
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type Rectangle}">
-                        <Setter Property="Margin" Value="10, 0, 10, 0" />
-                        <Setter Property="Height" Value="40" />
-                        <Setter Property="Width" Value="1" />
-                        <Setter Property="Fill" Value="#FF3E3E3E" />
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock VerticalAlignment="Center" x:Name="PointerXY" Width="75">X: 0 Y: 0</TextBlock>
-                <Rectangle />
-                <StackPanel x:Name="TileStatus" Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center">Tile Value:</TextBlock>
-                    <TextBlock VerticalAlignment="Center" x:Name="TileValue" Width="25">00</TextBlock>
-                    <Rectangle />
-                    <TextBlock VerticalAlignment="Center">Terrain:</TextBlock>
-                    <TextBlock VerticalAlignment="Center" x:Name="TerrainDescription" Width="125">Terrain</TextBlock>
-                    <Rectangle />
-                    <TextBlock VerticalAlignment="Center">Interaction:</TextBlock>
-                    <TextBlock VerticalAlignment="Center" x:Name="InteractionDescription" Width="125">Interacton</TextBlock>
-                </StackPanel>
-                <StackPanel x:Name="SpriteStatus" Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
-                </StackPanel>
-            </StackPanel>
-        </Border>
         <Border Padding="5" Style="{StaticResource Section}" DockPanel.Dock="Right">
             <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden" >
                 <StackPanel Orientation="Vertical">
@@ -155,6 +58,103 @@
                 </StackPanel>
             </ScrollViewer>
         </Border>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <Border Style="{StaticResource Section}">
+                <Button x:Name="SaveButton" Click="SaveButton_Click">
+                    <StackPanel Orientation="Vertical">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="16" />
+                        <TextBlock>Save</TextBlock>
+                    </StackPanel>
+                </Button>
+            </Border>
+            <Border Style="{StaticResource Section}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Cursor.png" Height="16" />
+                    </TextBlock>
+                    <ComboBox Width="100" VerticalAlignment="Center" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
+                        <ComboBoxItem>Tiles</ComboBoxItem>
+                        <ComboBoxItem>Sprites</ComboBoxItem>
+                        <ComboBoxItem>Pointers</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock VerticalAlignment="Center">
+                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="16" />
+                    </TextBlock>
+                    <ComboBox Width="100" x:Name="SelectedDrawMode" VerticalAlignment="Center" SelectionChanged="DrawMode_SelectionChanged">
+                        <ComboBoxItem>Default</ComboBoxItem>
+                        <ComboBoxItem>Fill</ComboBoxItem>
+                        <ComboBoxItem>Replace</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Section}">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Grid.png" Height="16" />
+                            <TextBlock>Grid</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton GroupName="Grid2" Click="ShowScreenLines_Click" x:Name="ShowScreenLines">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Border.png" Height="16" />
+                            <TextBlock>Screens</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Section}">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton GroupName="Grid4" Click="ShowTerrain_Click" x:Name="ShowTerrain">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Terrain.png" Height="16" />
+                            <TextBlock>Terrain</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Interactions.png" Height="16" />
+                            <TextBlock>Interactions</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton GroupName="Grid4" Click="ShowPSwitch_Click" x:Name="ShowPSwitch">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\PSwitch.png" Height="16" />
+                            <TextBlock>P-Switch</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        
+        <Border Style="{StaticResource Section}" DockPanel.Dock="Bottom">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <Setter Property="Margin" Value="10, 0, 10, 0" />
+                        <Setter Property="Height" Value="40" />
+                        <Setter Property="Width" Value="1" />
+                        <Setter Property="Fill" Value="#FF3E3E3E" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock VerticalAlignment="Center" x:Name="PointerXY" Width="75">X: 0 Y: 0</TextBlock>
+                <Rectangle />
+                <StackPanel x:Name="TileStatus" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Tile Value:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="TileValue" Width="25">00</TextBlock>
+                    <Rectangle />
+                    <TextBlock VerticalAlignment="Center">Terrain:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="TerrainDescription" Width="125">Terrain</TextBlock>
+                    <Rectangle />
+                    <TextBlock VerticalAlignment="Center">Interaction:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" x:Name="InteractionDescription" Width="125">Interacton</TextBlock>
+                </StackPanel>
+                <StackPanel x:Name="SpriteStatus" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
         <Border BorderBrush="#000000" BorderThickness="1" Margin="2" HorizontalAlignment="Stretch">
             <ScrollViewer x:Name="LevelScroller" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ScrollViewer.Background>

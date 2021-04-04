@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Spotlight"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
         mc:Ignorable="d"
         Padding="5"
         Icon="Controls\Icons\Spotlight.png"

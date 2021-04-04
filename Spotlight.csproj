@@ -139,6 +139,7 @@
     <Compile Include="Controls\ProjectPanel.xaml.cs">
       <DependentUpon>ProjectPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\DpiHelper.cs" />
     <Compile Include="Utilities\GlobalPanels.cs" />
     <Page Include="Controls\AlertWindow.xaml">
       <SubType>Designer</SubType>

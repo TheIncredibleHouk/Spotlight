@@ -57,16 +57,14 @@ namespace Spotlight
             _graphicsSetRenderer = new GraphicsSetRender(_graphicsAccessor);
             _tileSetRenderer = new TileSetRenderer(_graphicsAccessor, _localTileTerrain, _localMapTileInteraction);
 
-            _graphicsSetBitmap = new WriteableBitmap(128, 128, 96, 96, PixelFormats.Bgra32, null);
-            _tileBlockBitmap = new WriteableBitmap(16, 16, 96, 96, PixelFormats.Bgra32, null);
+            Dpi dpi = this.GetDpi();
+
+            _graphicsSetBitmap = new WriteableBitmap(128, 128, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+            _tileBlockBitmap = new WriteableBitmap(16, 16, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
             GraphicsSetImage.Source = _graphicsSetBitmap;
-            GraphicsSetImage.Width = _graphicsSetBitmap.PixelWidth * 2;
-            GraphicsSetImage.Height = _graphicsSetBitmap.PixelHeight * 2;
 
             TileBlockImage.Source = _tileBlockBitmap;
-            TileBlockImage.Width = _tileBlockBitmap.PixelWidth * 2 + 1;
-            TileBlockImage.Height = _tileBlockBitmap.PixelHeight * 2 + 1;
 
             BlockSelector.Initialize(_graphicsAccessor, _tileService, _tileService.GetTileSet(0), _graphicsService.GetPalette(0), _tileSetRenderer);
             BlockSelector.TileBlockSelected += BlockSelector_TileBlockSelected;

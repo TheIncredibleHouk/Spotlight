@@ -42,7 +42,9 @@ namespace Spotlight
             _palettesService = palettesService;
 
             _renderer = new GameObjectRenderer(gameObjectService, _palettesService, graphicsAccessor);
-            _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
+
+            Dpi dpi = this.GetDpi();
+            _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
             _selectedGroup = new Dictionary<GameObjectType, string>();
             _selectedGroup[GameObjectType.Global] = null;
@@ -52,9 +54,6 @@ namespace Spotlight
             _selectedObject = null;
 
             GameObjectImage.Source = _bitmap;
-            GameObjectImage.Width = _bitmap.PixelWidth + 2;
-            GameObjectImage.Height = _bitmap.PixelHeight + 2;
-
             GameObjectTypes.ItemsSource = new List<GameObjectType>() { GameObjectType.Global, GameObjectType.TypeA, GameObjectType.TypeB };
 
             _renderer.Update(palette);

@@ -73,7 +73,8 @@ namespace Spotlight
 
             _levelDataAccessor = new LevelDataAccessor(_level, _tileSet);
 
-            _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, 96, 96, PixelFormats.Bgra32, null);
+            Dpi dpi = this.GetDpi();
+            _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
             _levelRenderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _palettesService, _gameObjectService, _tileService.GetTerrain());
             _levelRenderer.Initializing();
 
@@ -87,7 +88,7 @@ namespace Spotlight
             CanvasContainer.Height = LevelRenderSource.Height = _bitmap.PixelHeight;
             LevelClip.Width = _level.ScreenLength * 16 * 16;
 
-            _cursorBitmap = new WriteableBitmap(16, 16, 96, 96, PixelFormats.Bgra32, null);
+            _cursorBitmap = new WriteableBitmap(16, 16, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
             CursorImage.ImageSource = _cursorBitmap;
 
             _level.ObjectData.ForEach(o =>
@@ -216,12 +217,12 @@ namespace Spotlight
 
                 if (safeRect.X + safeRect.Width > LevelRenderer.BITMAP_WIDTH)
                 {
-                    safeRect.Width -= LevelRenderer.BITMAP_WIDTH - (safeRect.X + safeRect.Width);
+                    safeRect.Width = LevelRenderer.BITMAP_WIDTH - safeRect.X;
                 }
 
                 if (safeRect.Y + safeRect.Height > LevelRenderer.BITMAP_HEIGHT)
                 {
-                    safeRect.Height -= LevelRenderer.BITMAP_HEIGHT - (safeRect.Y + safeRect.Height);
+                    safeRect.Height = LevelRenderer.BITMAP_HEIGHT - safeRect.Y;
                 }
 
                 Int32Rect sourceArea = new Int32Rect(0, 0, Math.Max(0, Math.Min(safeRect.Width, LevelRenderer.BITMAP_WIDTH)), Math.Max(0, Math.Min(safeRect.Height, LevelRenderer.BITMAP_HEIGHT)));
@@ -260,7 +261,7 @@ namespace Spotlight
 
         private void LevelRenderSource_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Point clickPoint = Snap(e.GetPosition(LevelRenderSource));
+            Point clickPoint = e.GetPosition(LevelRenderSource);
 
             LevelRenderSource.Focusable = true;
             LevelRenderSource.Focus();

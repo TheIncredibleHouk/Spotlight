@@ -15,8 +15,8 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="0" x:Name="GraphicsCoordinate">00</TextBlock>
                     <Border VerticalAlignment="Center" BorderThickness="1" BorderBrush="#FF3E3E3E">
-                        <Canvas SnapsToDevicePixels="True" Width="257" Height="257">
-                            <Image MouseMove="GraphicsSetImage_MouseMove" MouseDown="GraphicsSetImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GraphicsSetImage" UseLayoutRounding="False" Width="257" Height="257" />
+                        <Canvas SnapsToDevicePixels="True" Width="258" Height="258">
+                            <Image MouseMove="GraphicsSetImage_MouseMove" Canvas.Left="0" Canvas.Top="0" MouseDown="GraphicsSetImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GraphicsSetImage" UseLayoutRounding="False" Width="256" Height="256" />
                             <Border MouseMove="GraphicsSetImage_MouseMove" MouseDown="GraphicsSetImage_MouseDown" SnapsToDevicePixels="True" UseLayoutRounding="True" BorderThickness="1" BorderBrush="Red" x:Name="TileSelectionRectangle" Width="16" Height="16">
                                 <Border MouseDown="GraphicsSetImage_MouseDown" SnapsToDevicePixels="True" UseLayoutRounding="True" BorderThickness="1" Background="#60FFFFFF" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                             </Border>
@@ -24,7 +24,7 @@
                     </Border>
                 </StackPanel>
                 <Border VerticalAlignment="Center" Margin="10" BorderThickness="1" BorderBrush="#FF3E3E3E">
-                    <Image MouseDown="TileBlockImage_MouseDown" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="TileBlockImage" Width="32" Height="32" />
+                    <Image MouseDown="TileBlockImage_MouseDown"  RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="TileBlockImage" Width="32" Height="32" />
                 </Border>
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="0" x:Name="TileSelectorCoordinate" HorizontalAlignment="Right">00</TextBlock>

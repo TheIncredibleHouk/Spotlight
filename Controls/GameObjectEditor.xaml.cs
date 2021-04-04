@@ -42,7 +42,8 @@ namespace Spotlight
             _graphicsAccessor = new GraphicsAccessor(graphicsService.GetGlobalTiles(), graphicsService.GetExtraTiles());
             viewObjects.Add(viewObject);
 
-            _bitmap = new WriteableBitmap(256, 256, 96, 96, PixelFormats.Bgra32, null);
+            Dpi dpi = this.GetDpi();
+            _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
             _renderer = new GameObjectRenderer(_gameObjectService, _palettesService, _graphicsAccessor);
             _renderer.RenderGrid = true;
 

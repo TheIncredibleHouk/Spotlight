@@ -18,8 +18,8 @@ namespace Spotlight.Models
 
         public Rect CalcBoundBox()
         {
-            int minX = 1000, minY = 10000;
-            int maxX = 0, maxY = 0;
+            int minX = 1000, minY = 1000;
+            int maxX = -1000, maxY = -1000;
 
             List<Sprite> visibleSprites = GameObject.Sprites.Where(s => s.PropertiesAppliedTo == null || s.PropertiesAppliedTo.Count == 0 ? true : s.PropertiesAppliedTo.Contains(Property)).Where(s => !s.Overlay).ToList();
 
@@ -45,8 +45,8 @@ namespace Spotlight.Models
 
         public Rect CalcVisualBox(bool withOverlays)
         {
-            int minX = 1000, minY = 10000;
-            int maxX = 0, maxY = 0;
+            int minX = 1000, minY = 1000;
+            int maxX = -1000, maxY = -1000;
 
             List<Sprite> visibleSprites = GameObject.Sprites.Where(s => s.PropertiesAppliedTo == null || s.PropertiesAppliedTo.Count == 0 ? true : s.PropertiesAppliedTo.Contains(Property)).Where(s => (withOverlays ? true : !s.Overlay)).ToList();
 

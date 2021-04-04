@@ -29,8 +29,9 @@ namespace Spotlight
             _projectService = projectService;
             _palettesService = palettesService;
 
-            _bitmapSection = new WriteableBitmap(256, 32, 96, 96, PixelFormats.Bgra32, null);
-            _bitmapFull = new WriteableBitmap(256, 64, 96, 96, PixelFormats.Bgra32, null);
+            Dpi dpi = this.GetDpi();
+            _bitmapSection = new WriteableBitmap(256, 32, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+            _bitmapFull = new WriteableBitmap(256, 64, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
             ImageSection.Source = _bitmapSection;
             ImageFull.Source = _bitmapFull;
