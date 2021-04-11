@@ -28,7 +28,7 @@ namespace Spotlight
         public FilePanel()
         {
             InitializeComponent();
-            
+
         }
 
         private WorldService _worldService;
@@ -58,7 +58,7 @@ namespace Spotlight
                 WorldTree.Items.Add(BuildTreeViewItem(worldInfo));
             }
 
-            if(defaultSelection != null)
+            if (defaultSelection != null)
             {
                 SetSelectedItem(defaultSelection);
             }
@@ -159,7 +159,7 @@ namespace Spotlight
                         {
                             _levelService.RenameLevel(levelInfo.Name, newName);
                             levelInfo.Name = newName;
-                            
+
                             _levelService.NotifyUpdate(levelInfo);
                             NameUpdated(new NameUpdate((IInfo)levelInfo, previousName, levelInfo.Name));
                             ((TreeViewItem)WorldTree.SelectedItem).Header = levelInfo.Name;
@@ -176,14 +176,14 @@ namespace Spotlight
                     string previousName = worldInfo.Name;
 
                     string newName = InputWindow.GetInput("Rename map", worldInfo.Name);
-                    if(newName != null)
+                    if (newName != null)
                     {
                         WorldInfo existingInfo = _worldService.AllWorlds().Where(w => w.Name.Equals(newName, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (existingInfo == null)
                         {
                             _worldService.RenameWorld(worldInfo.Name, newName);
                             worldInfo.Name = newName;
-                            
+
                             NameUpdated(new NameUpdate((IInfo)worldInfo, previousName, worldInfo.Name));
                             ((TreeViewItem)WorldTree.SelectedItem).Header = worldInfo.Name;
                         }
@@ -202,7 +202,7 @@ namespace Spotlight
             TreeViewItem parentLevelItem = (TreeViewItem)((TreeViewItem)WorldTree.SelectedItem).Parent;
 
             LevelInfo levelInfo = (LevelInfo)((TreeViewItem)WorldTree.SelectedItem).DataContext;
-            IInfo parentInfo = (IInfo) parentLevelItem.DataContext;
+            IInfo parentInfo = (IInfo)parentLevelItem.DataContext;
             LevelInfo parentLevelInfo = parentLevelItem.DataContext is LevelInfo ? (LevelInfo)parentLevelItem.DataContext : null;
 
             while (parentWorldItem.Parent is TreeViewItem)
@@ -210,14 +210,14 @@ namespace Spotlight
                 parentWorldItem = (TreeViewItem)parentWorldItem.Parent;
             }
 
-            WorldInfo hostWorldInfo = (WorldInfo) parentWorldItem.DataContext;
+            WorldInfo hostWorldInfo = (WorldInfo)parentWorldItem.DataContext;
 
             MoveLevelResult result = MoveLevelWindow.Show(_levelService, _worldService, hostWorldInfo, parentLevelInfo);
 
             if (result != null)
             {
                 parentInfo.SublevelsInfo.Remove(levelInfo);
-                if(result.InfoNode.SublevelsInfo == null)
+                if (result.InfoNode.SublevelsInfo == null)
                 {
                     result.InfoNode.SublevelsInfo = new List<LevelInfo>();
                 }
@@ -250,7 +250,7 @@ namespace Spotlight
                     return true;
                 }
 
-                if(item.IsExpanded = SelectItem(item.Items, info))
+                if (item.IsExpanded = SelectItem(item.Items, info))
                 {
                     return true; ;
                 }

@@ -18,14 +18,12 @@
         </Grid>
         <TextBlock Padding="15, 0, 0, 5" x:Name="GameObjectName" />
         <Border BorderBrush="#FF3E3E3E" BorderThickness="1" Margin="15, 0, 15, 5" HorizontalAlignment="Left">
-            <Border x:Name="GameObjectImageBorder" HorizontalAlignment="Center" BorderThickness="8" VerticalAlignment="Top">
-                <Canvas x:Name="CanvasArea" UseLayoutRounding="False" VerticalAlignment="Top" Width="258" Height="258">
-                    <Image Canvas.Top="0" Canvas.Left="0" Width="256" Height="256" UseLayoutRounding="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GameObjectImage" DockPanel.Dock="Bottom" MouseDown="GameObjectImage_MouseDown" />
-                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle">
-                        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
-                    </Border>
-                </Canvas>
-            </Border>
+            <Canvas x:Name="CanvasArea" UseLayoutRounding="False" VerticalAlignment="Top">
+                <Image Canvas.Top="0" Canvas.Left="0" Width="256" Height="256" UseLayoutRounding="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GameObjectImage" DockPanel.Dock="Bottom" MouseDown="GameObjectImage_MouseDown" />
+                <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle">
+                    <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+                </Border>
+            </Canvas>
         </Border>
     </StackPanel>
 </UserControl>

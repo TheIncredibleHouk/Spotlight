@@ -230,7 +230,7 @@ namespace Spotlight
 
             _levelService.LevelUpdated += _levelService_LevelUpdated;
             _worldService.WorldUpdated += _worldService_WorldUpdated;
-            
+
 
             List<WorldInfo> worldInfos = new List<WorldInfo>();
             worldInfos.AddRange(project.WorldInfo);
@@ -463,13 +463,13 @@ namespace Spotlight
             }
 
             _projectService.SaveProject();
-            
+
         }
 
         private void _ProjectPanel_NewLevelClicked()
         {
             NewLevelResult newLevelResult = NewLevelWindow.Show(_levelService, _worldService);
-            if(newLevelResult != null)
+            if (newLevelResult != null)
             {
                 _levelService.AddLevel(newLevelResult.Level, newLevelResult.WorldInfo);
             }

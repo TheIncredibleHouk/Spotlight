@@ -67,7 +67,7 @@ namespace Spotlight
 
             Tile[] staticSet = _graphicsService.GetTileSection(_level.StaticTileTableIndex);
             Tile[] animationSet = _graphicsService.GetTileSection(_level.AnimationTileTableIndex);
-            
+
             _graphicsAccessor = new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
 
@@ -78,7 +78,7 @@ namespace Spotlight
             _levelRenderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _palettesService, _gameObjectService, _tileService.GetTerrain());
             _levelRenderer.Initializing();
 
-            
+
 
             Palette palette = _palettesService.GetPalette(_level.PaletteId);
             _levelRenderer.Update(tileSet: _tileSet, palette: palette);
@@ -120,7 +120,7 @@ namespace Spotlight
 
         private void _levelService_LevelUpdated(LevelInfo levelInfo)
         {
-            if(levelInfo.Id == _level.Id)
+            if (levelInfo.Id == _level.Id)
             {
                 _level.Name = levelInfo.Name;
             }
@@ -471,7 +471,7 @@ namespace Spotlight
                 {
                     _selectedObject = _level.ObjectData.Where(o => o.BoundRectangle.Contains(tilePoint.X, tilePoint.Y)).FirstOrDefault();
 
-                    if((Keyboard.Modifiers & ModifierKeys.Shift) > 0 || (Keyboard.Modifiers & ModifierKeys.Control) > 0)
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0 || (Keyboard.Modifiers & ModifierKeys.Control) > 0)
                     {
                         if (_selectedObject != null && !_selectedObject.GameObject.IsStartObject)
                         {
@@ -498,7 +498,14 @@ namespace Spotlight
                     }
 
                     Rect boundRect = _selectedObject.BoundRectangle;
-                    Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
+                    if (boundRect.Bottom <= 200)
+                    {
+                        Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
+                    }
+                    else
+                    {
+                        Canvas.SetTop(GameObjectProperty, boundRect.Top - 48);
+                    }
                     Canvas.SetLeft(GameObjectProperty, boundRect.Left - 10);
 
                     GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
@@ -561,7 +568,14 @@ namespace Spotlight
                         leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.ActualWidth;
                     }
 
-                    Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
+                    if(boundRect.Bottom <= 200)
+                    {
+                        Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
+                    }
+                    else
+                    {
+                        Canvas.SetTop(PointerEditor, boundRect.Top - 160);
+                    }
                     Canvas.SetLeft(PointerEditor, leftEdge);
 
                     PointerEditor.SetPointer(_selectedPointer);
@@ -826,7 +840,7 @@ namespace Spotlight
             {
                 _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
-                
+
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
                 int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
                 int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
@@ -1197,7 +1211,15 @@ namespace Spotlight
                     leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.ActualWidth;
                 }
 
-                Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
+                if (boundRect.Bottom <= 200)
+                {
+                    Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
+                }
+                else
+                {
+                    Canvas.SetTop(PointerEditor, boundRect.Top - 160);
+                }
+                
                 Canvas.SetLeft(PointerEditor, leftEdge);
             }
 
@@ -1216,7 +1238,16 @@ namespace Spotlight
             }
 
             Rect boundRect = _selectedObject.BoundRectangle;
-            Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
+            
+            if (boundRect.Bottom <= 200)
+            {
+                Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
+            }
+            else
+            {
+                Canvas.SetTop(GameObjectProperty, boundRect.Top - 48);
+            }
+
             Canvas.SetLeft(GameObjectProperty, boundRect.Left - 10);
 
             GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
@@ -1449,7 +1480,7 @@ namespace Spotlight
                     break;
 
                 case Key.Escape:
-                    if(_editMode == EditMode.Tiles)
+                    if (_editMode == EditMode.Tiles)
                     {
                         _isDragging = false;
                         _selectionMode = SelectionMode.SetTiles;

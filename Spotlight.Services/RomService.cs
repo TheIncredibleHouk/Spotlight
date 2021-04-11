@@ -90,7 +90,7 @@ namespace Spotlight.Services
                 _levelAddressTable.Clear();
 
                 byte levelIndex = 0;
-                foreach(LevelInfo levelInfo in _levelService.AllLevels())
+                foreach (LevelInfo levelInfo in _levelService.AllLevels())
                 {
                     _levelIndexTable.Add(levelInfo.Id, levelIndex++);
                 }
@@ -157,7 +157,7 @@ namespace Spotlight.Services
 
             try
             {
-              
+
                 foreach (WorldInfo worldInfo in _worldService.AllWorlds().OrderBy(w => w.Number))
                 {
                     if (worldInfo.Name != "No World")
@@ -212,7 +212,7 @@ namespace Spotlight.Services
             try
             {
                 string name = level.Name.ToUpper();
-                
+
                 if (name.Length > 0x22)
                 {
                     name = name.Substring(0, 0x22);
@@ -309,7 +309,7 @@ namespace Spotlight.Services
 
                 byte[] levelData = level.CompressedData ?? _compressionService.CompressLevel(level);
 
-                if(level.CompressedData == null)
+                if (level.CompressedData == null)
                 {
                     level.CompressedData = levelData;
                     _levelService.SaveLevel(level);
@@ -373,7 +373,7 @@ namespace Spotlight.Services
                 region = "Compressing world data";
                 byte[] levelData = world.CompressedData ?? _compressionService.CompressWorld(world);
 
-                if(world.CompressedData == null)
+                if (world.CompressedData == null)
                 {
                     world.CompressedData = levelData;
                     _worldService.SaveWorld(world);
@@ -405,7 +405,7 @@ namespace Spotlight.Services
 
             try
             {
-                
+
                 foreach (Palette palette in paletteList)
                 {
                     currentPalette = palette;
@@ -437,7 +437,7 @@ namespace Spotlight.Services
             try
             {
                 List<TileSet> tileSets = _tileService.GetTileSets().ToList();
-                
+
                 for (int i = 0; i < 16; i++)
                 {
                     region = "Writing block data for tile set " + i;
@@ -468,7 +468,7 @@ namespace Spotlight.Services
                     region = "Writing tile interactons for tile set " + i;
 
                     TileSet currentTileSet = tileSets[i];
-                    for(int j = 0; j < 8; j++)
+                    for (int j = 0; j < 8; j++)
                     {
                         if (j < currentTileSet.FireBallInteractions.Count)
                         {

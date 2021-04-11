@@ -58,7 +58,7 @@ namespace Spotlight
 
             _renderer.Update(palette);
 
-            CanvasArea.Background = GameObjectImageBorder.BorderBrush = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
+            CanvasArea.Background = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
             GameObjectTypes.SelectedIndex = 0;
 
             _gameObjectService.GameObjectUpdated += GameObjectsUpdated;
@@ -79,7 +79,7 @@ namespace Spotlight
         {
             _palette = palette;
             _renderer.Update(palette);
-            CanvasArea.Background = GameObjectImageBorder.Background = GameObjectImageBorder.BorderBrush = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
+            CanvasArea.Background = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
             Update();
         }
 

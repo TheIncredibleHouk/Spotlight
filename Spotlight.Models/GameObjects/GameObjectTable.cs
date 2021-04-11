@@ -16,7 +16,7 @@ namespace Spotlight.Models
         public void UpdateGameObject(GameObject gameObject)
         {
             LevelObject existingLevelObject = AllObjects.Where(g => g.GameObjectId == gameObject.GameId).FirstOrDefault();
-            
+
             if (existingLevelObject != null)
             {
                 if (gameObject.GameObjectType != existingLevelObject.GameObject.GameObjectType ||

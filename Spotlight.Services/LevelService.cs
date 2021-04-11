@@ -117,7 +117,7 @@ namespace Spotlight.Services
         {
             List<IInfo> infos = new List<IInfo>();
             List<WorldInfo> worldInfos = _project.WorldInfo.ToList();
-            
+
             worldInfos.Add(_project.EmptyWorld);
 
             foreach (var world in worldInfos)

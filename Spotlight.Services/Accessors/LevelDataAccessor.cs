@@ -44,7 +44,7 @@ namespace Spotlight.Services
             if (PSwitchActive)
             {
                 PSwitchAlteration alteration = _tileSet.PSwitchAlterations.Where(p => p.From == tileValue).FirstOrDefault();
-                if(alteration != null)
+                if (alteration != null)
                 {
                     tileValue = alteration.To;
                 }

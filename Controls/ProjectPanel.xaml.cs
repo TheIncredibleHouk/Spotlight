@@ -71,7 +71,7 @@ namespace Spotlight
 
         private void NewLevelButton_Click(object sender, RoutedEventArgs e)
         {
-            if(NewLevelClicked != null)
+            if (NewLevelClicked != null)
             {
                 NewLevelClicked();
             }

@@ -43,7 +43,7 @@ namespace Spotlight
             PaletteList.SelectedIndex = 0;
 
             UpdateFull();
-            
+
             _palettesService.PalettesChanged += _palettesService_PalettesChanged;
             _rgbPalette = _palettesService.RgbPalette;
             _rgbEditors = new List<PaletteRgbEditor>();
@@ -232,7 +232,7 @@ namespace Spotlight
 
         private void ApplyRgbPalette_Click(object sender, RoutedEventArgs e)
         {
-            for(int i = 0; i < _rgbPalette.Length; i++)
+            for (int i = 0; i < _rgbPalette.Length; i++)
             {
                 _rgbPalette[i] = _rgbEditors[i].RgbColor;
             }
@@ -257,7 +257,7 @@ namespace Spotlight
                 if (openFileDialog.ShowDialog() == true)
                 {
                     byte[] rgbBytes = File.ReadAllBytes(openFileDialog.FileName);
-                    for(int i = 0; i < 0x40; i++)
+                    for (int i = 0; i < 0x40; i++)
                     {
                         int byteIndex = i * 3;
                         int paletteIndex = i;
@@ -265,7 +265,7 @@ namespace Spotlight
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 AlertWindow.Alert("Error loading new palette: " + ex.Message);
             }

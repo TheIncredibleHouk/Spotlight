@@ -1,18 +1,8 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Spotlight
 {
@@ -33,7 +23,7 @@ namespace Spotlight
             if (window.DialogResult == true)
             {
                 moveLevelResult = new MoveLevelResult();
-                if(window.ParentLevel != null)
+                if (window.ParentLevel != null)
                 {
                     moveLevelResult.InfoNode = window.ParentLevel;
                 }
@@ -63,8 +53,8 @@ namespace Spotlight
             _defaultParentLevel = parentLevel;
 
             WorldList.ItemsSource = _worldService.AllWorlds();
-            
-            if(parentLevel == null)
+
+            if (parentLevel == null)
             {
                 LevelList.SelectedIndex = 0;
             }
@@ -73,7 +63,7 @@ namespace Spotlight
                 LevelList.SelectedItem = parentLevel;
             }
 
-            if(hostWorld != null)
+            if (hostWorld != null)
             {
                 WorldList.SelectedItem = hostWorld;
             }
@@ -83,7 +73,7 @@ namespace Spotlight
         {
             get
             {
-                if(LevelList.SelectedIndex == 0)
+                if (LevelList.SelectedIndex == 0)
                 {
                     return null;
                 }
