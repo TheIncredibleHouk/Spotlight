@@ -445,7 +445,7 @@ namespace Spotlight
                         {
                             _historyService.UndoLevelObjects.Push(new LevelObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.Property, _selectedObject.GameObjectId, LevelObjectChangeType.Update));
                             updatedRects.Add(_selectedObject.VisualRectangle);
-                            _selectedObject.GameObject.GameId = ObjectSelector.SelectedObject.GameId;
+                            _selectedObject.GameObject = ObjectSelector.SelectedObject;
                             _selectedObject.CalcBoundBox();
                             updatedRects.Add(_selectedObject.CalcVisualBox(true));
                         }
@@ -518,8 +518,20 @@ namespace Spotlight
 
                 Update(updatedRects);
             }
+
+            UpdateSpriteStatus();
         }
 
+        private void UpdateSpriteStatus() {
+            if (_selectedObject == null)
+            {
+                SpriteDescription.Text = "None";
+            }
+            else
+            {
+                SpriteDescription.Text = _selectedObject.GameObject.Name;
+            }
+        }
         private void HandlePointerClick(MouseButtonEventArgs e)
         {
             Point tilePoint = e.GetPosition(LevelRenderSource);
@@ -728,15 +740,6 @@ namespace Spotlight
             }
 
             int blockX = (int)movePoint.X / 16, blockY = (int)movePoint.Y / 16;
-            LevelObject levelObject = _level.ObjectData.Where(o => o.BoundRectangle.Contains(movePoint.X, movePoint.Y)).FirstOrDefault();
-            if (levelObject == null)
-            {
-                SpriteDescription.Text = "None";
-            }
-            else
-            {
-                SpriteDescription.Text = levelObject.GameObject.Name;
-            }
 
             PointerXY.Text = "X: " + blockX.ToString("X2") + " Y: " + blockY.ToString("X2");
         }
@@ -1031,6 +1034,8 @@ namespace Spotlight
                 ClearSelectionRectangle();
                 _historyService.UndoLevelObjects.Push(new LevelObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.Property, _selectedObject.GameObjectId, LevelObjectChangeType.Deletion));
             }
+
+            UpdateSpriteStatus();
         }
 
         private void UndoObjects()
@@ -1040,6 +1045,8 @@ namespace Spotlight
                 LevelObjectChange undoObject = _historyService.UndoLevelObjects.Pop();
                 _historyService.RedoLevelObjects.Push(ApplyObjectChange(undoObject));
             }
+
+            UpdateSpriteStatus();
         }
 
         private void RedoObjects()
@@ -1049,6 +1056,8 @@ namespace Spotlight
                 LevelObjectChange redoObject = _historyService.RedoLevelObjects.Pop();
                 _historyService.UndoLevelObjects.Push(ApplyObjectChange(redoObject));
             }
+
+            UpdateSpriteStatus();
         }
 
         private void LevelRenderSource_MouseUp(object sender, MouseButtonEventArgs e)
@@ -1534,7 +1543,7 @@ namespace Spotlight
 
                     if (TileStatus != null)
                     {
-                        TileStatus.Visibility = Visibility.Visible;
+                        TileStatus.Visibility = TerrainStatus.Visibility = InteractionStatus.Visibility = Visibility.Visible;
                         SpriteStatus.Visibility = Visibility.Collapsed;
                     }
 
@@ -1546,7 +1555,7 @@ namespace Spotlight
 
                     if (TileStatus != null)
                     {
-                        TileStatus.Visibility = Visibility.Collapsed;
+                        TileStatus.Visibility = TerrainStatus.Visibility = InteractionStatus.Visibility = Visibility.Collapsed;
                         SpriteStatus.Visibility = Visibility.Visible;
                     }
 

@@ -114,7 +114,7 @@ namespace Spotlight
                 {
                     GameObjectTypes.SelectedItem = value.GameObjectType;
                     GameObjectGroups.SelectedItem = value.Group;
-                    _selectedObject = _gameObjectService.GetObjects((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.GameObject == value).FirstOrDefault();
+                    _selectedObject = _gameObjectService.GetObjects((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.GameObject.GameId == value.GameId).FirstOrDefault();
                     UpdateSelectedObject();
                 }
             }

@@ -8,7 +8,7 @@
              SnapsToDevicePixels="True"
              VerticalAlignment="Stretch">
     <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel Orientation="Vertical" Width="300">
+        <StackPanel Orientation="Vertical" Width="325">
             <Border Style="{StaticResource Section}">
                 <StackPanel Orientation="Vertical">
                     <TextBlock>Palettes</TextBlock>

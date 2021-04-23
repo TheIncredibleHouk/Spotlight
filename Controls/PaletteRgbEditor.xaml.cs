@@ -42,7 +42,7 @@ namespace Spotlight
 
         private void UpdateColorPreview()
         {
-            ColorPreview.Fill = new SolidColorBrush(Color.FromRgb(RgbColor.R, RgbColor.G, RgbColor.B));
+            ColorPreview.Background = new SolidColorBrush(Color.FromRgb(RgbColor.R, RgbColor.G, RgbColor.B));
         }
 
         private void TextBlock_KeyUp(object sender, KeyEventArgs e)

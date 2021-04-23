@@ -10,7 +10,105 @@
              VerticalAlignment="Stretch"
              d:DesignWidth="800">
     <ScrollViewer VerticalAlignment="Stretch">
-        <StackPanel HorizontalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel x:Name="FireballSection" Orientation="Vertical">
+                    <TextBlock>Fireball Interactions</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="FireInteraction1" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction2" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction3" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction4" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction5" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction6" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction7" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="FireInteraction8" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel x:Name="IceballSection" Orientation="Vertical">
+                    <TextBlock>Iceball Interactions</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="IceInteraction1" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction2" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction3" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction4" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction5" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction6" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction7" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBox x:Name="IceInteraction8" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="PSwitchSection" Orientation="Vertical" HorizontalAlignment="Center">
+                <TextBlock>P Switch Alterations</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <TextBox Margin="0" x:Name="PSwitchFrom1" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo1" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom2" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                        </TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo2" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom3" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo3" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom4" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo4" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom5" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo5" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom6" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo6" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom7" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0 0, 9, 0">
+                        <TextBox Margin="0" x:Name="PSwitchTo7" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="8, 0, 0, 0">
+                        <TextBox Margin="0" x:Name="PSwitchFrom8" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❯</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <TextBox Margin="0" x:Name="PSwitchTo8" Width="27" Height="25" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0" HorizontalAlignment="Center">❮</TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="0" x:Name="GraphicsCoordinate">00</TextBlock>
@@ -52,9 +150,7 @@
                         <TextBlock Margin="28, 0, 0, 0" VerticalAlignment="Center">Show Interactions</TextBlock>
                         <CheckBox VerticalAlignment="Center" Background="Black" Click="ShowInteractions_Click" x:Name="ShowInteractions" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="SetProjectileInteractions" Click="SetProjectileInteractions_Click">Set PSwitch/Fireball/Iceball Interactions</Button>
-                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
                     <TextBlock>Level</TextBlock>
                     <ComboBox SelectionChanged="LevelList_SelectionChanged" SelectedValuePath="Id" DisplayMemberPath="DisplayName" Margin="0, 0, 0, 18" HorizontalAlignment="Left" Width="256" x:Name="LevelList" />
                     <StackPanel Orientation="Vertical" x:Name="LevelTileSection">

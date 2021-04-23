@@ -4,6 +4,7 @@ using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -109,8 +110,6 @@ namespace Spotlight
             BlockSelector.SelectedBlockValue = tileBlockValue;
         }
 
-        private int _pSwitchFrom = 0;
-
         private void BlockSelector_TileBlockSelected(TileBlock tileBlock, int tileValue)
         {
             _ignoreChanges = true;
@@ -130,92 +129,6 @@ namespace Spotlight
             UpdateGraphics();
 
             _ignoreChanges = false;
-
-            if (_setInteractions)
-            {
-                if (Mouse.LeftButton == MouseButtonState.Pressed)
-                {
-                    if (Keyboard.Modifiers == ModifierKeys.Shift)
-                    {
-                        _pSwitchFrom = BlockSelector.SelectedBlockValue;
-                    }
-                    else
-                    {
-                        if (_localTileSet.FireBallInteractions.Contains(BlockSelector.SelectedBlockValue))
-                        {
-                            _localTileSet.FireBallInteractions.Remove(BlockSelector.SelectedBlockValue);
-                        }
-                        else
-                        {
-                            if (_localTileSet.FireBallInteractions.Count < 8)
-                            {
-                                _localTileSet.FireBallInteractions.Add(BlockSelector.SelectedBlockValue);
-                            }
-                        }
-                    }
-                }
-                else if (Mouse.RightButton == MouseButtonState.Pressed)
-                {
-                    if (Keyboard.Modifiers == ModifierKeys.Shift)
-                    {
-                        if (_pSwitchFrom > 0)
-                        {
-                            PSwitchAlteration alteration = _localTileSet.PSwitchAlterations.Where(p => p.From == _pSwitchFrom).FirstOrDefault();
-                            if (alteration == null && _localTileSet.PSwitchAlterations.Count < 8)
-                            {
-                                alteration = new PSwitchAlteration();
-                                alteration.From = _pSwitchFrom;
-                                _localTileSet.PSwitchAlterations.Add(alteration);
-                            }
-
-                            if (alteration != null)
-                            {
-                                alteration.To = BlockSelector.SelectedBlockValue;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (_localTileSet.IceBallInteractions.Contains(BlockSelector.SelectedBlockValue))
-                        {
-                            _localTileSet.IceBallInteractions.Remove(BlockSelector.SelectedBlockValue);
-                        }
-                        else
-                        {
-                            if (_localTileSet.IceBallInteractions.Count < 8)
-                            {
-                                _localTileSet.IceBallInteractions.Add(BlockSelector.SelectedBlockValue);
-                            }
-                        }
-                    }
-                }
-                else if (Mouse.MiddleButton == MouseButtonState.Pressed)
-                {
-                    int existingFireInteraction = _localTileSet.FireBallInteractions.Where(f => f == BlockSelector.SelectedBlockValue).FirstOrDefault();
-
-                    if (existingFireInteraction > 0)
-                    {
-                        _localTileSet.FireBallInteractions.Remove(existingFireInteraction);
-                    }
-
-                    int existingIceInteraction = _localTileSet.IceBallInteractions.Where(f => f == BlockSelector.SelectedBlockValue).FirstOrDefault();
-
-                    if (existingFireInteraction > 0)
-                    {
-                        _localTileSet.IceBallInteractions.Remove(existingIceInteraction);
-                    }
-
-                    PSwitchAlteration existingPSwitchAlteration = _localTileSet.PSwitchAlterations.Where(p => p.From == BlockSelector.SelectedBlockValue).FirstOrDefault();
-
-                    if (existingPSwitchAlteration != null)
-                    {
-                        _localTileSet.PSwitchAlterations.Remove(existingPSwitchAlteration);
-                    }
-                }
-
-                BlockSelector.Update();
-                UpdateTileBlock();
-            }
         }
 
         private void TerrainList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -258,11 +171,8 @@ namespace Spotlight
             _ignoreChanges = true;
             if (LevelList.SelectedItem is LevelInfo)
             {
-                _setInteractions = false;
-                _pSwitchFrom = 0;
-                SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
-
-                SetProjectileInteractions.Visibility = TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Visible;
+                PSwitchSection.IsEnabled = IceballSection.IsEnabled = FireballSection.IsEnabled = true;
+                TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Visible;
                 MapTileDefinitions.Visibility = MapTileSection.Visibility = Visibility.Collapsed;
 
                 LevelInfo levelInfo = (LevelInfo)LevelList.SelectedItem;
@@ -283,14 +193,12 @@ namespace Spotlight
                 BlockSelector.Update(tileSet: _localTileSet, palette: palette, withProjectileInteractions: false);
                 UpdateGraphics();
                 UpdateTileBlock();
+                LoadInteractions();
             }
             else if (LevelList.SelectedItem is WorldInfo)
             {
-                _setInteractions = false;
-                _pSwitchFrom = 0;
-                SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
-
-                SetProjectileInteractions.Visibility = TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Collapsed;
+                PSwitchSection.IsEnabled = IceballSection.IsEnabled = FireballSection.IsEnabled = false;
+                TileDefinitions.Visibility = LevelTileSection.Visibility = Visibility.Collapsed;
                 MapTileDefinitions.Visibility = MapTileSection.Visibility = Visibility.Visible;
 
                 if (MapInteractionList.SelectedIndex == -1)
@@ -320,6 +228,104 @@ namespace Spotlight
                 UpdateTileBlock();
             }
         }
+
+        private void LoadInteractions()
+        {
+            FireInteraction1.Text = _localTileSet.FireBallInteractions.Count > 0 ? _localTileSet.FireBallInteractions[0].ToString("X2") : "";
+            FireInteraction2.Text = _localTileSet.FireBallInteractions.Count > 1 ? _localTileSet.FireBallInteractions[1].ToString("X2") : "";
+            FireInteraction3.Text = _localTileSet.FireBallInteractions.Count > 2 ? _localTileSet.FireBallInteractions[2].ToString("X2") : "";
+            FireInteraction4.Text = _localTileSet.FireBallInteractions.Count > 3 ? _localTileSet.FireBallInteractions[3].ToString("X2") : "";
+            FireInteraction5.Text = _localTileSet.FireBallInteractions.Count > 4 ? _localTileSet.FireBallInteractions[4].ToString("X2") : "";
+            FireInteraction6.Text = _localTileSet.FireBallInteractions.Count > 5 ? _localTileSet.FireBallInteractions[5].ToString("X2") : "";
+            FireInteraction7.Text = _localTileSet.FireBallInteractions.Count > 6 ? _localTileSet.FireBallInteractions[6].ToString("X2") : "";
+            FireInteraction8.Text = _localTileSet.FireBallInteractions.Count > 7 ? _localTileSet.FireBallInteractions[7].ToString("X2") : "";
+
+            IceInteraction1.Text = _localTileSet.IceBallInteractions.Count > 0 ? _localTileSet.IceBallInteractions[0].ToString("X2") : "";
+            IceInteraction2.Text = _localTileSet.IceBallInteractions.Count > 1 ? _localTileSet.IceBallInteractions[1].ToString("X2") : "";
+            IceInteraction3.Text = _localTileSet.IceBallInteractions.Count > 2 ? _localTileSet.IceBallInteractions[2].ToString("X2") : "";
+            IceInteraction4.Text = _localTileSet.IceBallInteractions.Count > 3 ? _localTileSet.IceBallInteractions[3].ToString("X2") : "";
+            IceInteraction5.Text = _localTileSet.IceBallInteractions.Count > 4 ? _localTileSet.IceBallInteractions[4].ToString("X2") : "";
+            IceInteraction6.Text = _localTileSet.IceBallInteractions.Count > 5 ? _localTileSet.IceBallInteractions[5].ToString("X2") : "";
+            IceInteraction7.Text = _localTileSet.IceBallInteractions.Count > 6 ? _localTileSet.IceBallInteractions[6].ToString("X2") : "";
+            IceInteraction8.Text = _localTileSet.IceBallInteractions.Count > 7 ? _localTileSet.IceBallInteractions[7].ToString("X2") : "";
+
+            PSwitchFrom1.Text = _localTileSet.PSwitchAlterations.Count > 0 ? _localTileSet.PSwitchAlterations[0].From.ToString("X2") : "";
+            PSwitchFrom2.Text = _localTileSet.PSwitchAlterations.Count > 1 ? _localTileSet.PSwitchAlterations[1].From.ToString("X2") : "";
+            PSwitchFrom3.Text = _localTileSet.PSwitchAlterations.Count > 2 ? _localTileSet.PSwitchAlterations[2].From.ToString("X2") : "";
+            PSwitchFrom4.Text = _localTileSet.PSwitchAlterations.Count > 3 ? _localTileSet.PSwitchAlterations[3].From.ToString("X2") : "";
+            PSwitchFrom5.Text = _localTileSet.PSwitchAlterations.Count > 4 ? _localTileSet.PSwitchAlterations[4].From.ToString("X2") : "";
+            PSwitchFrom6.Text = _localTileSet.PSwitchAlterations.Count > 5 ? _localTileSet.PSwitchAlterations[5].From.ToString("X2") : "";
+            PSwitchFrom7.Text = _localTileSet.PSwitchAlterations.Count > 6 ? _localTileSet.PSwitchAlterations[6].From.ToString("X2") : "";
+            PSwitchFrom8.Text = _localTileSet.PSwitchAlterations.Count > 7 ? _localTileSet.PSwitchAlterations[7].From.ToString("X2") : "";
+
+            PSwitchTo1.Text = _localTileSet.PSwitchAlterations.Count > 0 ? _localTileSet.PSwitchAlterations[0].To.ToString("X2") : "";
+            PSwitchTo2.Text = _localTileSet.PSwitchAlterations.Count > 1 ? _localTileSet.PSwitchAlterations[1].To.ToString("X2") : "";
+            PSwitchTo3.Text = _localTileSet.PSwitchAlterations.Count > 2 ? _localTileSet.PSwitchAlterations[2].To.ToString("X2") : "";
+            PSwitchTo4.Text = _localTileSet.PSwitchAlterations.Count > 3 ? _localTileSet.PSwitchAlterations[3].To.ToString("X2") : "";
+            PSwitchTo5.Text = _localTileSet.PSwitchAlterations.Count > 4 ? _localTileSet.PSwitchAlterations[4].To.ToString("X2") : "";
+            PSwitchTo6.Text = _localTileSet.PSwitchAlterations.Count > 5 ? _localTileSet.PSwitchAlterations[5].To.ToString("X2") : "";
+            PSwitchTo7.Text = _localTileSet.PSwitchAlterations.Count > 6 ? _localTileSet.PSwitchAlterations[6].To.ToString("X2") : "";
+            PSwitchTo8.Text = _localTileSet.PSwitchAlterations.Count > 7 ? _localTileSet.PSwitchAlterations[7].To.ToString("X2") : "";
+        }
+
+        private void CommitInteractions()
+        {
+            while(_localTileSet.FireBallInteractions.Count < 8)
+            {
+                _localTileSet.FireBallInteractions.Add(-1);
+            }
+
+            while (_localTileSet.IceBallInteractions.Count < 8)
+            {
+                _localTileSet.IceBallInteractions.Add(-1);
+            }
+
+            while (_localTileSet.PSwitchAlterations.Count < 8)
+            {
+                _localTileSet.PSwitchAlterations.Add( new PSwitchAlteration() { From = -1, To = -1 });
+            }
+
+            int intValue;
+            if (Int32.TryParse(FireInteraction1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[0] = intValue;
+            if (Int32.TryParse(FireInteraction2.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[1] = intValue;
+            if (Int32.TryParse(FireInteraction3.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[2] = intValue;
+            if (Int32.TryParse(FireInteraction4.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[3] = intValue;
+            if (Int32.TryParse(FireInteraction5.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[4] = intValue;
+            if (Int32.TryParse(FireInteraction6.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[5] = intValue;
+            if (Int32.TryParse(FireInteraction7.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[6] = intValue;
+            if (Int32.TryParse(FireInteraction8.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.FireBallInteractions[7] = intValue;
+
+            if (Int32.TryParse(IceInteraction1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[0] = intValue;
+            if (Int32.TryParse(IceInteraction2.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[1] = intValue;
+            if (Int32.TryParse(IceInteraction3.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[2] = intValue;
+            if (Int32.TryParse(IceInteraction4.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[3] = intValue;
+            if (Int32.TryParse(IceInteraction5.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[4] = intValue;
+            if (Int32.TryParse(IceInteraction6.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[5] = intValue;
+            if (Int32.TryParse(IceInteraction7.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[6] = intValue;
+            if (Int32.TryParse(IceInteraction8.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.IceBallInteractions[7] = intValue;
+
+            if (Int32.TryParse(PSwitchFrom1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[0].From = intValue;
+            if (Int32.TryParse(PSwitchFrom2.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[1].From = intValue;
+            if (Int32.TryParse(PSwitchFrom3.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[2].From = intValue;
+            if (Int32.TryParse(PSwitchFrom4.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[3].From = intValue;
+            if (Int32.TryParse(PSwitchFrom5.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[4].From = intValue;
+            if (Int32.TryParse(PSwitchFrom6.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[5].From = intValue;
+            if (Int32.TryParse(PSwitchFrom7.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[6].From = intValue;
+            if (Int32.TryParse(PSwitchFrom8.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[7].From = intValue;
+
+            if (Int32.TryParse(PSwitchTo1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[0].To = intValue;
+            if (Int32.TryParse(PSwitchTo2.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[1].To = intValue;
+            if (Int32.TryParse(PSwitchTo3.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[2].To = intValue;
+            if (Int32.TryParse(PSwitchTo4.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[3].To = intValue;
+            if (Int32.TryParse(PSwitchTo5.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[4].To = intValue;
+            if (Int32.TryParse(PSwitchTo6.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[5].To = intValue;
+            if (Int32.TryParse(PSwitchTo7.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[6].To = intValue;
+            if (Int32.TryParse(PSwitchTo8.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out intValue) && intValue > -1 && intValue < 256) _localTileSet.PSwitchAlterations[7].To = intValue;
+
+            _localTileSet.FireBallInteractions.RemoveAll(i => i == -1);
+            _localTileSet.IceBallInteractions.RemoveAll(i => i == -1);
+            _localTileSet.PSwitchAlterations.RemoveAll(p => p.From == -1 || p.To == -1);
+        }                       
 
         private void UpdateGraphics()
         {
@@ -416,6 +422,7 @@ namespace Spotlight
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            CommitInteractions();
             _tileService.CommitTileSet(_currentLevel.TileSetIndex, _localTileSet, _localTileTerrain, _localMapTileInteraction);
             BlockSelector.Update();
             UpdateTileBlock();
@@ -627,25 +634,6 @@ namespace Spotlight
                     UpdateTileBlock();
                     SetUnsaved();
                 }
-            }
-        }
-
-        private bool _setInteractions;
-
-        private void SetProjectileInteractions_Click(object sender, RoutedEventArgs e)
-        {
-            if (_setInteractions == false)
-            {
-                SetProjectileInteractions.Content = "Finish PSwitch/Fireball/Iceball Interactions";
-                _setInteractions = true;
-                BlockSelector.Update(withProjectileInteractions: true);
-            }
-            else
-            {
-                SetProjectileInteractions.Content = "Set PSwitch/Fireball/Iceball Interactions";
-                _pSwitchFrom = 0;
-                _setInteractions = false;
-                BlockSelector.Update(withProjectileInteractions: false);
             }
         }
 

@@ -14,7 +14,7 @@
             <Border Style="{StaticResource Section}">
                 <StackPanel DockPanel.Dock="Top">
                     <local:TileBlockSelector TileBlockSelected="TileSelector_TileBlockSelected" Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
-                    <local:GameObjectSelector x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
+                    <local:GameObjectSelector  HorizontalAlignment="Center" x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>
         </DockPanel>
@@ -126,35 +126,36 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        
-        <Border Style="{StaticResource Section}" DockPanel.Dock="Bottom">
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type Rectangle}">
-                        <Setter Property="Margin" Value="10, 0, 10, 0" />
-                        <Setter Property="Height" Value="40" />
-                        <Setter Property="Width" Value="1" />
-                        <Setter Property="Fill" Value="#FF3E3E3E" />
-                    </Style>
-                </StackPanel.Resources>
+
+
+        <StackPanel VerticalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Bottom">
+            <Border Style="{StaticResource Section}">
                 <TextBlock VerticalAlignment="Center" x:Name="PointerXY" Width="75">X: 0 Y: 0</TextBlock>
-                <Rectangle />
-                <StackPanel x:Name="TileStatus" Orientation="Horizontal">
+            </Border>
+            <Border Style="{StaticResource Section}" x:Name="TileStatus">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center">Tile Value:</TextBlock>
                     <TextBlock VerticalAlignment="Center" x:Name="TileValue" Width="25">00</TextBlock>
-                    <Rectangle />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Section}" x:Name="TerrainStatus">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center">Terrain:</TextBlock>
                     <TextBlock VerticalAlignment="Center" x:Name="TerrainDescription" Width="125">Terrain</TextBlock>
-                    <Rectangle />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Section}" x:Name="InteractionStatus">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center">Interaction:</TextBlock>
                     <TextBlock VerticalAlignment="Center" x:Name="InteractionDescription" Width="125">Interacton</TextBlock>
                 </StackPanel>
-                <StackPanel x:Name="SpriteStatus" Orientation="Horizontal">
+            </Border>
+            <Border Style="{StaticResource Section}" x:Name="SpriteStatus">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" x:Name="SpriteDescription" Width="200">Sprite</TextBlock>
                 </StackPanel>
-            </StackPanel>
-        </Border>
-        
+            </Border>
+        </StackPanel>
         <Border BorderBrush="#000000" BorderThickness="1" Margin="2" HorizontalAlignment="Stretch">
             <ScrollViewer x:Name="LevelScroller" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ScrollViewer.Background>

@@ -7,23 +7,26 @@
              mc:Ignorable="d"
              
              d:DesignHeight="450" d:DesignWidth="300">
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
         <Grid HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="175"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="0" x:Name="GameObjectTypes" SelectionChanged="GameObjectType_SelectionChanged" HorizontalAlignment="Stretch" />
-            <ComboBox Grid.Column="1" x:Name="GameObjectGroups" SelectionChanged="GameObjectGroups_SelectionChanged" HorizontalAlignment="Stretch" />
-        </Grid>
-        <TextBlock Padding="15, 0, 0, 5" x:Name="GameObjectName" />
-        <Border BorderBrush="#FF3E3E3E" BorderThickness="1" Margin="15, 0, 15, 5" HorizontalAlignment="Left">
-            <Canvas x:Name="CanvasArea" UseLayoutRounding="False" VerticalAlignment="Top">
-                <Image Canvas.Top="0" Canvas.Left="0" Width="256" Height="256" UseLayoutRounding="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GameObjectImage" DockPanel.Dock="Bottom" MouseDown="GameObjectImage_MouseDown" />
-                <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ComboBox Grid.Row="0" Grid.Column="0" x:Name="GameObjectTypes" SelectionChanged="GameObjectType_SelectionChanged" HorizontalAlignment="Stretch" />
+            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="GameObjectGroups" SelectionChanged="GameObjectGroups_SelectionChanged" HorizontalAlignment="Stretch" />
+            <TextBlock Padding="15, 0, 0, 5" x:Name="GameObjectName" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
+            <Canvas Margin="10, 0, 0, 0" x:Name="CanvasArea" SnapsToDevicePixels="True" UseLayoutRounding="False" VerticalAlignment="Top" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+                <Image Canvas.Top="0" Canvas.Left="1" Width="256" Height="256" UseLayoutRounding="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="GameObjectImage" DockPanel.Dock="Bottom" MouseDown="GameObjectImage_MouseDown" />
+                <Border BorderThickness="1" BorderBrush="Red" UseLayoutRounding="False" SnapsToDevicePixels="True" x:Name="SelectionRectangle">
                     <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
                 </Border>
             </Canvas>
-        </Border>
+        </Grid>
     </StackPanel>
 </UserControl>
