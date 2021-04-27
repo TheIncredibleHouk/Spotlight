@@ -38,22 +38,4 @@ namespace Spotlight.Models
             }
         }
     }
-
-    public class LegacyWorldInfo
-    {
-        [XmlAttribute]
-        public string name { get; set; }
-
-        [XmlAttribute]
-        public string ordinal { get; set; }
-
-        [XmlAttribute]
-        public string worldguid { get; set; }
-
-        [XmlAttribute]
-        public string lastmodified { get; set; }
-
-        [XmlAttribute]
-        public string isnoworld { get; set; }
-    }
 }

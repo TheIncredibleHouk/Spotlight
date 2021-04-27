@@ -20,25 +20,4 @@ namespace Spotlight.Models
             }
         }
     }
-
-    public class LegacyLevelInfo
-    {
-        [XmlAttribute]
-        public string name { get; set; }
-
-        [XmlAttribute]
-        public string worldguid { get; set; }
-
-        [XmlAttribute]
-        public string levelguid { get; set; }
-
-        [XmlAttribute]
-        public string leveltype { get; set; }
-
-        [XmlAttribute]
-        public string lastmodified { get; set; }
-
-        [XmlAttribute]
-        public string bonusfor { get; set; }
-    }
 }

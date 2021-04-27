@@ -31,58 +31,6 @@ namespace Spotlight.Services
             return worldList;
         }
 
-        public List<World> ConvertFromLegacy(List<LegacyWorld> legacyWorld, LegacyProject legacyProject)
-        {
-            return legacyWorld.Select(w => new World()
-            {
-                ClearTileIndex = int.Parse(w.clearvalue),
-                Id = Guid.Parse(w.guid),
-                Name = w.name,
-                MusicValue = int.Parse(w.music, System.Globalization.NumberStyles.HexNumber),
-                PaletteId = legacyProject.paletteinfo[int.Parse(w.palette)].guid,
-                Pointers = w.pointers.Select(p => new WorldPointer()
-                {
-                    LevelId = Guid.Parse(p.levelguid),
-                    X = int.Parse(p.x),
-                    Y = int.Parse(p.y) - 0x11
-                }).ToList(),
-                ScreenLength = int.Parse(w.length),
-                TileTableIndex = int.Parse(w.graphicsbank, System.Globalization.NumberStyles.HexNumber),
-                TileData = w.worlddata.Split(',').Select(d => int.Parse(d)).Skip(0x440).ToArray()
-            }).ToList();
-        }
-
-        public List<LegacyWorld> GetLegacyWorlds(string basePath, List<LegacyWorldInfo> legacyWorldInfos)
-        {
-            List<LegacyWorld> legacyWorlds = new List<LegacyWorld>();
-            foreach (var legacyWorldInfo in legacyWorldInfos)
-            {
-                string filePath = basePath + @"\" + legacyWorldInfo.worldguid + ".map";
-                if (File.Exists(filePath))
-                {
-                    using (FileStream fileStream = File.OpenRead(filePath))
-                    {
-                        using (XmlReader xmlReader = XmlReader.Create(fileStream))
-                        {
-                            try
-                            {
-                                LegacyWorld legacyWorld = ((LegacyWorld)new XmlSerializer(typeof(LegacyWorld)).Deserialize(xmlReader));
-                                legacyWorld.name = legacyWorldInfo.name;
-                                legacyWorlds.Add(legacyWorld);
-                            }
-                            catch (Exception e)
-                            {
-                                _errorService.LogError(e);
-                                return null;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return legacyWorlds;
-        }
-
         public void NotifyUpdate(WorldInfo worldInfo)
         {
             if (WorldUpdated != null)

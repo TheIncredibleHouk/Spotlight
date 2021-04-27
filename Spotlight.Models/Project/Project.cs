@@ -147,29 +147,4 @@ namespace Spotlight.Models
         public Dictionary<string, List<KeyValuePair<string, string>>> TextTable { get; set; }
         public Color[] RgbPalette { get; set; }
     }
-
-    [XmlRoot("project")]
-    public class LegacyProject
-    {
-        [XmlAttribute]
-        public string name { get; set; }
-
-        [XmlAttribute]
-        public string guid { get; set; }
-
-        [XmlAttribute]
-        public string romfile { get; set; }
-
-        [XmlArray("paletteinfo")]
-        [XmlArrayItem("palette")]
-        public List<LegacyPalette> paletteinfo { get; set; }
-
-        [XmlArray("worldinfo")]
-        [XmlArrayItem("world")]
-        public List<LegacyWorldInfo> worldinfo { get; set; }
-
-        [XmlArray("levelinfo")]
-        [XmlArrayItem("level")]
-        public List<LegacyLevelInfo> levelinfo { get; set; }
-    }
 }

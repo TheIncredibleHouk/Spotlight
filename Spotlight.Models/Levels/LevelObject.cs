@@ -110,19 +110,4 @@ namespace Spotlight.Models
         [JsonIgnore]
         public Rect VisualRectangle { get; private set; }
     }
-
-    public class LegacyLevelObject
-    {
-        [XmlAttribute]
-        public string x { get; set; }
-
-        [XmlAttribute]
-        public string y { get; set; }
-
-        [XmlAttribute]
-        public string value { get; set; }
-
-        [XmlAttribute]
-        public string property { get; set; }
-    }
 }

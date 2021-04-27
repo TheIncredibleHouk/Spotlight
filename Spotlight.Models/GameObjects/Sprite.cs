@@ -51,31 +51,4 @@ namespace Spotlight.Models
         public bool Overlay { get; set; }
         public string[] CustomPalette { get; set; }
     }
-
-    public class LegacySprite
-    {
-        [XmlAttribute]
-        public string property { get; set; }
-
-        [XmlAttribute]
-        public string x { get; set; }
-
-        [XmlAttribute]
-        public string y { get; set; }
-
-        [XmlAttribute]
-        public string value { get; set; }
-
-        [XmlAttribute]
-        public string palette { get; set; }
-
-        [XmlAttribute]
-        public string horizontalflip { get; set; }
-
-        [XmlAttribute]
-        public string verticalflip { get; set; }
-
-        [XmlAttribute]
-        public string table { get; set; }
-    }
 }

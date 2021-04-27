@@ -242,46 +242,5 @@ namespace Spotlight.Services
                 GameObjectUpdated(globalGameObject);
             }
         }
-
-        public List<GameObject> ConvertFromLegacy(string fileName)
-        {
-            List<GameObject> gameObjects = new List<GameObject>();
-
-            XElement root = XDocument.Load(fileName).Element("sprites");
-            foreach (var x in root.Elements("spritedefinition"))
-            {
-                SpriteDefinition sp = new SpriteDefinition();
-                sp.LoadFromElement(x);
-                try
-                {
-                    gameObjects.Add(new GameObject()
-                    {
-                        GameId = Int32.Parse(sp.InGameId, System.Globalization.NumberStyles.HexNumber),
-                        Name = sp.Name,
-                        GameObjectType = (GameObjectType)int.Parse(sp.Class),
-                        Properties = sp.PropertyDescriptions,
-                        Group = sp.Group,
-                        Sprites = sp.Sprites.Select(s => new Sprite()
-                        {
-                            PropertiesAppliedTo = s.Property?.Select(p => int.Parse(p)).ToList(),
-                            PaletteIndex = Int32.Parse(s.Palette),
-                            HorizontalFlip = bool.Parse(s.HorizontalFlip),
-                            VerticalFlip = bool.Parse(s.VerticalFlip),
-                            Overlay = s.Table == "-1",
-                            TileTableAddress = s.Table == "-1" ? "0x0" : "0x" + (Int32.Parse(s.Table, System.Globalization.NumberStyles.HexNumber) * 0x400).ToString("X2"),
-                            TileValue = "0x" + s.Value,
-                            X = Int32.Parse(s.X),
-                            Y = int.Parse(s.Y)
-                        }).ToList()
-                    });
-                }
-                catch (Exception e)
-                {
-                    _errorService.LogError(e, "Sprite name: " + sp.Name);
-                }
-            }
-
-            return gameObjects;
-        }
     }
 }

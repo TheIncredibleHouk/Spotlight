@@ -54,40 +54,4 @@ namespace Spotlight.Models
             }
         }
     }
-
-    public class LegacyLevelPointer
-    {
-        [XmlAttribute]
-        public string levelguid { get; set; }
-
-        [XmlAttribute]
-        public string exittype { get; set; }
-
-        [XmlAttribute]
-        public string xexit { get; set; }
-
-        [XmlAttribute]
-        public string yexit { get; set; }
-
-        [XmlAttribute]
-        public string xenter { get; set; }
-
-        [XmlAttribute]
-        public string yenter { get; set; }
-
-        [XmlAttribute]
-        public string exitslevel { get; set; }
-
-        [XmlAttribute]
-        public string world { get; set; }
-
-        [XmlAttribute]
-        public string redraw { get; set; }
-
-        [XmlAttribute]
-        public string keepobjects { get; set; }
-
-        [XmlAttribute]
-        public string disableweather { get; set; }
-    }
 }

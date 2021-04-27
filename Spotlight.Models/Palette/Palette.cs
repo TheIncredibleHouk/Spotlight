@@ -34,24 +34,4 @@ namespace Spotlight.Models
         [JsonIgnore]
         public Color[][] RgbColors { get; set; }
     }
-
-    public class LegacyPalette
-    {
-        public LegacyPalette()
-        {
-            guid = Guid.NewGuid();
-        }
-
-        [XmlAttribute]
-        public string background { get; set; }
-
-        [XmlAttribute]
-        public string data { get; set; }
-
-        [XmlAttribute]
-        public string name { get; set; }
-
-        [XmlAttribute]
-        public Guid guid { get; set; }
-    }
 }
