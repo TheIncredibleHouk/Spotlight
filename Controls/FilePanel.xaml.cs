@@ -258,6 +258,11 @@ namespace Spotlight
 
             return false;
         }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     public class NameUpdate

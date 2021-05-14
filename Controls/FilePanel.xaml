@@ -26,7 +26,7 @@
                             <Button Click="Open_Clicked">Open</Button>
                             <Button Click="Rename_Click">Rename</Button>
                             <Button x:Name="MoveButton" Click="Move_Click">Move</Button>
-                            <Button>Delete</Button>
+                            <Button x:Name="DeleteButton" Click="DeleteButton_Click">Delete</Button>
                         </StackPanel>
                     </StackPanel>
                 </Border>
