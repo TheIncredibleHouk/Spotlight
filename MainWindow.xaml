@@ -11,6 +11,7 @@
         Padding="5"
         Icon="Controls\Icons\Spotlight.png"
         Closed="Window_Closed"
+        Loaded="Window_Loaded"
         Background="#303038"
         SizeChanged="Window_SizeChanged"
         LocationChanged="Window_LocationChanged"

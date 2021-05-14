@@ -135,8 +135,6 @@ namespace Spotlight.Models
 
         public string Name { get; set; }
         public string DirectoryPath { get; set; }
-        public string RomFilePath { get; set; }
-
         public List<Palette> Palettes { get; set; }
         public List<WorldInfo> WorldInfo { get; set; }
         public WorldInfo EmptyWorld { get; set; }

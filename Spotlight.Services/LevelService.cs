@@ -154,7 +154,12 @@ namespace Spotlight.Services
             File.Delete(priorFileName);
         }
 
-        public void SaveLevel(Level Level, string basePath = null)
+        private string SafeFileName(Level level)
+        {
+            return level.Name.Replace("!", "").Replace("?", "");
+        }
+
+        public void SaveLevel(Level level, string basePath = null, bool asTemp = false)
         {
             try
             {
@@ -163,21 +168,65 @@ namespace Spotlight.Services
                     basePath = _project.DirectoryPath;
                 }
 
-                string LevelDirectory = basePath + @"\levels";
+                string levelDirectory = basePath + @"\levels";
 
-                if (!Directory.Exists(LevelDirectory))
+                if (!Directory.Exists(levelDirectory))
                 {
-                    Directory.CreateDirectory(LevelDirectory);
+                    Directory.CreateDirectory(levelDirectory);
                 }
 
-                string safeFileName = Level.Name.Replace("!", "").Replace("?", "");
+                string safeFileName = SafeFileName(level);
 
-                File.WriteAllText(string.Format(@"{0}\{1}.json", LevelDirectory, safeFileName), JsonConvert.SerializeObject(Level, Newtonsoft.Json.Formatting.Indented));
+                if (asTemp)
+                {
+                    safeFileName = "~" + safeFileName;
+                }
+
+                File.WriteAllText(string.Format(@"{0}\{1}.json", levelDirectory, safeFileName), JsonConvert.SerializeObject(level, Newtonsoft.Json.Formatting.Indented));
             }
             catch (Exception e)
             {
                 _errorService.LogError(e);
             }
+        }
+
+        public void CleanUpTemp(Level level)
+        {
+            string tempFile = _project.DirectoryPath + SafeFileName(level);
+
+            if (File.Exists(tempFile)){
+                File.Delete(tempFile);
+            }
+        }
+
+        public  void CleanUpTemps()
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
+            foreach(FileInfo fileInfo in directoryInfo.GetFiles())
+            {
+                if (fileInfo.Name.StartsWith("~"))
+                {
+                    File.Delete(fileInfo.FullName);
+                }
+            }
+        }
+
+        public IEnumerable<FileInfo> FindTemps()
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
+            return directoryInfo.GetFiles().Where(file => file.Name.StartsWith("~"));
+        }
+
+        public void SwampTemp(FileInfo tempFile)
+        {
+            string originalFile = _project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1);
+            if (File.Exists(originalFile))
+            {
+                string backupFile = _project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1) + ".bak";
+                File.Move(originalFile, backupFile);
+            }
+
+            File.Move(tempFile.FullName, originalFile);
         }
     }
 }

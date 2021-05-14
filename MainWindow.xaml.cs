@@ -37,7 +37,6 @@ namespace Spotlight
             _config = new Configuration();
 
             LoadConfiguration();
-
             InitializeComponent();
 
             _ProjectPanel.ProjectService = _projectService;
@@ -79,20 +78,20 @@ namespace Spotlight
 
         private void _ProjectPanel_RomSaved()
         {
-            if (_projectService.RomFileName == null || !File.Exists(_projectService.RomFileName))
+            if (_config.LastRomPath == null || !File.Exists(_config.LastRomPath))
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    _projectService.RomFileName = openFileDialog.FileName;
+                    _config.LastRomPath = openFileDialog.FileName;
                 }
             }
 
-            if (_projectService.RomFileName != null)
+            if (_config.LastRomPath != null)
             {
                 try
                 {
-                    _romService.CompileRom(_projectService.RomFileName);
+                    _romService.CompileRom(_config.LastRomPath);
 
                     if (_errorService.CurrentLog.Count > 0)
                     {
@@ -102,6 +101,8 @@ namespace Spotlight
                     {
                         AlertWindow.Alert("Rom compiled!");
                     }
+
+                    SaveConfiguration();
                 }
                 catch (Exception e)
                 {
@@ -428,10 +429,14 @@ namespace Spotlight
         {
             _config.WindowLocation = new System.Drawing.Rectangle((int)this.Left, (int)this.Top, (int)this.Width, (int)this.Height);
         }
+        private string GetConfigFilePath()
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/config.json";
+        }
 
         private void LoadConfiguration()
         {
-            if (File.Exists("config.json"))
+            if (File.Exists(GetConfigFilePath()))
             {
                 _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("config.json"));
                 this.Left = _config.WindowLocation.X;
@@ -443,12 +448,13 @@ namespace Spotlight
 
         private void SaveConfiguration()
         {
-            File.WriteAllText("config.json", JsonConvert.SerializeObject(_config, Newtonsoft.Json.Formatting.Indented));
+            File.WriteAllText(GetConfigFilePath(), JsonConvert.SerializeObject(_config, Newtonsoft.Json.Formatting.Indented));
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             SaveConfiguration();
+            _levelService.CleanUpTemps();
         }
 
         private void FilePanel_NameUpdated(NameUpdate nameUpdate)
@@ -479,6 +485,22 @@ namespace Spotlight
         private void FilePanel_LevelTreeUpdated()
         {
             _projectService.SaveProject();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            IEnumerable<FileInfo> residualTempFiles = _levelService.FindTemps();
+            foreach (FileInfo fileInfo in residualTempFiles)
+            {
+
+                if (ConfirmationWindow.Confirm($"Unsaved level data {fileInfo.Name}, would you like to swap this out?") == System.Windows.Forms.DialogResult.Yes)
+                {
+                    _levelService.SwampTemp(fileInfo);
+                }
+            }
+
+            _levelService.CleanUpTemps();
         }
     }
 }

@@ -4,6 +4,8 @@ using Spotlight.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -116,6 +118,7 @@ namespace Spotlight
             _initializing = false;
             _levelRenderer.Ready();
             Update();
+            AutoSave();
         }
 
         private void _levelService_LevelUpdated(LevelInfo levelInfo)
@@ -1634,6 +1637,22 @@ namespace Spotlight
             _cursorBitmap.WritePixels(updateRect, TileSelector.GetTileBlockImage(), 16 * 4, 0, 0);
             _cursorBitmap.AddDirtyRect(updateRect);
             _cursorBitmap.Unlock();
+        }
+
+        private async void AutoSave()
+        {
+            _ = Task.Run(() =>
+              {
+                  while (true)
+                  {
+                      lock (_level)
+                      {
+                          _levelService.SaveLevel(_level, asTemp: true);
+                      }
+
+                      Thread.Sleep(30 * 1000);
+                  }
+              });
         }
     }
 
