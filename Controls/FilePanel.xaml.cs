@@ -261,7 +261,15 @@ namespace Spotlight
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-
+            IInfo iInfo = (IInfo)((TreeViewItem)WorldTree.SelectedItem).DataContext;
+            
+            if(ConfirmationWindow.Confirm($"Are you sure you want to remove the level {iInfo.Name}?") == System.Windows.Forms.DialogResult.Yes)
+            {
+                if(iInfo is LevelInfo)
+                {
+                    _levelService.RemoveLevel((LevelInfo) iInfo);
+                }
+            }
         }
     }
 

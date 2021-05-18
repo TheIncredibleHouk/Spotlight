@@ -11,9 +11,10 @@
         Height="135"
         Width="400"
         KeyDown="Window_KeyDown"
+        SizeToContent="Height"
         Title="Confirmation Window" d:DesignHeight="134.688">
     <StackPanel Orientation="Vertical">
-        <TextBlock HorizontalAlignment="Center" x:Name="DisplayText" Margin="0, 10, 0, 10" >This is a sample display text!</TextBlock>
+        <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" x:Name="DisplayText" Margin="0, 10, 0, 10" >This is a sample display text!</TextBlock>
         <Border BorderThickness="0, 1, 0, 0" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button x:Name="OkButton" Click="OkButton_Click">Yes</Button>

@@ -48,9 +48,29 @@ namespace Spotlight.Services
 
             _project = project;
 
+            foreach(WorldInfo worldInfo in project.WorldInfo)
+            {
+                LinkLevelTree(worldInfo);
+            }
+
+            LinkLevelTree(project.EmptyWorld);
+
             return project;
         }
 
+        private void LinkLevelTree(IInfo iInfo)
+        {
+            if(iInfo.SublevelsInfo == null)
+            {
+                return;
+            }
+
+            foreach(IInfo subInfo in iInfo.SublevelsInfo)
+            {
+                subInfo.ParentInfo = iInfo;
+                LinkLevelTree(subInfo);
+            }
+        }
         public void SaveProject(Project project, string basePath)
         {
             try

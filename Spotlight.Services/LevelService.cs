@@ -39,6 +39,24 @@ namespace Spotlight.Services
             LevelsUpdated(levelInfo);
         }
 
+        public void RemoveLevel(LevelInfo info)
+        {
+            int levelIndex = info.ParentInfo.SublevelsInfo.IndexOf(info);
+            info.ParentInfo.SublevelsInfo.Remove(info);
+            info.ParentInfo.SublevelsInfo.InsertRange(levelIndex, info.SublevelsInfo ?? new List<LevelInfo>());
+
+            string fileName = _project.DirectoryPath + SafeFileName(info);
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            if(LevelsUpdated != null)
+            {
+                LevelsUpdated((LevelInfo) info.ParentInfo.SublevelsInfo[levelIndex]);
+            }
+        }
+
         public List<IInfo> AllWorldsLevels()
         {
             List<IInfo> infos = new List<IInfo>();
@@ -157,6 +175,11 @@ namespace Spotlight.Services
         private string SafeFileName(Level level)
         {
             return level.Name.Replace("!", "").Replace("?", "");
+        }
+
+        private string SafeFileName(LevelInfo levelInfo)
+        {
+            return levelInfo.Name.Replace("!", "").Replace("?", "");
         }
 
         public void SaveLevel(Level level, string basePath = null, bool asTemp = false)

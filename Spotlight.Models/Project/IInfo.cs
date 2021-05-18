@@ -8,6 +8,7 @@ namespace Spotlight.Models
         Guid Id { get; set; }
         string Name { get; set; }
         InfoType InfoType { get; }
+        IInfo ParentInfo { get; set; }
         List<LevelInfo> SublevelsInfo { get; set; }
         string DisplayName { get; }
     }

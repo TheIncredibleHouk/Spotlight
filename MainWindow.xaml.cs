@@ -454,6 +454,7 @@ namespace Spotlight
         private void Window_Closed(object sender, EventArgs e)
         {
             SaveConfiguration();
+            _projectService.SaveProject();
             _levelService.CleanUpTemps();
         }
 

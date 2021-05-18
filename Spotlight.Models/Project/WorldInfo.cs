@@ -11,6 +11,10 @@ namespace Spotlight.Models
         public string Name { get; set; }
         public Guid Id { get; set; }
         public DateTime LastModified { get; set; }
+
+        [JsonIgnore]
+        public IInfo ParentInfo { get; set; }
+
         [JsonIgnore]
         public List<LevelInfo> SublevelsInfo
         {
