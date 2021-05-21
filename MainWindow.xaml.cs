@@ -490,6 +490,10 @@ namespace Spotlight
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if(_levelService == null)
+            {
+                return;
+            }
 
             IEnumerable<FileInfo> residualTempFiles = _levelService.FindTemps();
             foreach (FileInfo fileInfo in residualTempFiles)
