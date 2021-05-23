@@ -66,7 +66,11 @@ namespace Spotlight
 
         private TreeViewItem BuildTreeViewItem(WorldInfo worldInfo)
         {
-            TreeViewItem treeViewItem = new TreeViewItem() { Header = worldInfo.Name, DataContext = worldInfo };
+            TreeViewItem treeViewItem = new TreeViewItem()
+            {
+                Header = worldInfo.Name,
+                DataContext = worldInfo
+            };
             foreach (var levelInfo in worldInfo.LevelsInfo ?? new List<LevelInfo>())
             {
                 treeViewItem.Items.Add(BuildTreeViewItem(levelInfo));
@@ -76,7 +80,11 @@ namespace Spotlight
 
         private TreeViewItem BuildTreeViewItem(LevelInfo levelInfo)
         {
-            TreeViewItem treeViewItem = new TreeViewItem() { Header = levelInfo.Name, DataContext = levelInfo };
+            TreeViewItem treeViewItem = new TreeViewItem()
+            {
+                Header = levelInfo.Name + $" ({(levelInfo.Size / 1024.0).ToString("#.##")} kb)",
+                DataContext = levelInfo
+            };
 
             if (levelInfo.SublevelsInfo != null)
             {
@@ -262,12 +270,12 @@ namespace Spotlight
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             IInfo iInfo = (IInfo)((TreeViewItem)WorldTree.SelectedItem).DataContext;
-            
-            if(ConfirmationWindow.Confirm($"Are you sure you want to remove the level {iInfo.Name}?") == System.Windows.Forms.DialogResult.Yes)
+
+            if (ConfirmationWindow.Confirm($"Are you sure you want to remove the level {iInfo.Name}?") == System.Windows.Forms.DialogResult.Yes)
             {
-                if(iInfo is LevelInfo)
+                if (iInfo is LevelInfo)
                 {
-                    _levelService.RemoveLevel((LevelInfo) iInfo);
+                    _levelService.RemoveLevel((LevelInfo)iInfo);
                 }
             }
         }

@@ -61,7 +61,7 @@ namespace Spotlight.Models
                         throw new OverflowException("Data length too large for pattern.");
                     }
 
-                    if (RepeatTimes >= 0x40)
+                    if (RepeatTimes >= 0x41)
                     {
                         throw new OverflowException("Repeat length too large for pattern.");
                     }

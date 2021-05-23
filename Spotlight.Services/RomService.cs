@@ -110,6 +110,7 @@ namespace Spotlight.Services
                         _levelAddressTable.Add(_levelIndexTable[level.Id], _dataPointer);
 
                         _dataPointer = WriteLevel(level, _dataPointer);
+                        levelInfo.Size = level.CompressedData.Length;
                         if (_dataPointer >= 0xFC000)
                         {
                             return -1;
@@ -308,12 +309,13 @@ namespace Spotlight.Services
                 region = "Compressing level data";
 
                 byte[] levelData = level.CompressedData ?? _compressionService.CompressLevel(level);
-
+                
                 if (level.CompressedData == null)
                 {
                     level.CompressedData = levelData;
                     _levelService.SaveLevel(level);
                 }
+
                 region = "Writing compressed level data";
                 for (int i = 0; i < levelData.Length; i++)
                 {

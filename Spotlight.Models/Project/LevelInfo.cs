@@ -7,6 +7,7 @@ namespace Spotlight.Models
 {
     public class LevelInfo : IInfo
     {
+        public int Size { get; set; }
         public string Name { get; set; }
         public Guid Id { get; set; }
         public DateTime LastModified { get; set; }

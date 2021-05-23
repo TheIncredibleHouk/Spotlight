@@ -11,6 +11,7 @@ namespace Spotlight.Models
         IInfo ParentInfo { get; set; }
         List<LevelInfo> SublevelsInfo { get; set; }
         string DisplayName { get; }
+        int Size { get; set; }
     }
 
     public enum InfoType

@@ -138,7 +138,7 @@ namespace Spotlight
             byte repeatTile;
             int repeatCount = 1;
             repeatTile = NextByte();
-            while (repeatTile == NextByte() && repeatCount < 0x3F)
+            while (repeatTile == NextByte() && repeatCount < 0x40)
             {
                 repeatCount++;
             }
@@ -269,20 +269,15 @@ namespace Spotlight
                 return 0xFF;
             }
 
-            int data = _levelDataAccessor.GetData(currentPoint.XPointer + (currentPoint.PagePointer * 0x10), currentPoint.YPointer);
+            int data = _levelDataAccessor.GetData(currentPoint.XPointer, currentPoint.YPointer);
             currentPoint.XPointer++;
-            if (currentPoint.XPointer >= 0x10)
+            if (currentPoint.XPointer >= 0x10 * _level.ScreenLength)
             {
                 currentPoint.XPointer = 0;
                 currentPoint.YPointer++;
                 if (currentPoint.YPointer >= 27)
                 {
-                    currentPoint.YPointer = 0;
-                    currentPoint.PagePointer++;
-                    if (currentPoint.PagePointer >= _level.ScreenLength)
-                    {
-                        currentPoint.EOD = true;
-                    }
+                    currentPoint.EOD = true;
                 }
             }
 
@@ -294,13 +289,8 @@ namespace Spotlight
             currentPoint.XPointer--;
             if (currentPoint.XPointer < 0)
             {
-                currentPoint.XPointer = 0x0F;
+                currentPoint.XPointer = (_level.ScreenLength * 0x10) - 1;
                 currentPoint.YPointer--;
-                if (currentPoint.YPointer < 0)
-                {
-                    currentPoint.YPointer = 26;
-                    currentPoint.PagePointer--;
-                }
             }
         }
 

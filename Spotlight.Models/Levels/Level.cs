@@ -43,7 +43,10 @@ namespace Spotlight.Models
                     int[] tileCount = new int[256];
                     foreach (var data in TileData)
                     {
-                        tileCount[data]++;
+                        if (data != 0xFF)
+                        {
+                            tileCount[data]++;
+                        }
                     }
 
                     int highestTileCount = -1;
@@ -52,6 +55,7 @@ namespace Spotlight.Models
                         if (tileCount[i] > highestTileCount)
                         {
                             _mostCommonTile = i;
+                            highestTileCount = tileCount[i];
                         }
                     }
                 }

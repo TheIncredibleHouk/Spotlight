@@ -135,7 +135,7 @@ namespace Spotlight.Services
             {
                 if (levelInfo.SublevelsInfo != null && levelInfo.SublevelsInfo.Count > 0)
                 {
-                    returnLevelInfos.AddRange(levelInfo.SublevelsInfo);
+                    returnLevelInfos.AddRange(FlattenLevelInfos(levelInfo.SublevelsInfo));
                 }
 
                 returnLevelInfos.Add(levelInfo);

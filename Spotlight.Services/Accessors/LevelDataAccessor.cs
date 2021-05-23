@@ -30,7 +30,12 @@ namespace Spotlight.Services
         {
             if (x < 0 || y < 0 || x >= 240 || y >= 27)
             {
-                return -1;
+                throw new System.Exception("Invalid data range.");
+            }
+
+            if(x / 16 > _level.ScreenLength)
+            {
+                return 0x41;
             }
 
             int dataOffset = (y * DATA_ROW_LENGTH) + x;
