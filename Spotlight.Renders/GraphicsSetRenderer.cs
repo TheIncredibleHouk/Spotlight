@@ -24,12 +24,15 @@ namespace Spotlight.Renderers
         private Palette _palette;
         private int _paletteIndex = 0;
 
-        public void Update(Palette palette = null, int? paletteIndex = null)
+        public void Update(Palette palette = null, int? paletteIndex = null, TileFormat? tileFormat = null)
         {
             _palette = palette ?? _palette;
             _paletteIndex = paletteIndex ?? _paletteIndex;
+            _tileFormat = tileFormat ?? _tileFormat;
             Update();
         }
+
+        private TileFormat _tileFormat = TileFormat._8x8;
 
         public void Update()
         {
@@ -41,16 +44,39 @@ namespace Spotlight.Renderers
             int maxRow = 16;
             int maxCol = 16;
 
-            for (int row = 0; row < maxRow; row++)
+            if (_tileFormat == TileFormat._8x8)
             {
-                for (int col = 0; col < maxCol; col++)
+                for (int row = 0; row < maxRow; row++)
                 {
-                    int tileValue = row * 16 + col;
-                    int x = col * 8, y = row * 8;
+                    for (int col = 0; col < maxCol; col++)
+                    {
+                        int tileValue = row * 16 + col;
+                        int x = col * 8, y = row * 8;
 
-                    RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tileValue), _buffer, _palette.RgbColors[_paletteIndex]);
+                        RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tileValue), _buffer, _palette.RgbColors[_paletteIndex]);
+                    }
+                }
+            }
+            else if (_tileFormat == TileFormat._8x16)
+            {
+                for (int row = 0; row < maxRow; row++)
+                {
+                    for (int col = 0; col < maxCol; col++)
+                    {
+                        int tileValue = row * 16 + col;
+                        int x = ((col / 2) * 8) + ((row % 2) * 64);
+                        int y = ((col % 2) * 8) + ((row / 2) * 16);
+
+                        RenderTile(x, y, _graphicsAccessor.GetRelativeTile(tileValue), _buffer, _palette.RgbColors[_paletteIndex]);
+                    }
                 }
             }
         }
+    }
+
+    public enum TileFormat
+    {
+        _8x8,
+        _8x16
     }
 }

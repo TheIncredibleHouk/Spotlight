@@ -45,6 +45,7 @@ namespace Spotlight
             _ProjectPanel.ObjectEditorOpened += OpenGameObjectEditor;
             _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
             _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
+            _ProjectPanel.GraphicsEditorClicked += _ProjectPanel_GraphicsEditorClicked;
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
             Activated += MainWindow_Activated;
 
@@ -54,6 +55,25 @@ namespace Spotlight
             {
                 _ProjectPanel.LoadProject(_config.LastProjectPath);
             }
+        }
+
+        private GraphicsWindow _graphicsWindow;
+        private void _ProjectPanel_GraphicsEditorClicked()
+        {
+            if(_graphicsWindow == null)
+            {
+                _graphicsWindow = new GraphicsWindow(_graphicsService, _tileService, _palettesService);
+                _graphicsWindow.Closed += _graphicsWindow_Closed;
+                _graphicsWindow.Show();
+            }
+
+            _graphicsWindow.Focus();
+        }
+
+        private void _graphicsWindow_Closed(object sender, EventArgs e)
+        {
+            _graphicsWindow.Closed -= _graphicsWindow_Closed;
+            _graphicsWindow = null;
         }
 
         private void _worldService_WorldUpdated(WorldInfo worldInfo)

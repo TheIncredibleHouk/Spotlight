@@ -27,6 +27,16 @@ namespace Spotlight.Services
             _overlayTable = extraTable;
         }
 
+        public GraphicsAccessor(Tile[] fullTable)
+        {
+            _relativeTable = new Tile[256];
+
+            for (int i = 0; i < 256; i++)
+            {
+                _relativeTable[i] = fullTable[i];
+            }
+        }
+
         public Tile GetAbsoluteTile(int tileTableIndex, int tileIndex)
         {
             int absoluteTileIndex = tileTableIndex * 0x40 + tileIndex;
@@ -45,6 +55,14 @@ namespace Spotlight.Services
         public Tile GetOverlayTile(int bank, int tileIndex)
         {
             return _overlayTable[bank * 0x40 + tileIndex];
+        }
+
+        public void SetFullTable(Tile[] fullTable)
+        {
+            for (int i = 0; i < 256; i++)
+            {
+                _relativeTable[i] = fullTable[i];
+            }
         }
 
         public void SetTopTable(Tile[] staticTable)

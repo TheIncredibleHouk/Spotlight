@@ -346,6 +346,16 @@ namespace Spotlight
                 {
                     if (tileValue != TileSelector.SelectedBlockValue)
                     {
+                        TileChange tileChange = new TileChange(0, 0, Level.BLOCK_WIDTH, Level.BLOCK_HEIGHT);
+                        for (int row = 0; row < Level.BLOCK_HEIGHT; row++){
+                            for(int col = 0; col < Level.BLOCK_WIDTH; col++)
+                            {
+                                tileChange.Data[col, row] = _levelDataAccessor.GetData(col, row);
+                            }
+                        }
+
+                        _historyService.UndoTiles.Push(tileChange);
+
                         _levelDataAccessor.ReplaceValue(tileValue, TileSelector.SelectedBlockValue);
                         Update();
                     }

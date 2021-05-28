@@ -16,8 +16,8 @@
             <ColumnDefinition />
             <ColumnDefinition Width="40" />
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="KeyTextbox" TextAlignment="Right" VerticalContentAlignment="Center" Foreground="#FFB5B8C1" Grid.Column="0" />
-        <TextBox x:Name="ValueTextbox" Foreground="#FFB5B8C1" VerticalContentAlignment="Center" Grid.Column="1" />
+        <TextBox x:Name="KeyTextbox" Text="meow" TextAlignment="Right" Grid.Column="0" />
+        <TextBox x:Name="ValueTextbox" Grid.Column="1" />
         <Button Grid.Column="2" Width="25" Height="25" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="DeleteButton" Click="DeleteButton_Click" Style="{StaticResource CloseButton}" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}" Content="×" />
     </Grid>
 </UserControl>

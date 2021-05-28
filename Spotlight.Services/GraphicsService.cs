@@ -149,6 +149,12 @@ namespace Spotlight.Services
             return _extraTiles.ToArray();
         }
 
+        public Tile[] GetExtraTilesAtAddress(int address)
+        {
+            int tilesSkipped = address / 64;
+            return _extraTiles.Skip(tilesSkipped).Take(256).ToArray();
+        }
+
         public Tile[] GetTileSection(int tileTableIndex)
         {
             return _tiles.Skip(tileTableIndex * 0x40).Take(0x80).ToArray();
@@ -167,6 +173,12 @@ namespace Spotlight.Services
         public List<Color> GetColors()
         {
             return _project.RgbPalette.ToList();
+        }
+
+        public Tile[] GetTilesAtAddress(int address)
+        {
+            int tilesSkipped = address / 64;
+            return _tiles.Skip(tilesSkipped).Take(256).ToArray();
         }
     }
 }

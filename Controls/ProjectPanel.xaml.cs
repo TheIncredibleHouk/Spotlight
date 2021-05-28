@@ -34,6 +34,9 @@ namespace Spotlight
         public delegate void NewLevelEventHandler();
 
         public event NewLevelEventHandler NewLevelClicked;
+        
+        public delegate void GraphicsEditorEventHandlder();
+        public event GraphicsEditorEventHandlder GraphicsEditorClicked;
 
         public ProjectService ProjectService { get; set; }
         public RomService RomService { get; set; }
@@ -56,7 +59,7 @@ namespace Spotlight
         {
             Project project = ProjectService.LoadProject(filePath);
             ProjectLoaded(project);
-            ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
+            GraphicsEditButton.IsEnabled = ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
         }
 
         private void SaveProjectButton_Click(object sender, RoutedEventArgs e)
@@ -103,6 +106,11 @@ namespace Spotlight
         private void PaletteButton_Click(object sender, RoutedEventArgs e)
         {
             GlobalPanels.OpenPaletteEditor();
+        }
+
+        private void GraphicsEditButton_Click(object sender, RoutedEventArgs e)
+        {
+            GraphicsEditorClicked();
         }
     }
 }

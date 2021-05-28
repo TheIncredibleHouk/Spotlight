@@ -69,6 +69,12 @@
                         <TextBlock>Edit Text</TextBlock>
                     </StackPanel>
                 </Button>
+                <Button x:Name="GraphicsEditButton" Click="GraphicsEditButton_Click"  IsEnabled="False">
+                    <StackPanel Orientation="Vertical">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="16" />
+                        <TextBlock>Edit Graphics</TextBlock>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Border>
     </StackPanel>

@@ -110,6 +110,9 @@
     <Compile Include="Controls\GameObjectSelector.xaml.cs">
       <DependentUpon>GameObjectSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\GraphicsWindow.xaml.cs">
+      <DependentUpon>GraphicsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\IDetachEvents.cs" />
     <Compile Include="Controls\InputWindow.xaml.cs">
       <DependentUpon>InputWindow.xaml</DependentUpon>
@@ -123,6 +126,9 @@
     </Compile>
     <Compile Include="Controls\NewLevelWindow.xaml.cs">
       <DependentUpon>NewLevelWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PaletteItem.xaml.cs">
+      <DependentUpon>PaletteItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PaletteRgbEditor.xaml.cs">
       <DependentUpon>PaletteRgbEditor.xaml</DependentUpon>
@@ -161,6 +167,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\GraphicsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\InputWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -178,6 +188,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\NewLevelWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PaletteItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

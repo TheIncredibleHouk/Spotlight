@@ -1,0 +1,77 @@
+﻿<Window x:Class="Spotlight.GraphicsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Spotlight"
+        Closed="Window_Closed"
+        Background="#303038"
+        mc:Ignorable="d"
+        Title="Graphics Editor" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <ComboBox x:Name="GraphicsType" Width="128" SelectionChanged="GraphicsType_SelectionChanged">
+                <ComboBoxItem>Game</ComboBoxItem>
+                <ComboBoxItem>Overlays</ComboBoxItem>
+            </ComboBox>
+            <TextBox KeyUp="GraphicsAddress_KeyUp" x:Name="GraphicsAddress" Width="128" HorizontalAlignment="Right" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top">
+            <Image x:Name="PatternTable" HorizontalAlignment="Right" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="False" Width="256" Height="256" />
+            <ComboBox SelectionChanged="LayoutOrder_SelectionChanged" x:Name="LayoutOrder" Width="256" HorizontalAlignment="Right">
+                <ComboBoxItem>Tile Mode</ComboBoxItem>
+                <ComboBoxItem>Sprite Mode</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+        <ComboBox Grid.Row="0" Grid.Column="2" SelectionChanged="PalettesList_SelectionChanged" x:Name="PalettesList" DisplayMemberPath="Name" Width="256" HorizontalAlignment="Left" />
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <Image x:Name="BlockTable" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="False" Width="256" Height="256" />
+                <StackPanel Orientation="Vertical">
+                    <RadioButton GroupName="DrawMode">Draw</RadioButton>
+                    <RadioButton GroupName="DrawMode">Draw</RadioButton>
+                    <RadioButton GroupName="DrawMode">Line</RadioButton>
+                    <RadioButton GroupName="DrawMode">Outline</RadioButton>
+                    <RadioButton GroupName="DrawMode">Solid</RadioButton>
+                </StackPanel>
+            </StackPanel>
+            <ComboBox SelectionChanged="ColorChoices_SelectionChanged" Width="256" HorizontalAlignment="Left" x:Name="ColorChoices">
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors1" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors2" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors3" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors4" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors5" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors6" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors7" />
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <local:PaletteItem x:Name="Colors8" />
+                </ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+
+    </Grid>
+</Window>
