@@ -27,7 +27,15 @@
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top">
-            <Image x:Name="PatternTable" HorizontalAlignment="Right" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="False" Width="256" Height="256" />
+            <Border>
+                <Canvas HorizontalAlignment="Right" Width="258" Height="258">
+                    <Image Canvas.Left="0" Canvas.Top="0" x:Name="PatternTable" HorizontalAlignment="Right" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="False" Width="256" Height="256" />
+                    <Border BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle">
+                        <Border BorderThickness="1" Width="32" Height="32" BorderBrush="White" />
+                    </Border>
+                    
+                </Canvas>
+            </Border>
             <ComboBox SelectionChanged="LayoutOrder_SelectionChanged" x:Name="LayoutOrder" Width="256" HorizontalAlignment="Right">
                 <ComboBoxItem>Tile Mode</ComboBoxItem>
                 <ComboBoxItem>Sprite Mode</ComboBoxItem>
