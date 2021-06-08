@@ -63,6 +63,7 @@ namespace Spotlight.Services
             {
                 _relativeTable[i] = fullTable[i];
             }
+
         }
 
         public void SetTopTable(Tile[] staticTable)

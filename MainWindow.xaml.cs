@@ -98,7 +98,7 @@ namespace Spotlight
 
         private void _ProjectPanel_RomSaved()
         {
-            if (_config.LastRomPath == null || !File.Exists(_config.LastRomPath))
+            if (_config.LastRomPath == null || !File.Exists(_config.LastRomPath) || (Keyboard.Modifiers == ModifierKeys.Control))
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
@@ -451,14 +451,21 @@ namespace Spotlight
         }
         private string GetConfigFilePath()
         {
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/config.json";
+            string directory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/Spotlight";
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            return directory + "/ config.json";
         }
 
         private void LoadConfiguration()
         {
-            if (File.Exists(GetConfigFilePath()))
+            string configFilePath = GetConfigFilePath() ;
+            if (File.Exists(configFilePath))
             {
-                _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("config.json"));
+                _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(configFilePath));
                 this.Left = _config.WindowLocation.X;
                 this.Top = _config.WindowLocation.Y;
                 this.Width = _config.WindowLocation.Width;

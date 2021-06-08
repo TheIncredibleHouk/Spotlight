@@ -37,8 +37,14 @@ namespace Spotlight
         {
             _levelService = levelService;
             _worldService = worldService;
+            _levelService.LevelUpdated += _levelService_LevelUpdated;
             _levelService.LevelsUpdated += _levelService_LevelsUpdated;
             BuildTree();
+        }
+
+        private void _levelService_LevelUpdated(LevelInfo levelInfo)
+        {
+            BuildTree(levelInfo);
         }
 
         private void _levelService_LevelsUpdated(LevelInfo levelInfo)
@@ -49,9 +55,6 @@ namespace Spotlight
         public void BuildTree(LevelInfo defaultSelection = null)
         {
             WorldTree.Items.Clear();
-            Expanded = true;
-
-            UpdateCollapsedState();
 
             foreach (var worldInfo in _worldService.AllWorlds())
             {

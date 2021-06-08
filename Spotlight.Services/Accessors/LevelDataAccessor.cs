@@ -30,7 +30,7 @@ namespace Spotlight.Services
         {
             if (x < 0 || y < 0 || x >= 240 || y >= 27)
             {
-                throw new System.Exception("Invalid data range.");
+                return -1;
             }
 
             if(x / 16 > _level.ScreenLength)

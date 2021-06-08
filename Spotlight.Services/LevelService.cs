@@ -246,6 +246,11 @@ namespace Spotlight.Services
             if (File.Exists(originalFile))
             {
                 string backupFile = _project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1) + ".bak";
+                if (File.Exists(backupFile))
+                {
+                    File.Delete(backupFile);
+                }
+
                 File.Move(originalFile, backupFile);
             }
 

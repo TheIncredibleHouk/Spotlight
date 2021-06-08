@@ -151,8 +151,14 @@ namespace Spotlight.Services
 
         public Tile[] GetExtraTilesAtAddress(int address)
         {
-            int tilesSkipped = address / 64;
+            int tilesSkipped = address / 16;
             return _extraTiles.Skip(tilesSkipped).Take(256).ToArray();
+        }
+
+        public Tile GetExtraTileAtAddress(int address, int col, int row )
+        {
+            int tilesSkipped = address / 16 + (row * 16) + col;
+            return _extraTiles.Skip(tilesSkipped).FirstOrDefault();
         }
 
         public Tile[] GetTileSection(int tileTableIndex)
@@ -177,8 +183,14 @@ namespace Spotlight.Services
 
         public Tile[] GetTilesAtAddress(int address)
         {
-            int tilesSkipped = address / 64;
+            int tilesSkipped = address / 16;
             return _tiles.Skip(tilesSkipped).Take(256).ToArray();
+        }
+
+        public Tile GetTileAtAddress(int address, int col, int row)
+        {
+            int tilesSkipped = address / 16 + (row * 16) + col;
+            return _tiles.Skip(tilesSkipped).FirstOrDefault();
         }
     }
 }

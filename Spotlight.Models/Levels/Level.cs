@@ -29,40 +29,7 @@ namespace Spotlight.Models
         public Guid PaletteId { get; set; }
         public int StaticTileTableIndex { get; set; }
 
-        private int _mostCommonTile = -1;
-
-        [JsonIgnore]
-        public int MostCommonTile
-        {
-            get
-            {
-                if (_mostCommonTile < 0)
-                {
-                    _mostCommonTile = 0;
-
-                    int[] tileCount = new int[256];
-                    foreach (var data in TileData)
-                    {
-                        if (data != 0xFF)
-                        {
-                            tileCount[data]++;
-                        }
-                    }
-
-                    int highestTileCount = -1;
-                    for (int i = 0; i < 256; i++)
-                    {
-                        if (tileCount[i] > highestTileCount)
-                        {
-                            _mostCommonTile = i;
-                            highestTileCount = tileCount[i];
-                        }
-                    }
-                }
-
-                return _mostCommonTile;
-            }
-        }
+        public int MostCommonTile { get; set; }
 
         [JsonIgnore]
         public int AnimationTileTableIndex

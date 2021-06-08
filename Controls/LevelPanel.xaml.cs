@@ -1383,8 +1383,35 @@ namespace Spotlight
         {
             LevelObject startPointObject = _level.ObjectData[0];
             _level.ObjectData.RemoveAt(0);
+
+            int mostCommonTile = -1;
+            int[] tileCount = new int[256];
+            foreach (var data in _level.TileData)
+            {
+                if (data != 0xFF)
+                {
+                    tileCount[data]++;
+                }
+            }
+
+            int highestTileCount = -1;
+            for (int i = 0; i < 256; i++)
+            {
+                if (tileCount[i] > highestTileCount)
+                {
+                    mostCommonTile = i;
+                    highestTileCount = tileCount[i];
+                }
+            }
+
+            _level.MostCommonTile = mostCommonTile;
+            
             _level.CompressedData = _compressionService.CompressLevel(_level);
+            _levelInfo.Size = _level.CompressedData.Length;
+
             _levelService.SaveLevel(_level);
+            _levelService.NotifyUpdate(_levelInfo);
+
             _level.ObjectData.Insert(0, startPointObject);
 
             AlertWindow.Alert(_level.Name + " has been saved!");
