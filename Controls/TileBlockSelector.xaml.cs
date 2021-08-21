@@ -45,9 +45,6 @@ namespace Spotlight
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
-            TileRenderSource.Width = _bitmap.Width + 1;
-            TileRenderSource.Height = _bitmap.Height + 1;
-
             TileRenderSource.Source = _bitmap;
 
             Update(tileSet, palette);

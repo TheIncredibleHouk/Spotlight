@@ -373,17 +373,17 @@ namespace Spotlight.Services
                 }
 
                 region = "Compressing world data";
-                byte[] levelData = world.CompressedData ?? _compressionService.CompressWorld(world);
+                byte[] worldData = world.CompressedData ?? _compressionService.CompressWorld(world);
 
                 if (world.CompressedData == null)
                 {
-                    world.CompressedData = levelData;
+                    world.CompressedData = worldData;
                     _worldService.SaveWorld(world);
                 }
                 region = "Writing compressed world data";
-                for (int i = 0; i < levelData.Length; i++)
+                for (int i = 0; i < worldData.Length; i++)
                 {
-                    _rom[levelAddress++] = levelData[i];
+                    _rom[levelAddress++] = worldData[i];
                 }
 
                 _rom[levelAddress++] = (byte)0xFF;

@@ -28,14 +28,14 @@
                         <Image MouseDown="TileBlockImage_MouseDown"  RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="TileBlockImage" Width="32" Height="32" />
                     </Border>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Margin="0" x:Name="TileSelectorCoordinate" HorizontalAlignment="Right">00</TextBlock>
-                        <Border x:Name="BlockSelectorBorder" KeyDown="BlockSelectorBorder_KeyDown" MouseDown="BlockSelectorBorder_MouseDown" Focusable="True"  VerticalAlignment="Center" BorderThickness="1" BorderBrush="#FF3E3E3E">
+                        <TextBlock Margin="0" KeyDown="BlockSelectorBorder_KeyDown" Focusable="True" x:Name="TileSelectorCoordinate" HorizontalAlignment="Right">00</TextBlock>
+                        <Border x:Name="BlockSelectorBorder" MouseDown="BlockSelectorBorder_MouseDown" Focusable="True"  VerticalAlignment="Center" BorderThickness="1" BorderBrush="#FF3E3E3E">
                             <local:TileBlockSelector MouseMove="BlockSelector_MouseMove" x:Name="BlockSelector" />
                         </Border>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <StackPanel Margin="11, 27, 0, 0" Orientation="Vertical" HorizontalAlignment="Left" x:Name="TileDefinitions">
+                    <StackPanel Margin="0, 27, 0, 0" Orientation="Vertical" HorizontalAlignment="Left" x:Name="TileDefinitions">
                         <TextBlock>Terrain Overlay Definition</TextBlock>
                         <TextBox TextChanged="TerrainOverlay_TextChanged" AcceptsReturn="True" Height="80"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="TerrainOverlay" Background="Black" VerticalContentAlignment="Top" VerticalAlignment="Stretch"></TextBox>
                         <TextBlock>Interaction Overlay Definition</TextBlock>

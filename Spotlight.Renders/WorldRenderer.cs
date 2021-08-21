@@ -70,6 +70,7 @@ namespace Spotlight.Renderers
             }
 
             RenderTiles(blockX, blockY, blockWidth, blockHeight);
+            RenderObjects(blockX, blockY, blockWidth, blockHeight);
             RenderPointers(blockX, blockY, blockWidth, blockHeight);
         }
 
@@ -129,6 +130,30 @@ namespace Spotlight.Renderers
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public void RenderObjects(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT, bool withOverlays = false)
+        {
+            Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
+
+            foreach (var levelObject in _worldDataAccessor.GetWorldObjects(updateRect))
+            {
+                int baseX = levelObject.X * 16, baseY = levelObject.Y * 16;
+                var visibleSprites = levelObject.GameObject.Sprites;
+
+
+                foreach (var sprite in visibleSprites)
+                {
+                    int paletteIndex = sprite.PaletteIndex;
+
+                    Tile topTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex);
+                    Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
+                    int x = baseX + sprite.X, y = baseY + sprite.Y;
+
+                    RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
+                    RenderTile(x, y + 8, sprite.VerticalFlip ? topTile : bottomTile, _buffer, sprite.CustomPalette != null ? _paletteService.GetRgbPalette(sprite.CustomPalette) : _palette.RgbColors[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);
                 }
             }
         }

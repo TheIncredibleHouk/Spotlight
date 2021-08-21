@@ -66,6 +66,11 @@ namespace Spotlight.Services
 
             foreach (var world in worldInfos)
             {
+                if(world == _project.EmptyWorld)
+                {
+                    continue;
+                }
+
                 infos.Add(world);
 
                 foreach (var level in world.LevelsInfo)
@@ -240,7 +245,7 @@ namespace Spotlight.Services
             return directoryInfo.GetFiles().Where(file => file.Name.StartsWith("~"));
         }
 
-        public void SwampTemp(FileInfo tempFile)
+        public void SwapTemp(FileInfo tempFile)
         {
             string originalFile = _project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1);
             if (File.Exists(originalFile))

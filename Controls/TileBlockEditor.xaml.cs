@@ -94,8 +94,11 @@ namespace Spotlight
             }
             else if (_currentWorld != null)
             {
-                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex));
-                _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_currentWorld.TileTableIndex));
+                Tile[] staticTiles = _graphicsService.GetTileSection(_currentWorld.TileTableIndex);
+                Tile[] animatedTiles = _graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex);
+                
+                _graphicsAccessor.SetBottomTable(staticTiles);
+                _graphicsAccessor.SetTopTable(animatedTiles);
             }
 
             _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
@@ -423,7 +426,8 @@ namespace Spotlight
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             CommitInteractions();
-            _tileService.CommitTileSet(_currentLevel.TileSetIndex, _localTileSet, _localTileTerrain, _localMapTileInteraction);
+
+            _tileService.CommitTileSet(_currentLevel?.TileSetIndex ?? _currentWorld.TileSetIndex, _localTileSet, _localTileTerrain, _localMapTileInteraction);
             BlockSelector.Update();
             UpdateTileBlock();
             SetSaved();
@@ -610,31 +614,28 @@ namespace Spotlight
 
         private void BlockSelectorBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            BlockSelectorBorder.Focus();
+            if ((e.ButtonState & e.RightButton) > 0)
+            {
+                _copiedblock = BlockSelector.SelectedTileBlock;
+            }
+
+            if ((e.ButtonState & e.MiddleButton) > 0)
+            {
+                BlockSelector.SelectedTileBlock.UpperLeft = _copiedblock.UpperLeft;
+                BlockSelector.SelectedTileBlock.UpperRight = _copiedblock.UpperRight;
+                BlockSelector.SelectedTileBlock.LowerLeft = _copiedblock.LowerLeft;
+                BlockSelector.SelectedTileBlock.LowerRight = _copiedblock.LowerRight;
+                BlockSelector.Update();
+                UpdateTileBlock();
+                SetUnsaved();
+            }
         }
 
         private TileBlock _copiedblock;
 
         private void BlockSelectorBorder_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (e.Key == Key.C)
-                {
-                    _copiedblock = BlockSelector.SelectedTileBlock;
-                }
-
-                if (e.Key == Key.V)
-                {
-                    BlockSelector.SelectedTileBlock.UpperLeft = _copiedblock.UpperLeft;
-                    BlockSelector.SelectedTileBlock.UpperRight = _copiedblock.UpperRight;
-                    BlockSelector.SelectedTileBlock.LowerLeft = _copiedblock.LowerLeft;
-                    BlockSelector.SelectedTileBlock.LowerRight = _copiedblock.LowerRight;
-                    BlockSelector.Update();
-                    UpdateTileBlock();
-                    SetUnsaved();
-                }
-            }
+            
         }
 
         private void GraphicsSetImage_MouseMove(object sender, MouseEventArgs e)

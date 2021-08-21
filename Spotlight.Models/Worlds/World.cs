@@ -14,6 +14,7 @@ namespace Spotlight.Models
         {
             TileData = new int[0x40 * 0x1B];
             Pointers = new List<WorldPointer>();
+            ObjectData = new List<WorldObject>();
         }
 
         public int TileSetIndex
@@ -33,6 +34,7 @@ namespace Spotlight.Models
         public string Name { get; set; }
         public int[] TileData { get; set; }
         public List<WorldPointer> Pointers { get; set; }
+        public List<WorldObject> ObjectData { get; set; }
 
         public byte[] CompressedData { get; set; }
 
@@ -41,37 +43,5 @@ namespace Spotlight.Models
         {
             get { return 0x70; }
         }
-    }
-
-    [XmlRoot("world")]
-    public class LegacyWorld
-    {
-        [XmlAttribute]
-        public string guid { get; set; }
-
-        [XmlAttribute]
-        public string clearvalue { get; set; }
-
-        [XmlAttribute]
-        public string graphicsbank { get; set; }
-
-        [XmlAttribute]
-        public string length { get; set; }
-
-        [XmlAttribute]
-        public string music { get; set; }
-
-        [XmlAttribute]
-        public string palette { get; set; }
-
-        [XmlAttribute]
-        public string worlddata { get; set; }
-
-        [XmlArray("pointers")]
-        [XmlArrayItem("pointer")]
-        public List<LegacyWorldPointer> pointers { get; set; }
-
-        [XmlIgnore]
-        public string name { get; set; }
     }
 }

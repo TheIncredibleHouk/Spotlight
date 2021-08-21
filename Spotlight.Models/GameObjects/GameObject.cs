@@ -27,6 +27,7 @@ namespace Spotlight.Models
 
     public enum GameObjectType
     {
+        World = 0,
         Global = 1,
         TypeA = 2,
         TypeB = 3

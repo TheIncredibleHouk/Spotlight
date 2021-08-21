@@ -300,7 +300,7 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            WorldPanel worldPanel = new WorldPanel(_graphicsService, _palettesService, _textService, _tileService, _worldService, _levelService, worldInfo);
+            WorldPanel worldPanel = new WorldPanel(_graphicsService, _palettesService, _textService, _tileService, _worldService, _levelService, _gameObjectService, worldInfo);
 
             tabItem.Header = worldInfo.Name;
             tabItem.Content = worldPanel;
@@ -528,11 +528,20 @@ namespace Spotlight
 
                 if (ConfirmationWindow.Confirm($"Unsaved level data {fileInfo.Name}, would you like to swap this out?") == System.Windows.Forms.DialogResult.Yes)
                 {
-                    _levelService.SwampTemp(fileInfo);
+                    _levelService.SwapTemp(fileInfo);
                 }
             }
 
             _levelService.CleanUpTemps();
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            object selectedContent = ((TabItem)TabsOpen.SelectedItem).Content;
+            if (selectedContent is IKeyDownHandler)
+            {
+                ((IKeyDownHandler)selectedContent).HandleKeyDown(e);
+            }
         }
     }
 }

@@ -11,6 +11,14 @@ using System.Windows.Media.Imaging;
 
 namespace Spotlight
 {
+
+    public enum GameObjectGroup
+    {
+        Level,
+        World,
+        All
+    }
+
     /// <summary>
     /// Interaction logic for GameObjectSelector.xaml
     /// </summary>
@@ -21,6 +29,8 @@ namespace Spotlight
         public event GameObjectSelectorEventHandler GameObjectChanged;
 
         public event GameObjectSelectorEventHandler GameObjectDoubleClicked;
+
+        public GameObjectGroup ObjectGroup { get; set; }
 
         public GameObjectSelector()
         {
@@ -33,6 +43,7 @@ namespace Spotlight
         private Palette _palette;
         private GameObjectRenderer _renderer;
         private WriteableBitmap _bitmap;
+        private List<GameObjectType> _objectTypes;
 
         public void Initialize(GameObjectService gameObjectService, PalettesService palettesService, GraphicsAccessor graphicsAccessor, Palette palette)
         {
@@ -41,20 +52,46 @@ namespace Spotlight
             _palette = palette;
             _palettesService = palettesService;
 
+            _objectTypes = new List<GameObjectType>();
+
             _renderer = new GameObjectRenderer(gameObjectService, _palettesService, graphicsAccessor);
 
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
             _selectedGroup = new Dictionary<GameObjectType, string>();
-            _selectedGroup[GameObjectType.Global] = null;
-            _selectedGroup[GameObjectType.TypeA] = null;
-            _selectedGroup[GameObjectType.TypeB] = null;
+
+            switch (ObjectGroup)
+            {
+                case GameObjectGroup.Level:
+                    _objectTypes.Add(GameObjectType.Global);
+                    _objectTypes.Add(GameObjectType.TypeA);
+                    _objectTypes.Add(GameObjectType.TypeB);
+                    
+                    break;
+
+                case GameObjectGroup.World:
+                    _objectTypes.Add(GameObjectType.World);
+                    break;
+
+                case GameObjectGroup.All:
+                    _objectTypes.Add(GameObjectType.Global);
+                    _objectTypes.Add(GameObjectType.TypeA);
+                    _objectTypes.Add(GameObjectType.TypeB);
+                    _objectTypes.Add(GameObjectType.World);
+                    break;
+            }
+
+            foreach(var objectType in _objectTypes)
+            {
+                _selectedGroup[objectType] = null;
+            }
+            
 
             _selectedObject = null;
 
             GameObjectImage.Source = _bitmap;
-            GameObjectTypes.ItemsSource = new List<GameObjectType>() { GameObjectType.Global, GameObjectType.TypeA, GameObjectType.TypeB };
+            GameObjectTypes.ItemsSource = _objectTypes;
 
             _renderer.Update(palette);
 

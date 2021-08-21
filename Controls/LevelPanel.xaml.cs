@@ -17,7 +17,7 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for LevelPanel.xaml
     /// </summary>
-    public partial class LevelPanel : UserControl, IDetachEvents
+    public partial class LevelPanel : UserControl, IDetachEvents, IKeyDownHandler
     {
         private Level _level;
         private LevelInfo _levelInfo;
@@ -308,12 +308,33 @@ namespace Spotlight
                     break;
 
                 case EditMode.Objects:
-                    HandleSpriteClick(e);
+                    HandleObjectClick(e);
                     break;
 
                 case EditMode.Pointers:
                     HandlePointerClick(e);
                     break;
+            }
+
+            if(e.MiddleButton == MouseButtonState.Pressed)
+            {
+                LevelObject startObject = _level.ObjectData.Where(o => o.GameObject.IsStartObject).First();
+                List<Rect> updateRects = new List<Rect>();
+
+                updateRects.Add(startObject.VisualRectangle);
+                
+                startObject.X = (int)(clickPoint.X / 16);
+                startObject.Y = (int)(clickPoint.Y / 16);
+                
+                startObject.CalcBoundBox();
+                startObject.CalcVisualBox(true);
+
+                _level.StartX = startObject.X;
+                _level.StartY = startObject.Y;
+
+                updateRects.Add(startObject.VisualRectangle);
+                Update(updateRects);
+                
             }
         }
 
@@ -442,7 +463,7 @@ namespace Spotlight
             }
         }
 
-        private void HandleSpriteClick(MouseButtonEventArgs e)
+        private void HandleObjectClick(MouseButtonEventArgs e)
         {
             Point tilePoint = e.GetPosition(LevelRenderSource);
             List<Rect> updatedRects = new List<Rect>();
@@ -519,6 +540,7 @@ namespace Spotlight
                     {
                         Canvas.SetTop(GameObjectProperty, boundRect.Top - 48);
                     }
+
                     Canvas.SetLeft(GameObjectProperty, boundRect.Left - 10);
 
                     GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
@@ -633,7 +655,7 @@ namespace Spotlight
                         break;
 
                     case EditMode.Objects:
-                        HandleSpriteMove(e);
+                        HandleObjectMove(e);
                         break;
 
                     case EditMode.Pointers:
@@ -685,7 +707,7 @@ namespace Spotlight
 
         private Point originalTilePoint;
 
-        private void HandleSpriteMove(MouseEventArgs e)
+        private void HandleObjectMove(MouseEventArgs e)
         {
             Point movePoint = Snap(e.GetPosition(LevelRenderSource));
 
@@ -1082,7 +1104,7 @@ namespace Spotlight
                     break;
 
                 case EditMode.Objects:
-                    HandleSpriteRelease(e);
+                    HandleObjectRelease(e);
                     break;
 
                 case EditMode.Pointers:
@@ -1188,7 +1210,7 @@ namespace Spotlight
             }
         }
 
-        private void HandleSpriteRelease(MouseButtonEventArgs e)
+        private void HandleObjectRelease(MouseButtonEventArgs e)
         {
             _isDragging = false;
             if (_selectedObject != null)
@@ -1282,7 +1304,7 @@ namespace Spotlight
             List<KeyValuePair<string, string>> _graphicsSetNames = new List<KeyValuePair<string, string>>();
             for (int i = 0; i < 256; i++)
             {
-                _graphicsSetNames.Add(new KeyValuePair<string, string>(i.ToString("X"), i.ToString("X")));
+                _graphicsSetNames.Add(new KeyValuePair<string, string>(i.ToString("X"), "0x" + (i * 0x400).ToString("X")));
             }
 
             Music.ItemsSource = _textService.GetTable("music").OrderBy(kv => kv.Value);
@@ -1456,97 +1478,6 @@ namespace Spotlight
             }
         }
 
-        private void LevelRenderSource_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                switch (e.Key)
-                {
-                    case Key.S:
-                        SaveLevel();
-                        break;
-
-                    case Key.C:
-                        if (_editMode == EditMode.Tiles)
-                        {
-                            CopySelection();
-                        }
-                        break;
-
-                    case Key.V:
-                        if (_editMode == EditMode.Tiles)
-                        {
-                            PasteSelection();
-                        }
-                        break;
-
-                    case Key.X:
-                        if (_editMode == EditMode.Tiles)
-                        {
-                            CutSelection();
-                        }
-                        break;
-
-                    case Key.Z:
-                        if (_editMode == EditMode.Tiles)
-                        {
-                            UndoTiles();
-                        }
-                        else if (_editMode == EditMode.Objects)
-                        {
-                            UndoObjects();
-                        }
-                        break;
-
-                    case Key.Y:
-                        if (_editMode == EditMode.Tiles)
-                        {
-                            RedoTiles();
-                        }
-                        else if (_editMode == EditMode.Objects)
-                        {
-                            RedoObjects();
-                        }
-                        break;
-                }
-            }
-
-            switch (e.Key)
-            {
-                case Key.Delete:
-                    if (_editMode == EditMode.Objects)
-                    {
-                        DeleteObject();
-                    }
-                    else if (_editMode == EditMode.Pointers)
-                    {
-                        DeletePointer();
-                    }
-                    else
-                    {
-                        DeleteSection();
-                    }
-                    break;
-
-                case Key.Escape:
-                    if (_editMode == EditMode.Tiles)
-                    {
-                        _isDragging = false;
-                        _selectionMode = SelectionMode.SetTiles;
-                        CursorImage.Opacity = .75;
-                        SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
-                    }
-                    break;
-            }
-        }
-
-        private void LevelRenderSource_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (!GameObjectProperty.IsMouseOver && !PointerEditor.IsMouseOver && LevelScroller.IsMouseOver)
-            {
-                LevelScroller.Focus();
-            }
-        }
 
         private void DrawMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1690,6 +1621,90 @@ namespace Spotlight
                       Thread.Sleep(30 * 1000);
                   }
               });
+        }
+
+        public void HandleKeyDown(KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.S:
+                        SaveLevel();
+                        break;
+
+                    case Key.C:
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            CopySelection();
+                        }
+                        break;
+
+                    case Key.V:
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            PasteSelection();
+                        }
+                        break;
+
+                    case Key.X:
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            CutSelection();
+                        }
+                        break;
+
+                    case Key.Z:
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            UndoTiles();
+                        }
+                        else if (_editMode == EditMode.Objects)
+                        {
+                            UndoObjects();
+                        }
+                        break;
+
+                    case Key.Y:
+                        if (_editMode == EditMode.Tiles)
+                        {
+                            RedoTiles();
+                        }
+                        else if (_editMode == EditMode.Objects)
+                        {
+                            RedoObjects();
+                        }
+                        break;
+                }
+            }
+
+            switch (e.Key)
+            {
+                case Key.Delete:
+                    if (_editMode == EditMode.Objects)
+                    {
+                        DeleteObject();
+                    }
+                    else if (_editMode == EditMode.Pointers)
+                    {
+                        DeletePointer();
+                    }
+                    else
+                    {
+                        DeleteSection();
+                    }
+                    break;
+
+                case Key.Escape:
+                    if (_editMode == EditMode.Tiles)
+                    {
+                        _isDragging = false;
+                        _selectionMode = SelectionMode.SetTiles;
+                        CursorImage.Opacity = .75;
+                        SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
+                    }
+                    break;
+            }
         }
     }
 

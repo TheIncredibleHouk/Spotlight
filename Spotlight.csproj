@@ -120,7 +120,9 @@
     <Compile Include="Controls\KeyValueTextbox.xaml.cs">
       <DependentUpon>KeyValueTextbox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\LevelPanel.xaml.cs" />
+    <Compile Include="Controls\LevelPanel.xaml.cs">
+       <DependentUpon>LevelPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MoveLevelWindowl.xaml.cs">
       <DependentUpon>MoveLevelWindowl.xaml</DependentUpon>
     </Compile>
@@ -147,6 +149,7 @@
     </Compile>
     <Compile Include="Utilities\DpiHelper.cs" />
     <Compile Include="Utilities\GlobalPanels.cs" />
+    <Compile Include="Utilities\IKeyDownHandler.cs" />
     <Page Include="Controls\AlertWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

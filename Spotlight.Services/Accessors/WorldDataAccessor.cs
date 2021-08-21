@@ -8,6 +8,7 @@ namespace Spotlight.Services
     public class WorldDataAccessor
     {
         private int[] _tileData;
+        private List<WorldObject> _worldObjects;
         private List<WorldPointer> _pointers;
 
         private const int DATA_ROW_LENGTH = 4 * 16;
@@ -16,6 +17,7 @@ namespace Spotlight.Services
         {
             _tileData = _world.TileData;
             _pointers = _world.Pointers;
+            _worldObjects = _world.ObjectData;
         }
 
         public int GetData(int x, int y)
@@ -54,6 +56,11 @@ namespace Spotlight.Services
                     _tileData[i] = newValue;
                 }
             }
+        }
+
+        public List<WorldObject> GetWorldObjects(Rect area)
+        {
+            return _worldObjects.Where(o => o.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
 
         public List<WorldPointer> GetPointers(Rect area)

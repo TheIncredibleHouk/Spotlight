@@ -15,7 +15,7 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for WorldPanel.xaml
     /// </summary>
-    public partial class WorldPanel : UserControl, IDetachEvents
+    public partial class WorldPanel : UserControl, IDetachEvents, IKeyDownHandler
     {
         private World _world;
         private WorldInfo _worldInfo;
@@ -26,6 +26,7 @@ namespace Spotlight
         private TextService _textService;
         private GraphicsService _graphicsService;
         private CompressionService _compressionService;
+        private GameObjectService _gameObjectService;
         private TileService _tileService;
         private GraphicsAccessor _graphicsAccessor;
         private WorldDataAccessor _worldDataAccessor;
@@ -39,7 +40,7 @@ namespace Spotlight
 
         private bool _initializing = true;
 
-        public WorldPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, WorldService worldService, LevelService levelService, WorldInfo worldInfo)
+        public WorldPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, WorldService worldService, LevelService levelService, GameObjectService gameObjectService, WorldInfo worldInfo)
         {
             InitializeComponent();
 
@@ -49,6 +50,8 @@ namespace Spotlight
             _tileService = tileService;
             _palettesService = palettesService;
             _worldService = worldService;
+            _gameObjectService = gameObjectService;
+
             _historyService = new HistoryService();
             _interactions = _tileService.GetMapTileInteractions();
             _world = _worldService.LoadWorld(_worldInfo);
@@ -76,6 +79,7 @@ namespace Spotlight
             SelectedDrawMode.SelectedIndex = 0;
 
             TileSelector.Initialize(_graphicsAccessor, _tileService, _tileSet, palette);
+            ObjectSelector.Initialize(_gameObjectService, _palettesService, _graphicsAccessor, palette);
             PointerEditor.Initialize(levelService, _worldInfo);
 
             UpdateTextTables();
@@ -204,6 +208,7 @@ namespace Spotlight
         }
 
         private WorldPointer _selectedPointer;
+        private WorldObject _selectedObject;
 
         private EditMode _editMode;
         private DrawMode _drawMode;
@@ -240,6 +245,10 @@ namespace Spotlight
             {
                 case EditMode.Tiles:
                     HandleTileClick(e);
+                    break;
+
+                case EditMode.Objects:
+                    HandleObjectClick(e);
                     break;
 
                 case EditMode.Pointers:
@@ -362,6 +371,74 @@ namespace Spotlight
             }
         }
 
+        private void HandleObjectClick(MouseButtonEventArgs e)
+        {
+            Point tilePoint = e.GetPosition(WorldRenderSource);
+            List<Rect> updatedRects = new List<Rect>();
+
+            if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)
+            {
+                if (e.RightButton == MouseButtonState.Pressed)
+                {
+                    _selectedObject = _world.ObjectData.Where(o => o.BoundRectangle.Contains(tilePoint.X, tilePoint.Y)).FirstOrDefault();
+
+                    if (_selectedObject != null && ObjectSelector.SelectedObject != null)
+                    {
+                        _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y,  _selectedObject.GameObjectId, WorldObjectChangeType.Update));
+                        updatedRects.Add(_selectedObject.VisualRectangle);
+                        _selectedObject.GameObject = ObjectSelector.SelectedObject;
+                        _selectedObject.CalcBoundBox();
+                        updatedRects.Add(_selectedObject.CalcVisualBox(true));
+                    }
+                    else
+                    {
+                        if (ObjectSelector.SelectedObject != null)
+                        {
+                            WorldObject newObject = new WorldObject();
+                            newObject.X = (int)(tilePoint.X / 16);
+                            newObject.Y = (int)(tilePoint.Y / 16);
+                            newObject.GameObject = ObjectSelector.SelectedObject;
+                            newObject.GameObjectId = ObjectSelector.SelectedObject.GameId;
+                            newObject.CalcBoundBox();
+
+                            _world.ObjectData.Add(newObject);
+                            _historyService.UndoWorldObjects.Push(new WorldObjectChange(newObject, newObject.X, newObject.Y,  newObject.GameObjectId, WorldObjectChangeType.Addition));
+                            Update(newObject.CalcVisualBox(true));
+                        }
+                    }
+                }
+                else
+                {
+                    _selectedObject = _world.ObjectData.Where(o => o.BoundRectangle.Contains(tilePoint.X, tilePoint.Y)).FirstOrDefault();
+
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0 || (Keyboard.Modifiers & ModifierKeys.Control) > 0)
+                    {
+                        if (_selectedObject != null && !_selectedObject.GameObject.IsStartObject)
+                        {
+                            ObjectSelector.SelectedObject = _selectedObject.GameObject;
+                        }
+                    }
+                }
+
+                if (_selectedObject != null)
+                {
+                    _dragStartPoint = tilePoint;
+                    SetSelectionRectangle(_selectedObject.BoundRectangle);
+                    originalTilePoint = new Point(_selectedObject.X * 16, _selectedObject.Y * 16);
+                    _isDragging = true;
+                    _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y,  _selectedObject.GameObjectId, WorldObjectChangeType.Update));
+                }
+                else
+                {
+                    ClearSelectionRectangle();
+                }
+
+                Update(updatedRects);
+            }
+
+            //UpdateSpriteStatus();
+        }
+
         private void HandlePointerClick(MouseButtonEventArgs e)
         {
             Point tilePoint = e.GetPosition(WorldRenderSource);
@@ -418,6 +495,10 @@ namespace Spotlight
                     HandleTileMove(e);
                     break;
 
+                case EditMode.Objects:
+                    HandleObjectMove(e);
+                    break;
+
                 case EditMode.Pointers:
                     HandlePointerMove(e);
                     break;
@@ -425,6 +506,76 @@ namespace Spotlight
         }
 
         private SelectionMode _selectionMode;
+
+        private void HandleObjectMove(MouseEventArgs e)
+        {
+            Point movePoint = Snap(e.GetPosition(WorldRenderSource));
+
+            if (_selectedObject != null && _isDragging)
+            {
+                Point diffPoint = Snap(new Point(movePoint.X - originalTilePoint.X, movePoint.Y - originalTilePoint.Y));
+
+                List<Rect> updateRects = new List<Rect>();
+
+                Rect oldRect = _selectedObject.VisualRectangle;
+
+                if (oldRect.Right >= LevelRenderer.BITMAP_WIDTH)
+                {
+                    oldRect.Width = oldRect.Width - (oldRect.Right - LevelRenderer.BITMAP_WIDTH);
+                }
+
+                if (oldRect.Bottom >= LevelRenderer.BITMAP_HEIGHT)
+                {
+                    oldRect.Height = oldRect.Height - (oldRect.Bottom - LevelRenderer.BITMAP_HEIGHT);
+                }
+
+                updateRects.Add(oldRect);
+
+                int newX = (int)((originalTilePoint.X + diffPoint.X) / 16);
+                int newY = (int)((originalTilePoint.Y + diffPoint.Y) / 16);
+
+                if (newX == _selectedObject.X && newY == _selectedObject.Y)
+                {
+                    return;
+                }
+
+                if (newX >= Level.BLOCK_WIDTH)
+                {
+                    newX = Level.BLOCK_WIDTH - 1;
+                }
+
+                if (newY >= Level.BLOCK_HEIGHT)
+                {
+                    newY = Level.BLOCK_HEIGHT - 1;
+                }
+
+                _selectedObject.X = newX;
+                _selectedObject.Y = newY;
+                _selectedObject.CalcBoundBox();
+                _selectedObject.CalcVisualBox(true);
+
+                Rect updateArea = _selectedObject.VisualRectangle;
+
+                if (updateArea.Right >= LevelRenderer.BITMAP_WIDTH)
+                {
+                    updateArea.Width = updateArea.Width - (updateArea.Right - LevelRenderer.BITMAP_WIDTH);
+                }
+
+                if (updateArea.Bottom >= LevelRenderer.BITMAP_HEIGHT)
+                {
+                    updateArea.Height = updateArea.Height - (updateArea.Bottom - LevelRenderer.BITMAP_HEIGHT);
+                }
+
+                updateRects.Add(updateArea);
+
+                SetSelectionRectangle(_selectedObject.BoundRectangle);
+                Update(updateRects);
+            }
+
+            int blockX = (int)movePoint.X / 16, blockY = (int)movePoint.Y / 16;
+
+            PointerXY.Text = "X: " + blockX.ToString("X2") + " Y: " + blockY.ToString("X2");
+        }
 
         private void HandleTileMove(MouseEventArgs e)
         {
@@ -550,7 +701,7 @@ namespace Spotlight
                     for (int c = startX, x = 0; c < endX; c++, x++)
                     {
                         _copyBuffer[x, y] = _worldDataAccessor.GetData(c, r);
-                        _worldDataAccessor.SetData(c, r, 0x41);
+                        _worldDataAccessor.SetData(c, r, 0x00);
                     }
                 }
 
@@ -593,30 +744,35 @@ namespace Spotlight
         {
             if (_copyBuffer != null)
             {
-                int startX = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
-                int endX = (int)(SelectionRectangle.Width / 16) + startX;
-                int startY = (int)(Canvas.GetTop(SelectionRectangle) / 16);
-                int endY = (int)(SelectionRectangle.Height / 16) + startY;
+                int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
+                int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
+                int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
+                int endY = (int)((SelectionRectangle.Height - 4) / 16) + startY;
                 int bufferWidth = _copyBuffer.GetLength(0);
                 int bufferHeight = _copyBuffer.GetLength(1);
 
-                if (startX + bufferWidth > World.BLOCK_WIDTH)
+                TileChange tileChange;
+
+                if (startX + bufferWidth > Level.BLOCK_WIDTH)
                 {
-                    bufferWidth = World.BLOCK_WIDTH - startX;
+                    bufferWidth = Level.BLOCK_WIDTH - startX;
                 }
 
-                if (startY + bufferHeight > World.BLOCK_HEIGHT)
+                if (startY + bufferHeight > Level.BLOCK_HEIGHT)
                 {
-                    bufferHeight = World.BLOCK_HEIGHT - startY;
+                    bufferHeight = Level.BLOCK_HEIGHT - startY;
                 }
 
-                if (SelectionRectangle.Width == 16 &&
-                    SelectionRectangle.Height == 16)
+                if (SelectionRectangle.Width == 20 &&
+                    SelectionRectangle.Height == 20)
                 {
+                    tileChange = new TileChange(startX, startY, bufferWidth, bufferHeight);
+
                     for (int r = startY, y = 0; y < bufferHeight; r++, y++)
                     {
                         for (int c = startX, x = 0; x < bufferWidth; c++, x++)
                         {
+                            tileChange.Data[x, y] = _worldDataAccessor.GetData(c, r);
                             _worldDataAccessor.SetData(c, r, _copyBuffer[x % bufferWidth, y % bufferHeight]);
                         }
                     }
@@ -625,23 +781,28 @@ namespace Spotlight
                 }
                 else
                 {
+                    tileChange = new TileChange(startX, startY, endX - startX, endY - startY);
+
                     for (int r = startY, y = 0; r < endY; r++, y++)
                     {
                         for (int c = startX, x = 0; c < endX; c++, x++)
                         {
+                            tileChange.Data[x, y] = _worldDataAccessor.GetData(c, r);
+
                             _worldDataAccessor.SetData(c, r, _copyBuffer[x % bufferWidth, y % bufferHeight]);
                         }
                     }
 
-                    Update(new Rect(Canvas.GetLeft(SelectionRectangle),
-                                    Canvas.GetTop(SelectionRectangle),
-                                    SelectionRectangle.Width,
-                                    SelectionRectangle.Height));
+                    Update(new Rect(Canvas.GetLeft(SelectionRectangle) + 2,
+                                    Canvas.GetTop(SelectionRectangle) + 2,
+                                    (SelectionRectangle.Width - 4),
+                                    (SelectionRectangle.Height - 4)));
                 }
 
-                SetSelectionRectangle(new Rect((endX - 1) * 16, (endY - 1) * 16, 16, 16));
+                _historyService.UndoTiles.Push(tileChange);
 
                 _selectionMode = SelectionMode.SetTiles;
+                SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
             }
         }
 
@@ -663,6 +824,19 @@ namespace Spotlight
             }
         }
 
+        private void DeleteObject()
+        {
+            if (_selectedObject != null)
+            {
+                _world.ObjectData.Remove(_selectedObject);
+                Update(_selectedObject.VisualRectangle);
+                ClearSelectionRectangle();
+                _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.GameObjectId, WorldObjectChangeType.Deletion));
+            }
+
+            //UpdateSpriteStatus();
+        }
+
         private void DeletePointer()
         {
             if (_selectedPointer != null)
@@ -674,12 +848,38 @@ namespace Spotlight
             }
         }
 
+        private void UndoObjects()
+        {
+            if (_historyService.UndoLevelObjects.Count > 0)
+            {
+                WorldObjectChange undoObject = _historyService.UndoWorldObjects.Pop();
+                _historyService.RedoWorldObjects.Push(ApplyObjectChange(undoObject));
+            }
+
+            //UpdateSpriteStatus();
+        }
+
+        private void RedoObjects()
+        {
+            if (_historyService.RedoLevelObjects.Count > 0)
+            {
+                WorldObjectChange redoObject = _historyService.RedoWorldObjects.Pop();
+                _historyService.UndoWorldObjects.Push(ApplyObjectChange(redoObject));
+            }
+
+            //UpdateSpriteStatus();
+        }
+
         private void WorldRenderSource_MouseUp(object sender, MouseButtonEventArgs e)
         {
             switch (_editMode)
             {
                 case EditMode.Tiles:
                     HandleTileRelease(e);
+                    break;
+
+                case EditMode.Objects:
+                    HandleObjectRelease(e);
                     break;
 
                 case EditMode.Pointers:
@@ -710,6 +910,41 @@ namespace Spotlight
 
             Update(new Rect(columnStart * 16, rowStart * 16, (columnEnd - columnStart) * 16, (rowEnd - rowStart) * 16));
             return reverseTileChange;
+        }
+
+        private WorldObjectChange ApplyObjectChange(WorldObjectChange objectChange)
+        {
+            WorldObjectChange newChange = null;
+            List<Rect> updateRects = new List<Rect>() { objectChange.OriginalObject.VisualRectangle };
+
+            if (objectChange.ChangeType == WorldObjectChangeType.Addition)
+            {
+                newChange = new WorldObjectChange(objectChange.OriginalObject, objectChange.OriginalObject.X, objectChange.OriginalObject.Y, objectChange.OriginalObject.GameObjectId, WorldObjectChangeType.Deletion);
+                _world.ObjectData.Remove(objectChange.OriginalObject);
+                _selectedObject = null;
+                ClearSelectionRectangle();
+            }
+            else if (objectChange.ChangeType == WorldObjectChangeType.Deletion)
+            {
+                newChange = new WorldObjectChange(objectChange.OriginalObject, objectChange.OriginalObject.X, objectChange.OriginalObject.Y, objectChange.OriginalObject.GameObjectId, WorldObjectChangeType.Addition);
+                _world.ObjectData.Add(objectChange.OriginalObject);
+                _selectedObject = objectChange.OriginalObject;
+                SetSelectionRectangle(_selectedObject.CalcBoundBox());
+            }
+            else if (objectChange.ChangeType == WorldObjectChangeType.Update)
+            {
+                newChange = new WorldObjectChange(objectChange.OriginalObject, objectChange.OriginalObject.X, objectChange.OriginalObject.Y, objectChange.OriginalObject.GameObjectId, WorldObjectChangeType.Update);
+                objectChange.OriginalObject.X = objectChange.X;
+                objectChange.OriginalObject.Y = objectChange.Y;
+                objectChange.OriginalObject.GameObjectId = objectChange.GameId;
+                objectChange.OriginalObject.GameObject = _gameObjectService.GetObject(objectChange.GameId);
+                updateRects.Add(objectChange.OriginalObject.CalcVisualBox(true));
+                _selectedObject = objectChange.OriginalObject;
+                SetSelectionRectangle(_selectedObject.CalcBoundBox());
+            }
+
+            Update(updateRects);
+            return newChange;
         }
 
         private void HandleTileRelease(MouseButtonEventArgs e)
@@ -754,6 +989,26 @@ namespace Spotlight
             }
         }
 
+
+        private void HandleObjectRelease(MouseButtonEventArgs e)
+        {
+            _isDragging = false;
+            if (_selectedObject != null)
+            {
+                if (_historyService.UndoLevelObjects.Count > 0)
+                {
+                    if (_historyService.UndoLevelObjects.Peek().IsSame())
+                    {
+                        _historyService.UndoLevelObjects.Pop();
+                    }
+                    else
+                    {
+                        _historyService.RedoLevelObjects.Clear();
+                    }
+                }
+            }
+        }
+
         private void HandlePointerRelease(MouseButtonEventArgs e)
         {
             if (_selectedPointer != null && _isDragging)
@@ -784,13 +1039,13 @@ namespace Spotlight
 
             Music.SelectedValue = _world.MusicValue.ToString("X");
             PaletteIndex.SelectedValue = _world.PaletteId;
-            GraphicsSet.SelectedValue = _world.TileTableIndex.ToString("X");
+            GraphicsSet.SelectedValue = _world.TileTableIndex;
             Screens.SelectedIndex = _world.ScreenLength - 1;
         }
 
         private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _world.TileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
+            _world.TileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString());
             _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_world.TileTableIndex));
             TileSelector.Update();
             Update();
@@ -877,12 +1132,20 @@ namespace Spotlight
                         {
                             UndoTiles();
                         }
+                        else if (_editMode == EditMode.Objects)
+                        {
+                            UndoObjects();
+                        }
                         break;
 
                     case Key.Y:
                         if (_editMode == EditMode.Tiles)
                         {
                             RedoTiles();
+                        }
+                        else if (_editMode == EditMode.Objects)
+                        {
+                            RedoObjects();
                         }
                         break;
                 }
@@ -894,6 +1157,10 @@ namespace Spotlight
                     if (_editMode == EditMode.Pointers)
                     {
                         DeletePointer();
+                    }
+                    else if (_editMode == EditMode.Objects)
+                    {
+                        DeleteObject();
                     }
                     break;
             }
@@ -937,6 +1204,11 @@ namespace Spotlight
                     break;
 
                 case 1:
+                    _editMode = EditMode.Objects;
+                    PointerEditor.Visibility = Visibility.Collapsed;
+                    break;
+
+                case 2:
                     _editMode = EditMode.Pointers;
                     break;
             }
@@ -957,6 +1229,21 @@ namespace Spotlight
         {
             _worldRenderer.RenderGrid = ShowGrid.IsChecked.Value;
             Update();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalPanels.OpenPaletteEditor((Palette)PaletteIndex.SelectedItem);
+        }
+
+        private void ObjectSelector_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        public void HandleKeyDown(KeyEventArgs e)
+        {
+            WorldRenderSource_KeyDown(null, e);
         }
     }
 }

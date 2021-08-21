@@ -14,7 +14,7 @@
             <Border Style="{StaticResource Section}">
                 <StackPanel DockPanel.Dock="Top">
                     <local:TileBlockSelector TileBlockSelected="TileSelector_TileBlockSelected" Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
-                    <local:GameObjectSelector  HorizontalAlignment="Center" x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
+                    <local:GameObjectSelector ObjectGroup="Level" HorizontalAlignment="Center" x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>
         </DockPanel>
@@ -157,7 +157,7 @@
             </Border>
         </StackPanel>
         <Border BorderBrush="#000000" BorderThickness="1" Margin="2" HorizontalAlignment="Stretch">
-            <ScrollViewer x:Name="LevelScroller" LostKeyboardFocus="LevelRenderSource_LostKeyboardFocus" Focusable="True" KeyDown="LevelRenderSource_KeyDown" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="LevelScroller" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ScrollViewer.Background>
                     <ImageBrush ImageSource="Icons\Checkboard.png" Stretch="UniformtoFill" TileMode="Tile" ViewportUnits="Absolute" Viewport="0, 0, 16, 16"/>
                 </ScrollViewer.Background>

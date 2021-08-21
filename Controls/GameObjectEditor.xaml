@@ -9,7 +9,7 @@
     <DockPanel>
         <Border Padding="0, 10, 0, 0" DockPanel.Dock="Right" BorderThickness="1, 0, 0, 0" BorderBrush="#FF3E3E3E">
             <StackPanel>
-                <local:GameObjectSelector x:Name="ObjectSelector" GameObjectChanged="ObjectSelector_GameObjectChanged" />
+                <local:GameObjectSelector ObjectGroup="All" x:Name="ObjectSelector" GameObjectChanged="ObjectSelector_GameObjectChanged" />
             </StackPanel>
         </Border>
         <DockPanel VerticalAlignment="Stretch" LastChildFill="True" Margin="10">

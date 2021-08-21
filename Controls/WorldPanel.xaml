@@ -14,50 +14,60 @@
             <Border BorderBrush="#FF3E3E3E" BorderThickness="0, 0, 0, 0" DockPanel.Dock="Top">
                 <StackPanel>
                     <local:TileBlockSelector  Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
+                    <local:GameObjectSelector ObjectGroup="World" HorizontalAlignment="Center" x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>
         </DockPanel>
         <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 1" DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type Rectangle}">
-                        <Setter Property="Margin" Value="10, 0, 10, 0" />
-                        <Setter Property="Height" Value="40" />
-                        <Setter Property="Width" Value="1" />
-                        <Setter Property="Fill" Value="#FF3E3E3E" />
-                    </Style>
-                </StackPanel.Resources>
-                <Button x:Name="SaveButton" Click="SaveButton_Click">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="20" />
-                </Button>
-                <Rectangle />
-                <TextBlock VerticalAlignment="Center">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Cursor.png" Height="20" />
-                </TextBlock>
-                <ComboBox Width="80" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
-                    <ComboBoxItem>Tiles</ComboBoxItem>
-                    <ComboBoxItem>Pointers</ComboBoxItem>
-                </ComboBox>
-                <TextBlock VerticalAlignment="Center">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="20" />
-                </TextBlock>
-                <Rectangle />
-                <ComboBox Width="80" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
-                    <ComboBoxItem>Default</ComboBoxItem>
-                    <ComboBoxItem>Fill</ComboBoxItem>
-                    <ComboBoxItem>Replace</ComboBoxItem>
-                </ComboBox>
-                <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Grid.png" Height="20" />
-                </RadioButton>
-                <Rectangle />
-                <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Terrain.png" Height="20" />
-                </RadioButton>
+                <Border Style="{StaticResource Section}">
+                    <Button x:Name="SaveButton" Click="SaveButton_Click">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="20" />
+                            <TextBlock>Save</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </Border>
+                <Border Style="{StaticResource Section}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Cursor.png" Height="20" />
+                        </TextBlock>
+                        <ComboBox Width="100" VerticalAlignment="Center" x:Name="SelectedEditMode" SelectionChanged="SelectedEditMode_SelectionChanged">
+                            <ComboBoxItem>Tiles</ComboBoxItem>
+                            <ComboBoxItem>Objects</ComboBoxItem>
+                            <ComboBoxItem>Pointers</ComboBoxItem>
+                        </ComboBox>
+                        <TextBlock VerticalAlignment="Center">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="20" />
+                        </TextBlock>
+                        <ComboBox Width="100" VerticalAlignment="Center" x:Name="SelectedDrawMode" SelectionChanged="DrawMode_SelectionChanged">
+                            <ComboBoxItem>Default</ComboBoxItem>
+                            <ComboBoxItem>Fill</ComboBoxItem>
+                            <ComboBoxItem>Replace</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Section}">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">
+                            <StackPanel Orientation="Vertical">
+                                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Grid.png" Height="20" />
+                                <TextBlock>Grid</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton GroupName="Grid4" Click="ShowInteraction_Click" x:Name="ShowInteraction">
+                            <StackPanel Orientation="Vertical">
+                                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Terrain.png" Height="20" />
+                                <TextBlock>Terrain</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </Border>
         <ScrollViewer Width="225" HorizontalScrollBarVisibility="Hidden"  DockPanel.Dock="Right">
-            <Border BorderBrush="#FF3E3E3E" BorderThickness="1, 0, 0, 0" Padding="0, 0, 0, 10">
+            <Border Padding="5" Style="{StaticResource Section}">
                 <StackPanel Orientation="Vertical">
 
                     <Label>Graphics Set</Label>
@@ -65,9 +75,14 @@
 
                     <Label>Music</Label>
                     <ComboBox SelectionChanged="Music_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="Music" />
-
+                    
                     <Label>Palette</Label>
-                    <ComboBox SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <ComboBox Width="160" SelectionChanged="PaletteIndex_SelectionChanged"  SelectedValuePath="Id" DisplayMemberPath="Name" x:Name="PaletteIndex" />
+                        <Button Click="Button_Click" Width="48" >
+                            <Image Source="Icons\Palette.png" HorizontalAlignment="Center" Margin="0" Width="16" />
+                        </Button>
+                    </StackPanel>
 
                     <Label>Screens</Label>
                     <ComboBox SelectionChanged="Screens_SelectionChanged" x:Name="Screens" />

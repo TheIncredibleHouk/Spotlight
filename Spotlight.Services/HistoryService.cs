@@ -11,6 +11,8 @@ namespace Spotlight.Services
             RedoTiles = new Stack<TileChange>();
             UndoLevelObjects = new Stack<LevelObjectChange>();
             RedoLevelObjects = new Stack<LevelObjectChange>();
+            UndoWorldObjects = new Stack<WorldObjectChange>();
+            RedoWorldObjects = new Stack<WorldObjectChange>();
         }
 
         public Stack<TileChange> UndoTiles { get; private set; }
@@ -18,5 +20,8 @@ namespace Spotlight.Services
 
         public Stack<LevelObjectChange> UndoLevelObjects { get; private set; }
         public Stack<LevelObjectChange> RedoLevelObjects { get; private set; }
+
+        public Stack<WorldObjectChange> UndoWorldObjects { get; private set; }
+        public Stack<WorldObjectChange> RedoWorldObjects { get; private set; }
     }
 }

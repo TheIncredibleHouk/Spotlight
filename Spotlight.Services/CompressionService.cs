@@ -296,7 +296,7 @@ namespace Spotlight
 
         public byte[] CompressWorld(World world)
         {
-            WorldDataAccessor worldDataAccessor = new WorldDataAccessor(world);
+             WorldDataAccessor worldDataAccessor = new WorldDataAccessor(world);
             byte[] data = new byte[9 * 16 * world.ScreenLength];
             int counter = 0;
             for (int p = 0; p < world.ScreenLength; p++)
