@@ -138,10 +138,10 @@ namespace Spotlight.Renderers
         {
             Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
 
-            foreach (var levelObject in _worldDataAccessor.GetWorldObjects(updateRect))
+            foreach (var worldObject in _worldDataAccessor.GetWorldObjects(updateRect))
             {
-                int baseX = levelObject.X * 16, baseY = levelObject.Y * 16;
-                var visibleSprites = levelObject.GameObject.Sprites;
+                int baseX = worldObject.X * 16, baseY = worldObject.Y * 16;
+                var visibleSprites = worldObject.GameObject.Sprites;
 
 
                 foreach (var sprite in visibleSprites)

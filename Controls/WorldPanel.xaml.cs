@@ -82,6 +82,9 @@ namespace Spotlight
             ObjectSelector.Initialize(_gameObjectService, _palettesService, _graphicsAccessor, palette);
             PointerEditor.Initialize(levelService, _worldInfo);
 
+            _world.ObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
+
+
             UpdateTextTables();
 
             _graphicsService.GraphicsUpdated += _graphicsService_GraphicsUpdated;
@@ -89,6 +92,8 @@ namespace Spotlight
             _palettesService.PalettesChanged += _palettesService_PalettesChanged;
             _tileService.TileSetUpdated += _tileService_TileSetUpdated;
             _worldService.WorldUpdated += _worldService_WorldUpdated;
+            gameObjectService.GameObjectUpdated += GameObjectService_GameObjectsUpdated;
+
 
             _initializing = false;
             _worldRenderer.Ready();
@@ -115,6 +120,7 @@ namespace Spotlight
             _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
             _palettesService.PalettesChanged -= _palettesService_PalettesChanged;
             _worldService.WorldUpdated -= _worldService_WorldUpdated;
+            _gameObjectService.GameObjectUpdated -= GameObjectService_GameObjectsUpdated;
         }
 
         private void _palettesService_PalettesChanged()
@@ -1017,6 +1023,26 @@ namespace Spotlight
             }
 
             _isDragging = false;
+        }
+
+        private void GameObjectService_GameObjectsUpdated(GameObject gameObject)
+        {
+            List<WorldObject> affectedObjects = _world.ObjectData.Where(l => l.GameObjectId == gameObject.GameId).ToList();
+            List<Rect> affectedRects = new List<Rect>();
+
+            foreach (WorldObject worldObject in affectedObjects)
+            {
+                worldObject.GameObject = gameObject;
+                worldObject.GameObjectId = gameObject.GameId;
+                worldObject.CalcBoundBox();
+                worldObject.CalcVisualBox(true);
+                affectedRects.Add(worldObject.VisualRectangle);
+            }
+
+            if (affectedRects.Count > 0)
+            {
+                Update(affectedRects);
+            }
         }
 
         private void UpdateTextTables()

@@ -372,6 +372,15 @@ namespace Spotlight.Services
                     _rom[levelAddress++] = (byte)(worldPointer.Y + 2);
                 }
 
+                foreach(WorldObject worldObject in world.ObjectData)
+                {
+                    _rom[levelAddress++] = (byte)(worldObject.GameObjectId - 0xC7);
+                    _rom[levelAddress++] = (byte)worldObject.Y;
+                    _rom[levelAddress++] = (byte)((((byte)worldObject.X) >> 8) | (((byte)worldObject.X) << 8));
+                }
+
+                _rom[levelAddress++] = (byte)0xFF;
+
                 region = "Compressing world data";
                 byte[] worldData = world.CompressedData ?? _compressionService.CompressWorld(world);
 

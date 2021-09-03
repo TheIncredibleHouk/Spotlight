@@ -180,6 +180,7 @@ namespace Spotlight
         {
             List<LevelObject> affectedObjects = _level.ObjectData.Where(l => l.GameObjectId == gameObject.GameId).ToList();
             List<Rect> affectedRects = new List<Rect>();
+            
             foreach (LevelObject levelObject in affectedObjects)
             {
                 levelObject.GameObject = gameObject;
