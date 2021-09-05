@@ -486,7 +486,7 @@ namespace Spotlight
                         }
                         else
                         {
-                            if (ObjectSelector.SelectedObject != null)
+                            if (ObjectSelector.SelectedObject != null && _level.ObjectData.Count < 48)
                             {
                                 LevelObject newObject = new LevelObject();
                                 newObject.X = (int)(tilePoint.X / 16);

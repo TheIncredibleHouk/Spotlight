@@ -95,6 +95,12 @@ namespace Spotlight
             gameObjectService.GameObjectUpdated += GameObjectService_GameObjectsUpdated;
 
 
+            _world.ObjectData.ForEach(o =>
+            {
+                o.CalcBoundBox();
+                o.CalcVisualBox(true);
+            });
+
             _initializing = false;
             _worldRenderer.Ready();
             Update();
@@ -238,6 +244,10 @@ namespace Spotlight
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (_world.Pointers.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
+                {
+                    SelectedEditMode.SelectedIndex = 2;
+                }
+                else if(_world.ObjectData.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
                 {
                     SelectedEditMode.SelectedIndex = 1;
                 }
@@ -398,7 +408,7 @@ namespace Spotlight
                     }
                     else
                     {
-                        if (ObjectSelector.SelectedObject != null)
+                        if (ObjectSelector.SelectedObject != null && _world.ObjectData.Count < 14)
                         {
                             WorldObject newObject = new WorldObject();
                             newObject.X = (int)(tilePoint.X / 16);
@@ -1264,7 +1274,7 @@ namespace Spotlight
 
         private void ObjectSelector_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            SelectedEditMode.SelectedIndex = 1;
         }
 
         public void HandleKeyDown(KeyEventArgs e)

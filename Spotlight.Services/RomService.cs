@@ -372,11 +372,13 @@ namespace Spotlight.Services
                     _rom[levelAddress++] = (byte)(worldPointer.Y + 2);
                 }
 
+                region = "Writing world object data";
+
                 foreach(WorldObject worldObject in world.ObjectData)
                 {
                     _rom[levelAddress++] = (byte)(worldObject.GameObjectId - 0xC7);
-                    _rom[levelAddress++] = (byte)worldObject.Y;
-                    _rom[levelAddress++] = (byte)((((byte)worldObject.X) >> 8) | (((byte)worldObject.X) << 8));
+                    _rom[levelAddress++] = (byte)(worldObject.Y + 2);
+                    _rom[levelAddress++] = (byte)(worldObject.X);
                 }
 
                 _rom[levelAddress++] = (byte)0xFF;
@@ -389,7 +391,9 @@ namespace Spotlight.Services
                     world.CompressedData = worldData;
                     _worldService.SaveWorld(world);
                 }
+
                 region = "Writing compressed world data";
+
                 for (int i = 0; i < worldData.Length; i++)
                 {
                     _rom[levelAddress++] = worldData[i];

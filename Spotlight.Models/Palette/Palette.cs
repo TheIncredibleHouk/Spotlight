@@ -16,6 +16,8 @@ namespace Spotlight.Models
                 RgbColors[i] = new Color[4];
             }
         }
+        
+        public bool Renamed { get; set; }
 
         public int[] IndexedColors { get; set; }
         public string Name { get; set; }
