@@ -29,6 +29,7 @@ namespace Spotlight
         private RomService _romService;
         private Project _project;
         private Configuration _config;
+        private ClipBoardService _clipBoardService;
 
         public MainWindow()
         {
@@ -246,6 +247,7 @@ namespace Spotlight
             _worldService = new WorldService(_errorService, project);
             _tileService = new TileService(_errorService, project);
             _textService = new TextService(_errorService, project);
+            _clipBoardService = new ClipBoardService();
             _romService = new RomService(_errorService, _graphicsService, _palettesService, _tileService, _levelService, _worldService, _textService);
             _gameObjectService = new GameObjectService(_errorService, project);
 
@@ -276,7 +278,7 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            LevelPanel levelPanel = new LevelPanel(_graphicsService, _palettesService, _textService, _tileService, _gameObjectService, _levelService, levelInfo);
+            LevelPanel levelPanel = new LevelPanel(_graphicsService, _palettesService, _textService, _tileService, _gameObjectService, _levelService, _clipBoardService, levelInfo);
 
             tabItem.Header = levelInfo.Name;
             tabItem.Content = levelPanel;

@@ -35,6 +35,7 @@ namespace Spotlight
         private WriteableBitmap _bitmap;
         private WriteableBitmap _cursorBitmap;
         private HistoryService _historyService;
+        private ClipBoardService _clipBoardService;
         private List<TileTerrain> _terrain;
 
         public delegate void LevelEditorExitSelectedHandled(int x, int y);
@@ -43,7 +44,7 @@ namespace Spotlight
 
         private bool _initializing = true;
 
-        public LevelPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, GameObjectService gameObjectService, LevelService levelService, LevelInfo levelInfo)
+        public LevelPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, GameObjectService gameObjectService, LevelService levelService, ClipBoardService clipBoardService, LevelInfo levelInfo)
         {
             InitializeComponent();
 
@@ -56,6 +57,7 @@ namespace Spotlight
             _levelService = levelService;
             _historyService = new HistoryService();
             _compressionService = new CompressionService();
+            _clipBoardService = clipBoardService;
             _terrain = _tileService.GetTerrain();
             _level = _levelService.LoadLevel(_levelInfo);
 
@@ -871,13 +873,11 @@ namespace Spotlight
             return new Point(Snap(Math.Min(value.X, LevelRenderer.BITMAP_WIDTH - 1)), Snap(Math.Min(value.Y, LevelRenderer.BITMAP_HEIGHT - 1)));
         }
 
-        private int[,] _copyBuffer;
-
         private void CutSelection()
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
+                int [,] _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
 
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
@@ -907,6 +907,7 @@ namespace Spotlight
 
                 _selectionMode = SelectionMode.SetTiles;
                 CursorImage.Opacity = .75;
+                _clipBoardService.ClipBoardItem = new ClipBoardItem(_copyBuffer, ClipBoardItemType.TileBuffer);
             }
         }
 
@@ -945,7 +946,7 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
+                int [,] _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
                 int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
@@ -962,13 +963,15 @@ namespace Spotlight
                 _selectionMode = SelectionMode.SetTiles;
                 CursorImage.Opacity = .75;
                 SetSelectionRectangle(new Rect(_dragStartPoint.X, _dragStartPoint.Y, 16, 16));
+                _clipBoardService.ClipBoardItem = new ClipBoardItem(_copyBuffer, ClipBoardItemType.TileBuffer);
             }
         }
 
         private void PasteSelection()
         {
-            if (_copyBuffer != null)
+            if (_clipBoardService.ClipBoardItem != null && _clipBoardService.ClipBoardItem.Type == ClipBoardItemType.TileBuffer)
             {
+                int[,] _copyBuffer = (int[,])_clipBoardService.ClipBoardItem.Data;
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
                 int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
                 int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
