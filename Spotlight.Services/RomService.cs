@@ -213,6 +213,11 @@ namespace Spotlight.Services
             try
             {
                 string name = level.Name.ToUpper();
+                int nameTrimIndex = name.IndexOf("-");
+                if(nameTrimIndex > -1)
+                {
+                    name = name.Substring(0, nameTrimIndex);
+                }
 
                 if (name.Length > 0x22)
                 {

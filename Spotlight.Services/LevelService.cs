@@ -57,7 +57,7 @@ namespace Spotlight.Services
             }
         }
 
-        public List<IInfo> AllWorldsLevels()
+        public List<IInfo> AllWorldsLevels(LevelInfo currentLevel = null)
         {
             List<IInfo> infos = new List<IInfo>();
             List<WorldInfo> worldInfos = _project.WorldInfo.ToList();
@@ -75,41 +75,25 @@ namespace Spotlight.Services
 
                 foreach (var level in world.LevelsInfo)
                 {
-                    infos.Add(level);
-
-                    foreach (var sublevel1 in level.SublevelsInfo ?? new List<LevelInfo>())
-                    {
-                        infos.Add(sublevel1);
-
-                        foreach (var sublevel2 in sublevel1.SublevelsInfo ?? new List<LevelInfo>())
-                        {
-                            infos.Add(sublevel2);
-
-                            foreach (var sublevel3 in sublevel2.SublevelsInfo ?? new List<LevelInfo>())
-                            {
-                                infos.Add(sublevel2);
-
-                                foreach (var sublevel4 in sublevel3.SublevelsInfo ?? new List<LevelInfo>())
-                                {
-                                    infos.Add(sublevel4);
-
-                                    foreach (var sublevel5 in sublevel4.SublevelsInfo ?? new List<LevelInfo>())
-                                    {
-                                        infos.Add(sublevel5);
-
-                                        foreach (var sublevel6 in sublevel5.SublevelsInfo ?? new List<LevelInfo>())
-                                        {
-                                            infos.Add(sublevel6);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    AddLevelInfos(infos, level);
                 }
             }
 
+            if(currentLevel != null)
+            {
+                infos.Remove(currentLevel);
+            }
+
             return infos;
+        }
+
+        private void AddLevelInfos(List<IInfo> infos, LevelInfo level)
+        {
+            foreach (var sublevel in level.SublevelsInfo ?? new List<LevelInfo>())
+            {
+                infos.Add(sublevel);
+                AddLevelInfos(infos, sublevel);
+            }
         }
 
         public void NotifyUpdate(LevelInfo levelInfo)
