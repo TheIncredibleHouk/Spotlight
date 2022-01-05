@@ -53,7 +53,7 @@ namespace Spotlight.Services
 
             if(LevelsUpdated != null)
             {
-                LevelsUpdated((LevelInfo) info.ParentInfo.SublevelsInfo[levelIndex]);
+                LevelsUpdated(null);
             }
         }
 
@@ -111,7 +111,7 @@ namespace Spotlight.Services
             worldInfos.Add(_project.EmptyWorld);
             foreach (var worldInfo in worldInfos)
             {
-                levelInfos.AddRange(FlattenLevelInfos(worldInfo.LevelsInfo));
+                levelInfos.AddRange(FlattenLevelInfos(worldInfo.LevelsInfo).OrderBy(l => l.Name));
             }
 
             return levelInfos;

@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using System.Linq;
+using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
 using System.Windows;
@@ -106,7 +107,7 @@ namespace Spotlight
         private void WorldList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            List<LevelInfo> availableLevels = _levelService.FlattenLevelInfos(HostWorld.LevelsInfo);
+            List<LevelInfo> availableLevels = _levelService.FlattenLevelInfos(HostWorld.LevelsInfo).OrderBy(l => l.Name).ToList();
             availableLevels.Insert(0, new LevelInfo()
             {
                 Name = "<none>"

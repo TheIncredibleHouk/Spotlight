@@ -2,6 +2,7 @@
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -104,7 +105,7 @@ namespace Spotlight
 
         private void WorldList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LevelList.ItemsSource = HostWorld.LevelsInfo;
+            LevelList.ItemsSource = _levelService.FlattenLevelInfos(HostWorld.LevelsInfo).OrderBy(l => l.Name).ToList();
         }
     }
 

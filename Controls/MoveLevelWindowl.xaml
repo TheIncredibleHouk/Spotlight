@@ -15,7 +15,7 @@
     <StackPanel Width="250" Orientation="Vertical">
         <TextBlock>Parent World</TextBlock>
         <ComboBox x:Name="WorldList" SelectionChanged="WorldList_SelectionChanged" DisplayMemberPath="DisplayName"></ComboBox>
-        <TextBlock>Parent Leve</TextBlock>
+        <TextBlock>Parent Level</TextBlock>
         <ComboBox x:Name="LevelList" DisplayMemberPath="DisplayName"></ComboBox>
         <Border BorderThickness="00" BorderBrush="White" Margin="10, 0 10, 0" Padding="0, 10, 0, 0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
