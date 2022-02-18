@@ -225,7 +225,7 @@ namespace Spotlight
 
                 if (e.ClickCount > 1)
                 {
-                    if (GameObjectDoubleClicked != null)
+                    if (GameObjectDoubleClicked != null && _selectedObject != null)
                     {
                         GameObjectDoubleClicked(_selectedObject.GameObject);
                     }

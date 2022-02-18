@@ -528,10 +528,10 @@ namespace Spotlight
             foreach (FileInfo fileInfo in residualTempFiles)
             {
 
-                if (ConfirmationWindow.Confirm($"Unsaved level data {fileInfo.Name}, would you like to swap this out?") == System.Windows.Forms.DialogResult.Yes)
-                {
-                    _levelService.SwapTemp(fileInfo);
-                }
+                //if (ConfirmationWindow.Confirm($"Unsaved level data {fileInfo.Name}, would you like to swap this out?") == System.Windows.Forms.DialogResult.Yes)
+                //{
+                //    _levelService.SwapTemp(fileInfo);
+                //}
             }
 
             _levelService.CleanUpTemps();
@@ -539,10 +539,13 @@ namespace Spotlight
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            object selectedContent = ((TabItem)TabsOpen.SelectedItem).Content;
-            if (selectedContent is IKeyDownHandler)
+            if (TabsOpen.SelectedItem != null)
             {
-                ((IKeyDownHandler)selectedContent).HandleKeyDown(e);
+                object selectedContent = ((TabItem)TabsOpen.SelectedItem).Content;
+                if (selectedContent is IKeyDownHandler)
+                {
+                    ((IKeyDownHandler)selectedContent).HandleKeyDown(e);
+                }
             }
         }
     }

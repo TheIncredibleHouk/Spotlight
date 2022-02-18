@@ -75,6 +75,7 @@ namespace Spotlight.Services
 
                 foreach (var level in world.LevelsInfo)
                 {
+                    infos.Add(level);
                     AddLevelInfos(infos, level);
                 }
             }

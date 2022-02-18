@@ -82,7 +82,7 @@ namespace Spotlight.Services
             string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
             string priorFileName = string.Format(@"{0}\{1}.json", _project.DirectoryPath + @"\worlds", safePriorLevelName);
 
-            World world = JsonConvert.DeserializeObject<World>(File.ReadAllText(safePriorLevelName));
+            World world = JsonConvert.DeserializeObject<World>(File.ReadAllText(priorFileName));
             world.Name = newName;
             SaveWorld(world);
 
