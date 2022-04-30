@@ -166,5 +166,17 @@ namespace Spotlight
             viewObject.Property = Properties.SelectedIndex;
             Update();
         }
+
+        private void FindButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameObject gameObject = viewObject.GameObject;
+            string output = string.Join("\n", _gameObjectService.FindInLevels(gameObject).Select(level => level.Name));
+            if (output.Length == 0)
+            {
+                output = "Not found in any levels";
+            }
+
+            AlertWindow.Alert($"{gameObject.Name} found in the following levels: \n{output}");
+        }
     }
 }

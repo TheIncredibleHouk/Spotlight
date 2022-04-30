@@ -2,8 +2,11 @@
 using Spotlight.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -196,6 +199,35 @@ namespace Spotlight.Services
                 }
 
                 File.WriteAllText(string.Format(@"{0}\{1}.json", levelDirectory, safeFileName), JsonConvert.SerializeObject(level, Newtonsoft.Json.Formatting.Indented));
+            }
+            catch (Exception e)
+            {
+                _errorService.LogError(e);
+            }
+        }
+
+        public void ExportLevelToPng(PngBitmapEncoder encoder, Level level, string basePath = null)
+        {
+            try
+            {
+                if (basePath == null)
+                {
+                    basePath = _project.DirectoryPath;
+                }
+
+                string imageDirectory = basePath + @"\images";
+
+                if (!Directory.Exists(imageDirectory))
+                {
+                    Directory.CreateDirectory(imageDirectory);
+                }
+
+                string safeFileName = SafeFileName(level);
+
+                using (var stream = File.Create(string.Format(@"{0}\{1}.png", imageDirectory, safeFileName)))
+                {
+                    encoder.Save(stream);
+                }
             }
             catch (Exception e)
             {

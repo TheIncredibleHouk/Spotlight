@@ -3,6 +3,7 @@ using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1324,7 +1325,7 @@ namespace Spotlight
 
             Music.SelectedValue = _level.MusicValue.ToString("X");
             AnimationType.SelectedValue = _level.AnimationType.ToString();
-            EffectType.SelectedValue = _level.Effects.ToString("X");
+            EffectType.SelectedValue = _level.Effects.ToString("X2");
             EventType.SelectedValue = _level.EventType.ToString("X");
             PaletteIndex.SelectedValue = _level.PaletteId;
             GraphicsSet.SelectedValue = _level.StaticTileTableIndex.ToString("X");
@@ -1709,6 +1710,18 @@ namespace Spotlight
                     }
                     break;
             }
+        }
+
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var encoder = new PngBitmapEncoder();
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)LevelRenderSource.ActualWidth, (int)LevelRenderSource.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(LevelRenderSource);
+            
+            BitmapFrame frame = BitmapFrame.Create(bitmap);
+            encoder.Frames.Add(frame);
+
+            _levelService.ExportLevelToPng(encoder, _level);
         }
     }
 

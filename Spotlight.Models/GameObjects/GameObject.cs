@@ -23,7 +23,13 @@ namespace Spotlight.Models
         public List<Sprite> Sprites { get; set; }
         public List<string> Properties { get; set; }
         public string Group { get; set; }
+
+        public static GameObject SecondQuestDivider = new GameObject()
+        {
+            GameId = 0xF8
+        };
     }
+
 
     public enum GameObjectType
     {

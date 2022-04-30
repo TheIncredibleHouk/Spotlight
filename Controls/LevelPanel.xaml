@@ -60,12 +60,20 @@
         </Border>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <Border Style="{StaticResource Section}">
-                <Button x:Name="SaveButton" Click="SaveButton_Click">
-                    <StackPanel Orientation="Vertical">
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="16" />
-                        <TextBlock>Save</TextBlock>
-                    </StackPanel>
-                </Button>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="SaveButton" Click="SaveButton_Click">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Save.png" Height="16" />
+                            <TextBlock>Save</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ExportButton" Click="ExportButton_Click">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\World.png" Height="16" />
+                            <TextBlock>PNG</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
             </Border>
             <Border Style="{StaticResource Section}">
                 <StackPanel Orientation="Horizontal">

@@ -242,5 +242,20 @@ namespace Spotlight.Services
                 GameObjectUpdated(globalGameObject);
             }
         }
+
+        public IEnumerable<LevelInfo> FindInLevels(GameObject gameObject)
+        {
+            List<LevelInfo> foundLevels = new List<LevelInfo>();
+            LevelService levelService = new LevelService(_errorService, _project);
+            foreach(LevelInfo levelInfo in levelService.AllLevels())
+            {
+                if(levelService.LoadLevel(levelInfo).ObjectData.Exists(obj => obj.GameObjectId == gameObject.GameId))
+                {
+                    foundLevels.Add(levelInfo);
+                }
+            }
+
+            return foundLevels;
+        }
     }
 }

@@ -252,7 +252,7 @@ namespace Spotlight.Services
                     _rom[levelAddress++] = (byte)name[i];
                 }
 
-                region = "Writint level pointers";
+                region = "Writing level pointers";
 
                 foreach (var pointer in level.LevelPointers.OrderBy(pt => pt.X).ThenBy(pt => pt.Y))
                 {
