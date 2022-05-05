@@ -16,7 +16,8 @@ namespace Spotlight
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((double)value) - 10;
+            var width = ((double)value) - 10;
+            return width < 0 ? 100 : width;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

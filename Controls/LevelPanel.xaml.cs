@@ -62,8 +62,10 @@ namespace Spotlight
             _terrain = _tileService.GetTerrain();
             _level = _levelService.LoadLevel(_levelInfo);
 
-            _level.ObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
-            _level.ObjectData.Insert(0, new LevelObject()
+            _level.FirstObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
+            _level.SecondObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
+
+            _level.FirstObjectData.Insert(0, new LevelObject()
             {
                 GameObject = _gameObjectService.GetStartPointObject(),
                 X = _level.StartX,
@@ -96,7 +98,13 @@ namespace Spotlight
             _cursorBitmap = new WriteableBitmap(16, 16, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
             CursorImage.ImageSource = _cursorBitmap;
 
-            _level.ObjectData.ForEach(o =>
+            _level.FirstObjectData.ForEach(o =>
+            {
+                o.CalcBoundBox();
+                o.CalcVisualBox(true);
+            });
+
+            _level.SecondObjectData.ForEach(o =>
             {
                 o.CalcBoundBox();
                 o.CalcVisualBox(true);
@@ -183,7 +191,7 @@ namespace Spotlight
         {
             List<LevelObject> affectedObjects = _level.ObjectData.Where(l => l.GameObjectId == gameObject.GameId).ToList();
             List<Rect> affectedRects = new List<Rect>();
-            
+
             foreach (LevelObject levelObject in affectedObjects)
             {
                 levelObject.GameObject = gameObject;
@@ -320,16 +328,16 @@ namespace Spotlight
                     break;
             }
 
-            if(e.MiddleButton == MouseButtonState.Pressed)
+            if (e.MiddleButton == MouseButtonState.Pressed)
             {
                 LevelObject startObject = _level.ObjectData.Where(o => o.GameObject.IsStartObject).First();
                 List<Rect> updateRects = new List<Rect>();
 
                 updateRects.Add(startObject.VisualRectangle);
-                
+
                 startObject.X = (int)(clickPoint.X / 16);
                 startObject.Y = (int)(clickPoint.Y / 16);
-                
+
                 startObject.CalcBoundBox();
                 startObject.CalcVisualBox(true);
 
@@ -338,7 +346,7 @@ namespace Spotlight
 
                 updateRects.Add(startObject.VisualRectangle);
                 Update(updateRects);
-                
+
             }
         }
 
@@ -372,8 +380,9 @@ namespace Spotlight
                     if (tileValue != TileSelector.SelectedBlockValue)
                     {
                         TileChange tileChange = new TileChange(0, 0, Level.BLOCK_WIDTH, Level.BLOCK_HEIGHT);
-                        for (int row = 0; row < Level.BLOCK_HEIGHT; row++){
-                            for(int col = 0; col < Level.BLOCK_WIDTH; col++)
+                        for (int row = 0; row < Level.BLOCK_HEIGHT; row++)
+                        {
+                            for (int col = 0; col < Level.BLOCK_WIDTH; col++)
                             {
                                 tileChange.Data[col, row] = _levelDataAccessor.GetData(col, row);
                             }
@@ -561,7 +570,8 @@ namespace Spotlight
             UpdateSpriteStatus();
         }
 
-        private void UpdateSpriteStatus() {
+        private void UpdateSpriteStatus()
+        {
             if (_selectedObject == null)
             {
                 SpriteDescription.Text = "None";
@@ -619,7 +629,7 @@ namespace Spotlight
                         leftEdge = LevelRenderer.BITMAP_WIDTH - PointerEditor.ActualWidth;
                     }
 
-                    if(boundRect.Bottom <= 200)
+                    if (boundRect.Bottom <= 200)
                     {
                         Canvas.SetTop(PointerEditor, boundRect.Bottom + 4);
                     }
@@ -878,7 +888,7 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                int [,] _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
+                int[,] _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
 
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
@@ -947,7 +957,7 @@ namespace Spotlight
         {
             if (_selectionMode == SelectionMode.SelectTiles)
             {
-                int [,] _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
+                int[,] _copyBuffer = new int[(int)((SelectionRectangle.Width - 4) / 16), (int)((SelectionRectangle.Height - 4) / 16)];
 
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
                 int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
@@ -1268,7 +1278,7 @@ namespace Spotlight
                 {
                     Canvas.SetTop(PointerEditor, boundRect.Top - 160);
                 }
-                
+
                 Canvas.SetLeft(PointerEditor, leftEdge);
             }
 
@@ -1287,7 +1297,7 @@ namespace Spotlight
             }
 
             Rect boundRect = _selectedObject.BoundRectangle;
-            
+
             if (boundRect.Bottom <= 200)
             {
                 Canvas.SetTop(GameObjectProperty, boundRect.Bottom + 4);
@@ -1432,7 +1442,7 @@ namespace Spotlight
             }
 
             _level.MostCommonTile = mostCommonTile;
-            
+
             _level.CompressedData = _compressionService.CompressLevel(_level);
             _levelInfo.Size = _level.CompressedData.Length;
 
@@ -1717,11 +1727,22 @@ namespace Spotlight
             var encoder = new PngBitmapEncoder();
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)LevelRenderSource.ActualWidth, (int)LevelRenderSource.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(LevelRenderSource);
-            
+
             BitmapFrame frame = BitmapFrame.Create(bitmap);
             encoder.Frames.Add(frame);
 
             _levelService.ExportLevelToPng(encoder, _level);
+        }
+
+        private Level.LevelQuest _currentQuest = Level.LevelQuest.First;
+        private void ToggleQuest_Click(object sender, RoutedEventArgs e)
+        {
+            LevelObject startObject = _level.ObjectData.Where(o => o.GameObject.IsStartObject).First();
+            _level.ObjectData.RemoveAt(0);
+            _currentQuest = _currentQuest == Level.LevelQuest.First ? Level.LevelQuest.Second : Level.LevelQuest.First;
+            _level.SwitchQuest(_currentQuest);
+            _level.ObjectData.Insert(0, startObject);
+            Update();
         }
     }
 

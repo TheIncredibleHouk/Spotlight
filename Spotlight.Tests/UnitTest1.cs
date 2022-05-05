@@ -25,7 +25,6 @@ namespace Spotlight.Tests
                     LevelInfo levelInfo = info as LevelInfo;
                     Level level = levelService.LoadLevel(levelInfo);
                     level.FirstObjectData = level.ObjectData;
-                    level.ObjectData.Clear();
                     level.SecondObjectData = new List<LevelObject>();
                     levelService.SaveLevel(level);
                 }

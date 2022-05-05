@@ -8,7 +8,6 @@ namespace Spotlight.Services
     public class LevelDataAccessor
     {
         private int[] _tileData;
-        private List<LevelObject> _gameObjects;
         private List<LevelPointer> _pointers;
         private const int DATA_ROW_LENGTH = 15 * 16;
         private Level _level;
@@ -20,7 +19,6 @@ namespace Spotlight.Services
             _tileSet = tileSet;
 
             _tileData = _level.TileData;
-            _gameObjects = _level.ObjectData;
             _pointers = _level.LevelPointers;
         }
 
@@ -82,7 +80,7 @@ namespace Spotlight.Services
 
         public List<LevelObject> GetLevelObjects(Rect area)
         {
-            return _gameObjects.Where(o => o.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
+            return _level.ObjectData.Where(o => o.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
 
         public List<LevelPointer> GetPointers(Rect area)

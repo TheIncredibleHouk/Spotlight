@@ -97,6 +97,16 @@
             </Border>
             <Border Style="{StaticResource Section}">
                 <StackPanel Orientation="Horizontal">
+                    <RadioButton GroupName="Grid4" Click="ToggleQuest_Click" x:Name="SecondQuest">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Object.png" Height="16" />
+                            <TextBlock>Alt</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Section}">
+                <StackPanel Orientation="Horizontal">
                     <RadioButton GroupName="Grid1" Click="ShowGrid_Click" x:Name="ShowGrid">
                         <StackPanel Orientation="Vertical">
                             <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Grid.png" Height="16" />

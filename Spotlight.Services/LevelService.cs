@@ -54,7 +54,7 @@ namespace Spotlight.Services
                 File.Delete(fileName);
             }
 
-            if(LevelsUpdated != null)
+            if (LevelsUpdated != null)
             {
                 LevelsUpdated(null);
             }
@@ -69,7 +69,7 @@ namespace Spotlight.Services
 
             foreach (var world in worldInfos)
             {
-                if(world == _project.EmptyWorld)
+                if (world == _project.EmptyWorld)
                 {
                     continue;
                 }
@@ -83,7 +83,7 @@ namespace Spotlight.Services
                 }
             }
 
-            if(currentLevel != null)
+            if (currentLevel != null)
             {
                 infos.Remove(currentLevel);
             }
@@ -144,7 +144,9 @@ namespace Spotlight.Services
                 string safeFileName = levelInfo.Name.Replace("!", "").Replace("?", "");
 
                 string fileName = _project.DirectoryPath + @"\levels\" + safeFileName + ".json";
-                return JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
+                Level level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
+                level.SwitchQuest(Level.LevelQuest.First);
+                return level;
             }
             catch (Exception e)
             {
@@ -152,6 +154,7 @@ namespace Spotlight.Services
                 return null;
             }
         }
+
 
         public void RenameLevel(string previousName, string newName)
         {
@@ -239,15 +242,16 @@ namespace Spotlight.Services
         {
             string tempFile = _project.DirectoryPath + SafeFileName(level);
 
-            if (File.Exists(tempFile)){
+            if (File.Exists(tempFile))
+            {
                 File.Delete(tempFile);
             }
         }
 
-        public  void CleanUpTemps()
+        public void CleanUpTemps()
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
-            foreach(FileInfo fileInfo in directoryInfo.GetFiles())
+            foreach (FileInfo fileInfo in directoryInfo.GetFiles())
             {
                 if (fileInfo.Name.StartsWith("~"))
                 {

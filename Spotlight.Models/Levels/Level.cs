@@ -14,7 +14,7 @@ namespace Spotlight.Models
         {
             TileData = new int[240 * 27];
             LevelPointers = new List<LevelPointer>();
-            ObjectData = new List<LevelObject>();
+            FirstObjectData = new List<LevelObject>();
             SecondObjectData = new List<LevelObject>();
         }
 
@@ -81,10 +81,37 @@ namespace Spotlight.Models
         public int Effects { get; set; }
         public int EventType { get; set; }
         public int[] TileData { get; set; }
-        public List<LevelObject> ObjectData { get; set; }
+        [JsonIgnore]
+        public List<LevelObject> ObjectData
+        {
+            get
+            {
+                if (_quest == LevelQuest.First)
+                {
+                    return FirstObjectData;
+                }
+                else
+                {
+                    return SecondObjectData;
+                }
+            }
+        }
+
         public List<LevelObject> FirstObjectData { get; set; }
         public List<LevelObject> SecondObjectData { get; set; }
         public List<LevelPointer> LevelPointers { get; set; }
         public byte[] CompressedData { get; set; }
+
+        private LevelQuest _quest = LevelQuest.First;
+        public void SwitchQuest(LevelQuest quest)
+        {
+            _quest = quest;
+        }
+
+        public enum LevelQuest
+        {
+            First = 0,
+            Second = 1
+        }
     }
 }

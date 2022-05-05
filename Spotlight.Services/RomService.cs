@@ -330,7 +330,16 @@ namespace Spotlight.Services
                 _rom[levelAddress++] = (byte)0xFF;
 
                 region = "Writing object data";
-                foreach (LevelObject levelObject in level.ObjectData.OrderBy(s => s.X).ThenBy(s => s.Y))
+                foreach (LevelObject levelObject in level.FirstObjectData.OrderBy(s => s.X).ThenBy(s => s.Y))
+                {
+                    _rom[levelAddress++] = (byte)levelObject.GameObjectId;
+                    _rom[levelAddress++] = (byte)levelObject.X;
+                    _rom[levelAddress++] = (byte)((levelObject.Property << 5) | levelObject.Y);
+                }
+
+                _rom[levelAddress++] = (byte) GameObject.SecondQuestDivider.GameId;
+
+                foreach (LevelObject levelObject in level.SecondObjectData.OrderBy(s => s.X).ThenBy(s => s.Y))
                 {
                     _rom[levelAddress++] = (byte)levelObject.GameObjectId;
                     _rom[levelAddress++] = (byte)levelObject.X;

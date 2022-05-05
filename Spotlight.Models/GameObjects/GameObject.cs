@@ -26,7 +26,7 @@ namespace Spotlight.Models
 
         public static GameObject SecondQuestDivider = new GameObject()
         {
-            GameId = 0xF8
+            GameId = 0xFE
         };
     }
 
