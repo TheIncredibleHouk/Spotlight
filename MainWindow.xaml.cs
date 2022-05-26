@@ -47,6 +47,7 @@ namespace Spotlight
             _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
             _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
             _ProjectPanel.GraphicsEditorClicked += _ProjectPanel_GraphicsEditorClicked;
+            _ProjectPanel.ExportPaletteClicked += _ProjectPanel_ExportPaletteClicked;
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
             Activated += MainWindow_Activated;
 
@@ -55,6 +56,19 @@ namespace Spotlight
             if (_config.LastProjectPath != null && File.Exists(_config.LastProjectPath))
             {
                 _ProjectPanel.LoadProject(_config.LastProjectPath);
+            }
+        }
+
+        private void _ProjectPanel_ExportPaletteClicked()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.DefaultExt = ".pal";
+            saveFileDialog.FileName = $"{_project.Name}.pal";
+            saveFileDialog.InitialDirectory = _config.LastProjectPath;
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                _palettesService.ExportRgbPalette(saveFileDialog.FileName);
             }
         }
 

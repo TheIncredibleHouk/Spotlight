@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 
 namespace Spotlight.Services
@@ -162,6 +163,20 @@ namespace Spotlight.Services
             {
                 PalettesChanged();
             }
+        }
+
+        public void ExportRgbPalette(string fileName)
+        {
+            byte[] outputBytes = new byte[3 * 0x40];
+            int byteCounter = 0;
+            foreach(Color c in _project.RgbPalette)
+            {
+                outputBytes[byteCounter++] = c.R;
+                outputBytes[byteCounter++] = c.G;
+                outputBytes[byteCounter++] = c.B;
+            }
+
+            File.WriteAllBytes(fileName, outputBytes);
         }
     }
 }

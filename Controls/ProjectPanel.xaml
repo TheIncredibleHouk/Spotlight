@@ -23,6 +23,12 @@
                         <TextBlock>Save ROM</TextBlock>
                     </StackPanel>
                 </Button>
+                <Button x:Name="ExportPaletteButton" Click="ExportPaletteButton_Click" IsEnabled="False">
+                    <StackPanel Orientation="Vertical">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Palette.png" Height="16" />
+                        <TextBlock>Export RGB</TextBlock>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Border>
         <Border Style="{StaticResource Section}">
