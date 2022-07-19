@@ -1534,6 +1534,8 @@ namespace Spotlight
                     }
 
                     CursorImage.Opacity = .75;
+                    SelectedDrawMode.IsEnabled = true;
+                    SelectedDrawMode.Opacity = 1;
                     break;
 
                 case 1:
@@ -1546,6 +1548,8 @@ namespace Spotlight
                     }
 
                     CursorImage.Opacity = 0;
+                    SelectedDrawMode.IsEnabled = false;
+                    SelectedDrawMode.Opacity = .5;
                     break;
 
                 case 2:
@@ -1557,6 +1561,8 @@ namespace Spotlight
                     }
                     _selectedObject = null;
                     CursorImage.Opacity = 0;
+                    SelectedDrawMode.IsEnabled = false;
+                    SelectedDrawMode.Opacity = .5;
                     break;
             }
         }

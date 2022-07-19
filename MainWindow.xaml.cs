@@ -75,7 +75,7 @@ namespace Spotlight
         private GraphicsWindow _graphicsWindow;
         private void _ProjectPanel_GraphicsEditorClicked()
         {
-            if(_graphicsWindow == null)
+            if (_graphicsWindow == null)
             {
                 _graphicsWindow = new GraphicsWindow(_graphicsService, _tileService, _palettesService);
                 _graphicsWindow.Closed += _graphicsWindow_Closed;
@@ -478,14 +478,23 @@ namespace Spotlight
 
         private void LoadConfiguration()
         {
-            string configFilePath = GetConfigFilePath() ;
+            string configFilePath = GetConfigFilePath();
             if (File.Exists(configFilePath))
             {
-                _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(configFilePath));
+                try
+                {
+                    _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(configFilePath)) ?? new Configuration();
+                }
+                catch
+                {
+                    _config = new Configuration();
+                }
+
                 this.Left = _config.WindowLocation.X;
                 this.Top = _config.WindowLocation.Y;
                 this.Width = _config.WindowLocation.Width;
                 this.Height = _config.WindowLocation.Height;
+
             }
         }
 
@@ -533,7 +542,7 @@ namespace Spotlight
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if(_levelService == null)
+            if (_levelService == null)
             {
                 return;
             }

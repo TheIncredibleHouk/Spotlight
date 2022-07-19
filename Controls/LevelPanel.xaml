@@ -86,7 +86,7 @@
                         <ComboBoxItem>Pointers</ComboBoxItem>
                     </ComboBox>
                     <TextBlock VerticalAlignment="Center">
-                    <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="16" />
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Edit.png" Height="16" />
                     </TextBlock>
                     <ComboBox Width="100" x:Name="SelectedDrawMode" VerticalAlignment="Center" SelectionChanged="DrawMode_SelectionChanged">
                         <ComboBoxItem>Default</ComboBoxItem>

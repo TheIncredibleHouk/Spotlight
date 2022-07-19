@@ -291,6 +291,7 @@ namespace Spotlight
             {
                 currentPoint.XPointer = (_level.ScreenLength * 0x10) - 1;
                 currentPoint.YPointer--;
+                currentPoint.EOD = false;
             }
         }
 
