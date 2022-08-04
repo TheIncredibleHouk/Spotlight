@@ -46,7 +46,7 @@ namespace Spotlight.Models
                         return 0xF0;
 
                     case 3:
-                        return 0x5C;
+                        return 0x5E;
 
                     default:
                         return 0x80;
