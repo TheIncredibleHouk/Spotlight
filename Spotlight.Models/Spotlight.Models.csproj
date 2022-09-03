@@ -56,12 +56,14 @@
     <Compile Include="Levels\Level.cs" />
     <Compile Include="Levels\LevelObject.cs" />
     <Compile Include="Levels\LevelObjectChange.cs" />
+    <Compile Include="Levels\LevelPatch.cs" />
     <Compile Include="Levels\LevelPointer.cs" />
     <Compile Include="Project\IInfo.cs" />
     <Compile Include="Project\LevelInfo.cs" />
     <Compile Include="Palette\Palette.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="Rom\Rom.cs" />
+    <Compile Include="Rom\RomInfo.cs" />
     <Compile Include="Tiles\MapTileInteraction.cs" />
     <Compile Include="Tiles\PSwitchAlteration.cs" />
     <Compile Include="Tiles\Tile.cs" />

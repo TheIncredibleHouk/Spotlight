@@ -126,7 +126,7 @@ namespace Spotlight
             {
                 try
                 {
-                    _romService.CompileRom(_config.LastRomPath);
+                    RomInfo romInfo = _romService.CompileRom(_config.LastRomPath);
 
                     if (_errorService.CurrentLog.Count > 0)
                     {
@@ -134,7 +134,7 @@ namespace Spotlight
                     }
                     else
                     {
-                        AlertWindow.Alert("Rom compiled!");
+                        AlertWindow.Alert($"Rom compiled!\nLevels used: {romInfo.LevelsUsed}\nRemaining space: {romInfo.SpaceRemaining} bytes");
                     }
 
                     SaveConfiguration();

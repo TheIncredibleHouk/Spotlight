@@ -57,8 +57,9 @@ namespace Spotlight.Services
             }
         }
 
-        public int CompileRom(string fileName)
+        public RomInfo CompileRom(string fileName)
         {
+            RomInfo romInfo = new RomInfo();
             _rom = new Rom();
             if (!_rom.Load(fileName))
             {
@@ -76,7 +77,11 @@ namespace Spotlight.Services
 
             WriteGraphics();
             _rom.Save();
-            return 0x7C00F - _dataPointer;
+            romInfo.LevelAddressEnd = _dataPointer;
+            romInfo.SpaceRemaining = 0x7C00F - _dataPointer;
+            romInfo.LevelsUsed = _levelService.AllLevels().Count;
+
+            return romInfo;
         }
 
         private int CompileLevels()
@@ -258,7 +263,7 @@ namespace Spotlight.Services
                 {
                     if (pointer.ExitsLevel)
                     {
-                        _rom[levelAddress++] = (byte)(pointer.ExitsLevel ? 1 : 0);
+                        //_rom[levelAddress++] = (byte)(pointer.ExitsLevel ? 1 : 0);
                         if (_worldIndexTable.ContainsKey(pointer.LevelId))
                         {
                             _rom[levelAddress++] = _worldIndexTable[pointer.LevelId];

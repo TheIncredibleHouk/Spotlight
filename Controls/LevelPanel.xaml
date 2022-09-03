@@ -97,7 +97,7 @@
             </Border>
             <Border Style="{StaticResource Section}">
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton GroupName="Grid4" Click="ToggleQuest_Click" x:Name="SecondQuest">
+                    <RadioButton GroupName="AltGroup" Click="ToggleQuest_Click" x:Name="SecondQuest">
                         <StackPanel Orientation="Vertical">
                             <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Object.png" Height="16" />
                             <TextBlock>Alt</TextBlock>

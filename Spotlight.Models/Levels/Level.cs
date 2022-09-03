@@ -81,6 +81,8 @@ namespace Spotlight.Models
         public int Effects { get; set; }
         public int EventType { get; set; }
         public int[] TileData { get; set; }
+        public int[] PatchTileData { get; set; }
+
         [JsonIgnore]
         public List<LevelObject> ObjectData
         {

@@ -138,7 +138,7 @@ namespace Spotlight
             byte repeatTile;
             int repeatCount = 1;
             repeatTile = NextByte();
-            while (repeatTile == NextByte() && repeatCount < 0x40)
+            while (repeatTile == NextByte() && repeatCount < 0x40 && !currentPoint.EOD)
             {
                 repeatCount++;
             }
