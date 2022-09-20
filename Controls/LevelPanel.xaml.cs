@@ -558,6 +558,10 @@ namespace Spotlight
 
                     GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
                     GameObjectProperty.SelectedIndex = _selectedObject.Property;
+                    if (_selectedObject.GameObject.Properties.Count > 0)
+                    {
+                        GameObjectProperty.Width = _selectedObject.GameObject.Properties.Max(prop => prop.Length) * 5 + 80;
+                    }
                 }
                 else
                 {
@@ -1536,6 +1540,8 @@ namespace Spotlight
                     CursorImage.Opacity = .75;
                     SelectedDrawMode.IsEnabled = true;
                     SelectedDrawMode.Opacity = 1;
+                    PointerEditor.Visibility = Visibility.Hidden;
+                    GameObjectProperty.Visibility = Visibility.Hidden;
                     break;
 
                 case 1:
@@ -1550,6 +1556,7 @@ namespace Spotlight
                     CursorImage.Opacity = 0;
                     SelectedDrawMode.IsEnabled = false;
                     SelectedDrawMode.Opacity = .5;
+                    PointerEditor.Visibility = Visibility.Hidden;
                     break;
 
                 case 2:
@@ -1563,6 +1570,7 @@ namespace Spotlight
                     CursorImage.Opacity = 0;
                     SelectedDrawMode.IsEnabled = false;
                     SelectedDrawMode.Opacity = .5;
+                    GameObjectProperty.Visibility = Visibility.Hidden;
                     break;
             }
         }

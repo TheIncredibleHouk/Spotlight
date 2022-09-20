@@ -161,7 +161,7 @@ namespace Spotlight
 
         private void GameObjectType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GameObjectGroups.ItemsSource = _gameObjectService.GetGroups((GameObjectType)GameObjectTypes.SelectedItem);
+            GameObjectGroups.ItemsSource = _gameObjectService.GetGroups((GameObjectType)GameObjectTypes.SelectedItem).OrderBy(group => group);
             GameObjectGroups.SelectedItem = _selectedGroup[(GameObjectType)GameObjectTypes.SelectedItem];
 
             if (GameObjectGroups.SelectedItem == null)

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -379,7 +380,7 @@ namespace Spotlight
 
         private void TabItemHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            SelectedTabItem = null;
+            TabsOpen.SelectedItem = SelectedTabItem = (TabItem)((Border)sender).DataContext; ;
         }
 
         private void CloseButton_Clicked(object sender, RoutedEventArgs e)
@@ -423,16 +424,6 @@ namespace Spotlight
             }
         }
 
-        private void TabItemHeader_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Middle)
-            {
-                if (TabsOpen.Items.Count > 1)
-                {
-                    CloseTab((TabItem)TabsOpen.SelectedItem);
-                }
-            }
-        }
 
         private void _OpenLevelEditor(LevelInfo levelInfo)
         {

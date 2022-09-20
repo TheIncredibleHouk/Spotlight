@@ -56,7 +56,6 @@
     <Compile Include="Levels\Level.cs" />
     <Compile Include="Levels\LevelObject.cs" />
     <Compile Include="Levels\LevelObjectChange.cs" />
-    <Compile Include="Levels\LevelPatch.cs" />
     <Compile Include="Levels\LevelPointer.cs" />
     <Compile Include="Project\IInfo.cs" />
     <Compile Include="Project\LevelInfo.cs" />

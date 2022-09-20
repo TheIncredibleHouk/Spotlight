@@ -25,14 +25,14 @@
             <Border Style="{StaticResource Section}" x:Name="SplashText">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">Please click Load Project to continue</TextBlock>
             </Border>
-            <TabControl Margin="4" Padding="0" x:Name="TabsOpen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
+            <TabControl Margin="4" Padding="0" x:Name="TabsOpen" SelectionChanged="TabsOpen_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="TabItem">
                                     <StackPanel Orientation="Horizontal">
-                                        <Border Padding="4" CornerRadius="5, 5, 0, 0" Name="Panel" MouseDown="TabItemHeader_MouseDown" MouseUp="TabItemHeader_MouseUp">
+                                        <Border Padding="4" CornerRadius="5, 5, 0, 0" Name="Panel" MouseDown="TabItemHeader_MouseDown" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
                                             <StackPanel Orientation="Horizontal">
                                                 <ContentPresenter ContentSource="Header" />
                                                 <Button Click="CloseButton_Clicked" Style="{StaticResource CloseButton}" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}" Content="×" />
