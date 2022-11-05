@@ -558,7 +558,7 @@ namespace Spotlight
 
                     GameObjectProperty.ItemsSource = _selectedObject.GameObject.Properties;
                     GameObjectProperty.SelectedIndex = _selectedObject.Property;
-                    if (_selectedObject.GameObject.Properties.Count > 0)
+                    if (_selectedObject.GameObject.Properties != null && _selectedObject.GameObject.Properties.Count > 0)
                     {
                         GameObjectProperty.Width = _selectedObject.GameObject.Properties.Max(prop => prop.Length) * 5 + 80;
                     }
