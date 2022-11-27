@@ -96,7 +96,7 @@ namespace Spotlight
 
         private void ObjectSelector_GameObjectChanged(GameObject gameObject)
         {
-            List<string> properties = gameObject.Properties.ToList();
+            List<string> properties = (gameObject.Properties ?? new List<string>()).ToList();
 
             _gameObject = viewObject.GameObject = gameObject;
             ObjectDefinition.Text = JsonConvert.SerializeObject(gameObject, Formatting.Indented);
