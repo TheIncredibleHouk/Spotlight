@@ -619,7 +619,7 @@ namespace Spotlight
                 _copiedblock = BlockSelector.SelectedTileBlock;
             }
 
-            if ((e.ButtonState & e.MiddleButton) > 0)
+            if ((e.ButtonState & e.MiddleButton) > 0 && _copiedblock != null)
             {
                 BlockSelector.SelectedTileBlock.UpperLeft = _copiedblock.UpperLeft;
                 BlockSelector.SelectedTileBlock.UpperRight = _copiedblock.UpperRight;

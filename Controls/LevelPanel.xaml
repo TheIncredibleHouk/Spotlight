@@ -141,6 +141,12 @@
                             <TextBlock>P-Switch</TextBlock>
                         </StackPanel>
                     </RadioButton>
+                    <RadioButton GroupName="Grid5" Click="ShowHighlight_Click" x:Name="ShowHighlight">
+                        <StackPanel Orientation="Vertical">
+                            <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="Icons\Interactions.png" Height="16" />
+                            <TextBlock>Highlight</TextBlock>
+                        </StackPanel>
+                    </RadioButton>
                 </StackPanel>
             </Border>
         </StackPanel>

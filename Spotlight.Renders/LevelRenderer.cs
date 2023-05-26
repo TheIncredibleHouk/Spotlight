@@ -1,6 +1,7 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 
@@ -25,6 +26,9 @@ namespace Spotlight.Renderers
             _paletteService = paletteService;
             _terrain = terrain;
             _buffer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * 4];
+
+            _highlightPalette[1] = _paletteService.RgbPalette[0x0F];
+            _highlightPalette[2] = _paletteService.RgbPalette[0x30];
         }
 
         private TileSet _tileSet;
@@ -73,6 +77,7 @@ namespace Spotlight.Renderers
         }
 
         private bool _withSpriteOverlays, _withTerrainOverlay, _withInteractionOverlay;
+        private int? _withTileHighlight;
 
         public void Update(bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
         {
@@ -86,6 +91,15 @@ namespace Spotlight.Renderers
             _withSpriteOverlays = withSpriteOverlays;
             _withTerrainOverlay = withTerrainOverlay;
             _withInteractionOverlay = withInteractionOverlay;
+            Update(rect);
+        }
+
+        public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay, int? tileHighlight)
+        {
+            _withSpriteOverlays = withSpriteOverlays;
+            _withTerrainOverlay = withTerrainOverlay;
+            _withInteractionOverlay = withInteractionOverlay;
+            _withTileHighlight = tileHighlight;
             Update(rect);
         }
 
@@ -157,9 +171,26 @@ namespace Spotlight.Renderers
                             }
                         }
                     }
+
+                    if (_withTileHighlight == tileValue)
+                    {
+                        int upperLeft = 0xFF;
+                        int upperRight = 0xFF;
+                        int lowerLeft = 0xFF;
+                        int lowerRight = 0xFF;
+
+                        RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, upperLeft), _buffer, _highlightPalette, useTransparency: true, opacity: .5);
+                        RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, upperRight), _buffer, _highlightPalette, useTransparency: true, opacity: .5);
+                        RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, lowerLeft), _buffer, _highlightPalette, useTransparency: true, opacity: .5);
+                        RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, lowerRight), _buffer, _highlightPalette, useTransparency: true, opacity: .5);
+                    }
                 }
             }
         }
+
+
+        private Color[] _highlightPalette = new Color[4];
+
 
         public void RenderObjects(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT, bool withOverlays = false)
         {

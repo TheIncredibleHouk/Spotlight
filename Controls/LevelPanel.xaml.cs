@@ -129,7 +129,6 @@ namespace Spotlight
             _initializing = false;
             _levelRenderer.Ready();
             Update();
-            AutoSave();
         }
 
         private void _levelService_LevelUpdated(LevelInfo levelInfo)
@@ -242,7 +241,7 @@ namespace Spotlight
 
                 Int32Rect sourceArea = new Int32Rect(0, 0, Math.Max(0, Math.Min(safeRect.Width, LevelRenderer.BITMAP_WIDTH)), Math.Max(0, Math.Min(safeRect.Height, LevelRenderer.BITMAP_HEIGHT)));
 
-                _levelRenderer.Update(safeRect, true, ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value);
+                _levelRenderer.Update(safeRect, true, ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value, _highlightedTile);
                 _bitmap.WritePixels(sourceArea, _levelRenderer.GetRectangle(safeRect), safeRect.Width * 4, safeRect.X, safeRect.Y);
                 _bitmap.AddDirtyRect(safeRect);
             }
@@ -1610,6 +1609,23 @@ namespace Spotlight
             Update();
         }
 
+        private int? _highlightedTile = null;
+        private void ShowHighlight_Click(object sender, RoutedEventArgs e)
+        {
+            if (_highlightedTile == null)
+            {
+                _highlightedTile = TileSelector.SelectedBlockValue;
+                ShowHighlight.IsChecked = true;
+            }
+            else
+            {
+                _highlightedTile = null;
+                ShowHighlight.IsChecked = false;
+            }
+
+            Update();
+        }
+
         private void ShowScreenLines_Click(object sender, RoutedEventArgs e)
         {
             _levelRenderer.ScreenBorders = ShowScreenLines.IsChecked.Value;
@@ -1634,22 +1650,12 @@ namespace Spotlight
             _cursorBitmap.WritePixels(updateRect, TileSelector.GetTileBlockImage(), 16 * 4, 0, 0);
             _cursorBitmap.AddDirtyRect(updateRect);
             _cursorBitmap.Unlock();
-        }
 
-        private async void AutoSave()
-        {
-            _ = Task.Run(() =>
-              {
-                  while (true)
-                  {
-                      lock (_level)
-                      {
-                          _levelService.SaveLevel(_level, asTemp: true);
-                      }
-
-                      Thread.Sleep(30 * 1000);
-                  }
-              });
+            if (ShowHighlight.IsChecked == true)
+            {
+                _highlightedTile = TileSelector.SelectedBlockValue;
+                Update();
+            }
         }
 
         public void HandleKeyDown(KeyEventArgs e)
