@@ -464,7 +464,7 @@ namespace Spotlight
             {
                 if (e.RightButton == MouseButtonState.Pressed)
                 {
-                    if (_world.Pointers.Count < 20)
+                    if (_world.Pointers.Count < 25)
                     {
                         _selectedPointer = new WorldPointer()
                         {
