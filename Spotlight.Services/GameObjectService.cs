@@ -132,6 +132,11 @@ namespace Spotlight.Services
             return GameObjectTable.ObjectTable[type][group];
         }
 
+        public List<GameObject> GetObjects(IEnumerable<int> gameObjectIds)
+        {
+            return localGameObjects.Where(gameObject => gameObjectIds.Contains(gameObject.GameId)).ToList();
+        }
+
         public GameObject GetObject(int gameObjectId)
         {
             return localGameObjects[gameObjectId];
@@ -246,7 +251,7 @@ namespace Spotlight.Services
         public IEnumerable<LevelInfo> FindInLevels(GameObject gameObject)
         {
             List<LevelInfo> foundLevels = new List<LevelInfo>();
-            LevelService levelService = new LevelService(_errorService, _project);
+            LevelService levelService = new LevelService(_errorService, _project, null);
             foreach(LevelInfo levelInfo in levelService.AllLevels())
             {
                 if(levelService.LoadLevel(levelInfo).ObjectData.Exists(obj => obj.GameObjectId == gameObject.GameId))

@@ -14,7 +14,7 @@ namespace Spotlight.Services
     {
         private ErrorService _errorService;
         private Project _project;
-
+    
         public ProjectService(ErrorService errorService)
         {
             _errorService = errorService;
@@ -48,7 +48,7 @@ namespace Spotlight.Services
 
             _project = project;
 
-            foreach(WorldInfo worldInfo in project.WorldInfo)
+            foreach (WorldInfo worldInfo in project.WorldInfo)
             {
                 LinkLevelTree(worldInfo);
             }
@@ -60,12 +60,12 @@ namespace Spotlight.Services
 
         private void LinkLevelTree(IInfo iInfo)
         {
-            if(iInfo.SublevelsInfo == null)
+            if (iInfo.SublevelsInfo == null)
             {
                 return;
             }
 
-            foreach(IInfo subInfo in iInfo.SublevelsInfo)
+            foreach (IInfo subInfo in iInfo.SublevelsInfo)
             {
                 subInfo.ParentInfo = iInfo;
                 LinkLevelTree(subInfo);

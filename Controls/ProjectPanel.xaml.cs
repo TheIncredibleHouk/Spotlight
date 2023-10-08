@@ -41,6 +41,9 @@ namespace Spotlight
         public delegate void ExportPaletteEventHandler();
         public event ExportPaletteEventHandler ExportPaletteClicked;
 
+        public delegate void GenerateMetaDataEventHandler();
+        public event GenerateMetaDataEventHandler GenerateMetaDataClicked;
+
         public ProjectService ProjectService { get; set; }
         public RomService RomService { get; set; }
 
@@ -119,6 +122,11 @@ namespace Spotlight
         private void ExportPaletteButton_Click(object sender, RoutedEventArgs e)
         {
             ExportPaletteClicked();
+        }
+
+        private void UpdateMetaDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            GenerateMetaDataClicked();
         }
     }
 }

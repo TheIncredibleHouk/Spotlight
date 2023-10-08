@@ -15,6 +15,7 @@ namespace Spotlight.Models
         [JsonIgnore]
         public IInfo ParentInfo { get; set; }
         public InfoType InfoType { get { return InfoType.Level; } }
+        public LevelMetaData LevelMetaData { get; set; }
 
         public string DisplayName
         {

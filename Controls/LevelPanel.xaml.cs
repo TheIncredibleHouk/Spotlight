@@ -3,8 +3,11 @@ using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
+
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 
 namespace Spotlight
 {
@@ -37,6 +41,7 @@ namespace Spotlight
         private WriteableBitmap _cursorBitmap;
         private HistoryService _historyService;
         private ClipBoardService _clipBoardService;
+        private ProjectService _projectService;
         private List<TileTerrain> _terrain;
 
         public delegate void LevelEditorExitSelectedHandled(int x, int y);
@@ -45,7 +50,7 @@ namespace Spotlight
 
         private bool _initializing = true;
 
-        public LevelPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, GameObjectService gameObjectService, LevelService levelService, ClipBoardService clipBoardService, LevelInfo levelInfo)
+        public LevelPanel(ProjectService projectService, GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, GameObjectService gameObjectService, LevelService levelService, ClipBoardService clipBoardService, LevelInfo levelInfo)
         {
             InitializeComponent();
 
@@ -56,6 +61,7 @@ namespace Spotlight
             _tileService = tileService;
             _palettesService = palettesService;
             _levelService = levelService;
+            _projectService = projectService;
             _historyService = new HistoryService();
             _compressionService = new CompressionService();
             _clipBoardService = clipBoardService;
@@ -163,13 +169,11 @@ namespace Spotlight
             {
                 PaletteIndex.SelectedIndex = 0;
             }
-            else
-            {
-                _levelRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
-                TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
-                ObjectSelector.Update((Palette)PaletteIndex.SelectedItem);
-                Update();
-            }
+
+            _levelRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            ObjectSelector.Update((Palette)PaletteIndex.SelectedItem);
+            Update();
         }
 
         private void _graphicsService_GraphicsUpdated()
@@ -353,7 +357,7 @@ namespace Spotlight
         {
             Point clickPoint = Snap(e.GetPosition(LevelRenderSource));
 
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed && Keyboard.Modifiers != ModifierKeys.Alt)
             {
                 CursorImage.Opacity = .75;
 
@@ -460,9 +464,9 @@ namespace Spotlight
                     Update(new Rect(lowestX * 16, lowestY * 16, (highestX - lowestX + 1) * 16, (highestY - lowestY + 1) * 16));
                 }
             }
-            else if (e.RightButton == MouseButtonState.Pressed)
+            else if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && Keyboard.Modifiers == ModifierKeys.Alt))
             {
-                _selectionMode = SelectionMode.SelectTiles;
+                 _selectionMode = SelectionMode.SelectTiles;
 
                 int x = (int)(clickPoint.X / 16), y = (int)(clickPoint.Y / 16);
 
@@ -1453,6 +1457,36 @@ namespace Spotlight
             _levelService.NotifyUpdate(_levelInfo);
 
             _level.ObjectData.Insert(0, startPointObject);
+
+            int thumbnailX = startPointObject.X * 16 - 120;
+            int thumbnailY = startPointObject.Y * 16 - 120;
+
+            if (thumbnailX < 0)
+            {
+                thumbnailX = 0;
+            }
+
+            if (thumbnailY < 0)
+            {
+                thumbnailY = 0;
+            }
+
+            if (thumbnailX + 256 > 256 * _level.ScreenLength)
+            {
+                thumbnailX = 256 * _level.ScreenLength - 256;
+            }
+
+            if (thumbnailY + 256 > LevelRenderer.BITMAP_HEIGHT)
+            {
+                thumbnailY = LevelRenderer.BITMAP_HEIGHT - 256;
+            }
+
+            Int32Rect thumbnailReact = new Int32Rect(thumbnailX, thumbnailY, 256, 256);
+
+            using (MemoryStream ms = new MemoryStream(_levelRenderer.GetRectangle(thumbnailReact)))
+            {
+                _levelService.GenerateMetaData(_tileService, _levelInfo, ms);
+            }
 
             AlertWindow.Alert(_level.Name + " has been saved!");
         }

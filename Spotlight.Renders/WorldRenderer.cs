@@ -30,12 +30,14 @@ namespace Spotlight.Renderers
         private Palette _palette;
         private TileSet _tileSet;
         private bool _withInteractionOverlay;
+        private bool _withPointers;
 
-        public void Update(Int32Rect? rect = null, Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null)
+        public void Update(Int32Rect? rect = null, Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null, bool? withPointers = null)
         {
             _palette = palette ?? _palette;
             _tileSet = tileSet ?? _tileSet;
             _withInteractionOverlay = withInteractionOverlay ?? _withInteractionOverlay;
+            _withPointers = withPointers ?? _withPointers;
 
             if (rect.HasValue)
             {
@@ -71,7 +73,11 @@ namespace Spotlight.Renderers
 
             RenderTiles(blockX, blockY, blockWidth, blockHeight);
             RenderObjects(blockX, blockY, blockWidth, blockHeight);
-            RenderPointers(blockX, blockY, blockWidth, blockHeight);
+
+            if (_withPointers)
+            {
+                RenderPointers(blockX, blockY, blockWidth, blockHeight);
+            }
         }
 
         public void Update()

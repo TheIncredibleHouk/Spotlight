@@ -32,6 +32,8 @@ namespace Spotlight
         private WriteableBitmap _graphicsSetBitmap;
         private WriteableBitmap _tileBlockBitmap;
 
+        private List<LevelInfo> _levelInfos;
+
         public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, TextService textService)
         {
             _ignoreChanges = true;
@@ -52,6 +54,8 @@ namespace Spotlight
             TerrainList.ItemsSource = _localTileTerrain = _tileService.GetTerrainCopy();
             LevelList.ItemsSource = _levelService.AllWorldsLevels();
             MapInteractionList.ItemsSource = _localMapTileInteraction = _tileService.GetMapTileInteractionCopy();
+
+            _levelInfos = _levelService.AllLevels();
 
             _graphicsAccessor = new GraphicsAccessor(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
 
@@ -96,7 +100,7 @@ namespace Spotlight
             {
                 Tile[] staticTiles = _graphicsService.GetTileSection(_currentWorld.TileTableIndex);
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex);
-                
+
                 _graphicsAccessor.SetBottomTable(staticTiles);
                 _graphicsAccessor.SetTopTable(animatedTiles);
             }
@@ -132,6 +136,16 @@ namespace Spotlight
             UpdateGraphics();
 
             _ignoreChanges = false;
+
+            AffectedLevels.Children.Clear();
+
+            foreach (var levelInfo in _levelInfos.Where(info => info.LevelMetaData.TileSet == _currentLevel.TileSetIndex && info.LevelMetaData.TilesUsed.Contains(BlockSelector.SelectedBlockValue)))
+            {
+                AffectedLevels.Children.Add(new Label()
+                {
+                    Content = levelInfo.Name
+                });
+            }
         }
 
         private void TerrainList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -273,7 +287,7 @@ namespace Spotlight
 
         private void CommitInteractions()
         {
-            while(_localTileSet.FireBallInteractions.Count < 8)
+            while (_localTileSet.FireBallInteractions.Count < 8)
             {
                 _localTileSet.FireBallInteractions.Add(-1);
             }
@@ -285,7 +299,7 @@ namespace Spotlight
 
             while (_localTileSet.PSwitchAlterations.Count < 8)
             {
-                _localTileSet.PSwitchAlterations.Add( new PSwitchAlteration() { From = -1, To = -1 });
+                _localTileSet.PSwitchAlterations.Add(new PSwitchAlteration() { From = -1, To = -1 });
             }
 
             int intValue;
@@ -328,7 +342,7 @@ namespace Spotlight
             _localTileSet.FireBallInteractions.RemoveAll(i => i == -1);
             _localTileSet.IceBallInteractions.RemoveAll(i => i == -1);
             _localTileSet.PSwitchAlterations.RemoveAll(p => p.From == -1 || p.To == -1);
-        }                       
+        }
 
         private void UpdateGraphics()
         {
@@ -635,7 +649,7 @@ namespace Spotlight
 
         private void BlockSelectorBorder_KeyDown(object sender, KeyEventArgs e)
         {
-            
+
         }
 
         private void GraphicsSetImage_MouseMove(object sender, MouseEventArgs e)
@@ -650,6 +664,11 @@ namespace Spotlight
             Point mousePoint = Snap(e.GetPosition(BlockSelector));
             int value = (int)(mousePoint.Y + (mousePoint.X / 16));
             TileSelectorCoordinate.Text = value.ToString("X2");
+        }
+
+        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            AffectLevelsContainer.Height = Math.Max(this.ActualHeight - 600, 100);
         }
     }
 }

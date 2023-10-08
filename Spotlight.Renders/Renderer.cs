@@ -42,10 +42,20 @@ namespace Spotlight.Renderers
                 {
                     int xOffset = yOffset + (x * 4);
 
-                    copyData[copyDataPointer++] = buffer[xOffset];
-                    copyData[copyDataPointer++] = buffer[xOffset + 1];
-                    copyData[copyDataPointer++] = buffer[xOffset + 2];
-                    copyData[copyDataPointer++] = buffer[xOffset + 3];
+                    if (xOffset >= buffer.Length)
+                    {
+                        copyData[copyDataPointer++] = 0;
+                        copyData[copyDataPointer++] = 0;
+                        copyData[copyDataPointer++] = 0;
+                        copyData[copyDataPointer++] = 0;
+                    }
+                    else
+                    {
+                        copyData[copyDataPointer++] = buffer[xOffset];
+                        copyData[copyDataPointer++] = buffer[xOffset + 1];
+                        copyData[copyDataPointer++] = buffer[xOffset + 2];
+                        copyData[copyDataPointer++] = buffer[xOffset + 3];
+                    }
                 }
             }
 

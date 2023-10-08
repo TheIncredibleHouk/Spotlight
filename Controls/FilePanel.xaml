@@ -7,7 +7,7 @@
              Width="300"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="40">
-  
+
     <Border Style="{StaticResource Section}">
         <DockPanel>
             <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Bottom">
@@ -31,6 +31,29 @@
                     </StackPanel>
                 </Border>
             </DockPanel>
+            <Border DockPanel.Dock="Bottom" Height="356" BorderBrush="#303038" BorderThickness="0, 2, 0, 0">
+                <StackPanel x:Name="LevelMetaDisplay">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25" />
+                            <RowDefinition Height="25" />
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="256" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="0" FontWeight="Bold">Max Coins:</TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="0" x:Name="MetaCoins"></TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">Max Cherries:</TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="1" x:Name="MetaCherries"></TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="2" FontWeight="Bold">Power Ups:</TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="WrapWithOverflow" x:Name="MetaPowerUps"></TextBlock>
+                        <Image Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" x:Name="ThumbnailPreview" Width="256" Height="256" />
+                    </Grid>
+                </StackPanel>
+            </Border>
             <TreeView BorderThickness="0" SelectedItemChanged="WorldTree_SelectedItemChanged" DockPanel.Dock="Top" x:Name="WorldTree" Background="Transparent">
                 <TreeView.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF151515" />
@@ -38,5 +61,5 @@
                 </TreeView.Resources>
             </TreeView>
         </DockPanel>
-        </Border>
+    </Border>
 </UserControl>

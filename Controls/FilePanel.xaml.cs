@@ -1,10 +1,12 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Spotlight
 {
@@ -39,6 +41,10 @@ namespace Spotlight
             _worldService = worldService;
             _levelService.LevelUpdated += _levelService_LevelUpdated;
             _levelService.LevelsUpdated += _levelService_LevelsUpdated;
+
+            Dpi dpi = this.GetDpi();
+            _thumbnailBitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+            ThumbnailPreview.Source = _thumbnailBitmap;
             BuildTree();
         }
 
@@ -118,13 +124,13 @@ namespace Spotlight
             if (Expanded)
             {
                 Width = 300;
-                WorldTree.Visibility = ActionPanel.Visibility = Visibility.Visible;
+                LevelMetaDisplay.Visibility = WorldTree.Visibility = ActionPanel.Visibility = Visibility.Visible;
                 CollapseIcon.RenderTransform = null;
             }
             else
             {
                 Width = 45;
-                WorldTree.Visibility = ActionPanel.Visibility = Visibility.Collapsed;
+                LevelMetaDisplay.Visibility = WorldTree.Visibility = ActionPanel.Visibility = Visibility.Collapsed;
                 CollapseIcon.RenderTransform = new RotateTransform(180, 5, 5);
             }
         }
@@ -241,9 +247,40 @@ namespace Spotlight
             }
         }
 
+        private WriteableBitmap _thumbnailBitmap;
         private void WorldTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             MoveButton.IsEnabled = WorldTree.SelectedItem != null && ((TreeViewItem)WorldTree.SelectedItem).DataContext is LevelInfo;
+            if (((TreeViewItem)WorldTree.SelectedItem)?.DataContext is LevelInfo levelInfo)
+            {
+                if (levelInfo.LevelMetaData != null)
+                {
+                    MetaCoins.Text = levelInfo.LevelMetaData?.MaxCoinCount.ToString() ?? "unknown";
+                    MetaCherries.Text = levelInfo.LevelMetaData?.MaxCherryCount.ToString() ?? "unknown";
+                    MetaPowerUps.Text = string.Join(", ", levelInfo.LevelMetaData?.PowerUps ?? new List<string>());
+
+                    if (levelInfo.LevelMetaData.ThumbnailImage != null)
+                    {
+                        Int32Rect thumbnailRect = new Int32Rect(0, 0, 256, 256);
+
+                        _thumbnailBitmap.Lock();
+                        _thumbnailBitmap.WritePixels(thumbnailRect, levelInfo.LevelMetaData.ThumbnailImage, 256 * 4, 0, 0);
+                        _thumbnailBitmap.AddDirtyRect(thumbnailRect);
+                        _thumbnailBitmap.Unlock();
+                    }
+                }
+            } else if(((TreeViewItem) WorldTree.SelectedItem)?.DataContext is WorldInfo worldInfo)
+            {
+                if(worldInfo.ThumbnailImage != null)
+                {
+                    Int32Rect thumbnailRect = new Int32Rect(0, 0, 256, 256);
+
+                    _thumbnailBitmap.Lock();
+                    _thumbnailBitmap.WritePixels(thumbnailRect, worldInfo.ThumbnailImage, 256 * 4, 0, 0);
+                    _thumbnailBitmap.AddDirtyRect(thumbnailRect);
+                    _thumbnailBitmap.Unlock();
+                }
+            }
         }
 
         private void SetSelectedItem(IInfo info)

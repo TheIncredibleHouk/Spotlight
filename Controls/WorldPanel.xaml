@@ -62,6 +62,12 @@
                                 <TextBlock>Terrain</TextBlock>
                             </StackPanel>
                         </RadioButton>
+                        <RadioButton GroupName="Grid5" IsChecked="True" Click="ShowPointers_Click" x:Name="ShowPointers">
+                            <StackPanel Orientation="Vertical">
+                                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\World.png" Height="20" />
+                                <TextBlock>Pointers</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
                     </StackPanel>
                 </Border>
             </StackPanel>

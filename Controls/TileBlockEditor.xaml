@@ -8,6 +8,7 @@
              SnapsToDevicePixels="True"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch"
+             SizeChanged="UserControl_SizeChanged"
              d:DesignWidth="800">
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -40,6 +41,10 @@
                         <TextBox TextChanged="TerrainOverlay_TextChanged" AcceptsReturn="True" Height="80"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="TerrainOverlay" Background="Black" VerticalContentAlignment="Top" VerticalAlignment="Stretch"></TextBox>
                         <TextBlock>Interaction Overlay Definition</TextBlock>
                         <TextBox TextChanged="InteractionOverlay_TextChanged" AcceptsReturn="True" Height="80"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="InteractionOverlay" Background="Black" VerticalContentAlignment="Top"  VerticalAlignment="Stretch"></TextBox>
+                        <TextBlock>Affected Levels:</TextBlock>
+                        <ScrollViewer x:Name="AffectLevelsContainer" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+                            <StackPanel x:Name="AffectedLevels" Orientation="Vertical"/>
+                        </ScrollViewer>
                     </StackPanel>
                     <StackPanel Margin="11, 27, 0, 0" Orientation="Vertical" Visibility="Collapsed" HorizontalAlignment="Left" x:Name="MapTileDefinitions">
                         <TextBlock>Interaction Overlay Definition</TextBlock>

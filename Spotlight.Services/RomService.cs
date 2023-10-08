@@ -7,7 +7,6 @@ namespace Spotlight.Services
 {
     public class RomService
     {
-
         private Dictionary<Guid, byte> _levelIndexTable;
         private Dictionary<Guid, byte> _worldIndexTable;
         private Dictionary<Guid, byte> _paletteIndexTable;
@@ -63,7 +62,7 @@ namespace Spotlight.Services
             _rom = new Rom();
             if (!_rom.Load(fileName))
             {
-                throw new Exception("Unable to load rom.");
+                _rom.New();
             }
 
             WritePalettes(_palettesService.GetPalettes());
@@ -76,7 +75,7 @@ namespace Spotlight.Services
             _dataPointer = CompileLevels();
 
             WriteGraphics();
-            _rom.Save();
+            _rom.Save(fileName);
             romInfo.LevelAddressEnd = _dataPointer;
             romInfo.SpaceRemaining = 0x7C00F - _dataPointer;
             romInfo.LevelsUsed = _levelService.AllLevels().Count;

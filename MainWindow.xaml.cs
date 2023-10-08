@@ -49,6 +49,7 @@ namespace Spotlight
             _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
             _ProjectPanel.GraphicsEditorClicked += _ProjectPanel_GraphicsEditorClicked;
             _ProjectPanel.ExportPaletteClicked += _ProjectPanel_ExportPaletteClicked;
+            _ProjectPanel.GenerateMetaDataClicked += _ProjectPanel_GenerateMetaDataClicked;
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
             Activated += MainWindow_Activated;
 
@@ -58,6 +59,16 @@ namespace Spotlight
             {
                 _ProjectPanel.LoadProject(_config.LastProjectPath);
             }
+        }
+
+        private void _ProjectPanel_GenerateMetaDataClicked()
+        {
+            foreach (LevelInfo levelInfo in _levelService.AllLevels())
+            {
+                _levelService.GenerateMetaData(_tileService, levelInfo);
+            }
+
+            AlertWindow.Alert("Meta data generated for all levels.");
         }
 
         private void _ProjectPanel_ExportPaletteClicked()
@@ -116,10 +127,14 @@ namespace Spotlight
         {
             if (_config.LastRomPath == null || !File.Exists(_config.LastRomPath) || (Keyboard.Modifiers == ModifierKeys.Control))
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                if (openFileDialog.ShowDialog() == true)
+                SaveFileDialog saveFileDialog = new SaveFileDialog()
                 {
-                    _config.LastRomPath = openFileDialog.FileName;
+                    Filter = "NES ROM|*.nes"
+                };
+                
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    _config.LastRomPath = saveFileDialog.FileName;
                 }
             }
 
@@ -257,14 +272,14 @@ namespace Spotlight
             _project = project;
             _projectService = new ProjectService(new ErrorService(), project);
             _graphicsService = new GraphicsService(_errorService, project);
-            _levelService = new LevelService(_errorService, project);
+            _gameObjectService = new GameObjectService(_errorService, project);
+            _levelService = new LevelService(_errorService, project, _gameObjectService);
             _palettesService = new PalettesService(_errorService, project);
             _worldService = new WorldService(_errorService, project);
             _tileService = new TileService(_errorService, project);
             _textService = new TextService(_errorService, project);
             _clipBoardService = new ClipBoardService();
             _romService = new RomService(_errorService, _graphicsService, _palettesService, _tileService, _levelService, _worldService, _textService);
-            _gameObjectService = new GameObjectService(_errorService, project);
 
             _levelService.LevelUpdated += _levelService_LevelUpdated;
             _worldService.WorldUpdated += _worldService_WorldUpdated;
@@ -293,7 +308,7 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            LevelPanel levelPanel = new LevelPanel(_graphicsService, _palettesService, _textService, _tileService, _gameObjectService, _levelService, _clipBoardService, levelInfo);
+            LevelPanel levelPanel = new LevelPanel(_projectService, _graphicsService, _palettesService, _textService, _tileService, _gameObjectService, _levelService, _clipBoardService, levelInfo);
 
             tabItem.Header = levelInfo.Name;
             tabItem.Content = levelPanel;
@@ -303,6 +318,7 @@ namespace Spotlight
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
+
             return levelPanel;
         }
 
@@ -362,19 +378,16 @@ namespace Spotlight
 
         private void CloseTab(TabItem tabItem)
         {
-            if (TabsOpen.Items.Count > 1)
+            TabsOpen.Items.Remove(tabItem);
+            OpenedTabs.Remove(tabItem);
+            if (tabItem.Content is IDetachEvents)
             {
-                TabsOpen.Items.Remove(tabItem);
-                OpenedTabs.Remove(tabItem);
-                if (tabItem.Content is IDetachEvents)
-                {
-                    ((IDetachEvents)tabItem.Content).DetachEvents();
-                }
+                ((IDetachEvents)tabItem.Content).DetachEvents();
+            }
 
-                if (SelectedTabItem == tabItem)
-                {
-                    SelectedTabItem = (TabItem)TabsOpen.SelectedItem;
-                }
+            if (SelectedTabItem == tabItem)
+            {
+                SelectedTabItem = (TabItem)TabsOpen.SelectedItem;
             }
         }
 
@@ -386,19 +399,16 @@ namespace Spotlight
         private void CloseButton_Clicked(object sender, RoutedEventArgs e)
         {
             TabItem tabItem = (TabItem)((Button)sender).DataContext;
-            if (TabsOpen.Items.Count > 1)
+            if (((string)(tabItem.Header)).EndsWith("*"))
             {
-                if (((string)(tabItem.Header)).EndsWith("*"))
-                {
-                    if (ConfirmationWindow.Confirm("You have unsaved changes, are you sure you want to close this tab?") == System.Windows.Forms.DialogResult.Yes)
-                    {
-                        CloseTab(tabItem);
-                    }
-                }
-                else
+                if (ConfirmationWindow.Confirm("You have unsaved changes, are you sure you want to close this tab?") == System.Windows.Forms.DialogResult.Yes)
                 {
                     CloseTab(tabItem);
                 }
+            }
+            else
+            {
+                CloseTab(tabItem);
             }
         }
 

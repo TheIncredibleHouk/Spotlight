@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
@@ -23,10 +24,13 @@ namespace Spotlight.Services
         public delegate void LevelsUpdatedHandler(LevelInfo newLevel);
         public event LevelsUpdatedHandler LevelsUpdated;
 
-        public LevelService(ErrorService errorService, Project project)
+        private GameObjectService _gameObjectService;
+
+        public LevelService(ErrorService errorService, Project project, GameObjectService gameObjectService)
         {
             _errorService = errorService;
             _project = project;
+            _gameObjectService = gameObjectService;
         }
 
         public void AddLevel(Level level, WorldInfo worldInfo)
@@ -281,6 +285,85 @@ namespace Spotlight.Services
             }
 
             File.Move(tempFile.FullName, originalFile);
+        }
+
+        public void GenerateMetaData(TileService tileService, LevelInfo levelInfo, MemoryStream thumbnailStream = null)
+        {
+            Level level = LoadLevel(levelInfo);
+            TileSet tileSet = tileService.GetTileSet(level.TileSetIndex);
+            List<TileTerrain> tileTerrain = tileService.GetTerrain();
+            LevelMetaData levelMeta = new LevelMetaData();
+
+            List<int> gameObjectIds = level.ObjectData.Select(obj => obj.GameObjectId).Distinct().ToList();
+
+            levelMeta.UniqueGameObjects = _gameObjectService.GetObjects(gameObjectIds).Select(gameObject => gameObject.Name).ToList();
+
+            List<int> coinValues = new List<int>();
+            List<int> cherryValues = new List<int>();
+            List<int> itemBlockValues = new List<int>();
+            Dictionary<int, string> itemBlockDescriptions = new Dictionary<int, string>();
+
+            foreach (TileTerrain terrain in tileService.GetTerrain())
+            {
+                foreach (TileInteraction interaction in terrain.Interactions)
+                {
+                    if (interaction.Name.ToLower().Contains("coin"))
+                    {
+                        for (int index = 0; index < 256; index++)
+                        {
+                            if (tileSet.TileBlocks[index].Property == (terrain.Value | interaction.Value))
+                            {
+                                coinValues.Add(index);
+                            }
+                        }
+                    }
+                    else if (interaction.Name.ToLower().Contains("cherry"))
+                    {
+                        for (int index = 0; index < 256; index++)
+                        {
+                            if (tileSet.TileBlocks[index].Property == (terrain.Value | interaction.Value))
+                            {
+                                cherryValues.Add(index);
+                            }
+                        }
+                    }
+                    else if (terrain.Name.ToLower().Contains("item block") &&
+                             !interaction.Name.ToLower().Contains("toggle") &&
+                             !interaction.Name.ToLower().Contains("checkpoint") &&
+                             !interaction.Name.ToLower().Contains("event") &&
+                             !interaction.Name.ToLower().Contains("brick") &&
+                             !interaction.Name.ToLower().Contains("vine") &&
+                             !interaction.Name.ToLower().Contains("spinner") &&
+                             !interaction.Name.ToLower().Contains("key"))
+                    {
+                        for (int index = 0; index < 256; index++)
+                        {
+                            if (tileSet.TileBlocks[index].Property == (terrain.Value | interaction.Value))
+                            {
+                                itemBlockValues.Add(index);
+                                itemBlockDescriptions[index] = interaction.Name;
+                            }
+                        }
+                    }
+                }
+            }
+
+            List<string> powerUpList = new List<string>();
+
+            foreach (int tileValue in level.TileData.Where(tile => itemBlockValues.Contains(tile)).Distinct().ToList())
+            {
+                powerUpList.Add(itemBlockDescriptions[tileValue]);
+            }
+
+            levelMeta.MaxCoinCount = level.TileData.Where(tile => coinValues.Contains(tile)).Count();
+            levelMeta.PowerUps = powerUpList.Distinct().ToList();
+            levelMeta.MaxCherryCount = level.TileData.Where(tile => cherryValues.Contains(tile)).Count();
+            levelMeta.TilesUsed = level.TileData.Distinct().ToList();
+            levelMeta.TileSet = level.TileSetIndex;
+            levelMeta.ThumbnailImage = thumbnailStream?.ToArray();
+
+            LevelInfo updateLevelInfo = AllLevels().Where(lInfo => lInfo.Id == level.Id).FirstOrDefault();
+            updateLevelInfo.LevelMetaData = levelMeta;
         }
     }
 }

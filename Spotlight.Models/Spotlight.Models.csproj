@@ -54,6 +54,7 @@
     <Compile Include="GameObjects\GameObjectTable.cs" />
     <Compile Include="GameObjects\Sprite.cs" />
     <Compile Include="Levels\Level.cs" />
+    <Compile Include="Levels\LevelMetaData.cs" />
     <Compile Include="Levels\LevelObject.cs" />
     <Compile Include="Levels\LevelObjectChange.cs" />
     <Compile Include="Levels\LevelPointer.cs" />

@@ -3,6 +3,7 @@ using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,8 +57,10 @@ namespace Spotlight
             _interactions = _tileService.GetMapTileInteractions();
             _world = _worldService.LoadWorld(_worldInfo);
             _compressionService = new CompressionService();
+
             Tile[] bottomTableSet = _graphicsService.GetTileSection(_world.TileTableIndex);
             Tile[] topTableSet = _graphicsService.GetTileSection(_world.AnimationTileTableIndex);
+
             _graphicsAccessor = new GraphicsAccessor(topTableSet, bottomTableSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             _worldDataAccessor = new WorldDataAccessor(_world);
 
@@ -136,12 +139,11 @@ namespace Spotlight
             {
                 PaletteIndex.SelectedIndex = 0;
             }
-            else
-            {
-                _worldRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
-                TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
-                Update();
-            }
+
+            _worldRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            ObjectSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            Update();
         }
 
         private void _graphicsService_GraphicsUpdated()
@@ -194,7 +196,7 @@ namespace Spotlight
 
                 Int32Rect sourceArea = new Int32Rect(0, 0, Math.Max(0, Math.Min(safeRect.Width, WorldRenderer.BITMAP_WIDTH)), Math.Max(0, Math.Min(safeRect.Height, WorldRenderer.BITMAP_HEIGHT)));
 
-                _worldRenderer.Update(safeRect, withInteractionOverlay: ShowInteraction.IsChecked.Value);
+                _worldRenderer.Update(safeRect, withInteractionOverlay: ShowInteraction.IsChecked.Value, withPointers: ShowPointers.IsChecked);
                 _bitmap.WritePixels(sourceArea, _worldRenderer.GetRectangle(safeRect), safeRect.Width * 4, safeRect.X, safeRect.Y);
                 _bitmap.AddDirtyRect(safeRect);
             }
@@ -245,9 +247,18 @@ namespace Spotlight
             {
                 if (_world.Pointers.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
                 {
-                    SelectedEditMode.SelectedIndex = 2;
+                    if (SelectedEditMode.SelectedIndex != 2)
+                    {
+                        if (ShowPointers.IsChecked == false)
+                        {
+                            ShowPointers.IsChecked = true;
+                            Update();
+                        }
+
+                        SelectedEditMode.SelectedIndex = 2;
+                    }
                 }
-                else if(_world.ObjectData.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
+                else if (_world.ObjectData.Where(o => o.BoundRectangle.Contains(clickPoint.X, clickPoint.Y)).FirstOrDefault() != null)
                 {
                     SelectedEditMode.SelectedIndex = 1;
                 }
@@ -400,7 +411,7 @@ namespace Spotlight
 
                     if (_selectedObject != null && ObjectSelector.SelectedObject != null)
                     {
-                        _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y,  _selectedObject.GameObjectId, WorldObjectChangeType.Update));
+                        _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.GameObjectId, WorldObjectChangeType.Update));
                         updatedRects.Add(_selectedObject.VisualRectangle);
                         _selectedObject.GameObject = ObjectSelector.SelectedObject;
                         _selectedObject.CalcBoundBox();
@@ -418,7 +429,7 @@ namespace Spotlight
                             newObject.CalcBoundBox();
 
                             _world.ObjectData.Add(newObject);
-                            _historyService.UndoWorldObjects.Push(new WorldObjectChange(newObject, newObject.X, newObject.Y,  newObject.GameObjectId, WorldObjectChangeType.Addition));
+                            _historyService.UndoWorldObjects.Push(new WorldObjectChange(newObject, newObject.X, newObject.Y, newObject.GameObjectId, WorldObjectChangeType.Addition));
                             Update(newObject.CalcVisualBox(true));
                         }
                     }
@@ -442,7 +453,7 @@ namespace Spotlight
                     SetSelectionRectangle(_selectedObject.BoundRectangle);
                     originalTilePoint = new Point(_selectedObject.X * 16, _selectedObject.Y * 16);
                     _isDragging = true;
-                    _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y,  _selectedObject.GameObjectId, WorldObjectChangeType.Update));
+                    _historyService.UndoWorldObjects.Push(new WorldObjectChange(_selectedObject, _selectedObject.X, _selectedObject.Y, _selectedObject.GameObjectId, WorldObjectChangeType.Update));
                 }
                 else
                 {
@@ -1121,6 +1132,11 @@ namespace Spotlight
             _world.CompressedData = _compressionService.CompressWorld(_world);
             _worldService.SaveWorld(_world);
 
+            using (MemoryStream ms = new MemoryStream(_worldRenderer.GetRectangle(new Int32Rect(16, 0, 256, 256))))
+            {
+                _worldInfo.ThumbnailImage = ms.ToArray();
+            }
+
             AlertWindow.Alert(_world.Name + " has been saved!");
         }
 
@@ -1246,6 +1262,8 @@ namespace Spotlight
 
                 case 2:
                     _editMode = EditMode.Pointers;
+                    ShowPointers.IsChecked = true;
+                    Update();
                     break;
             }
         }
@@ -1264,6 +1282,11 @@ namespace Spotlight
         private void ShowGrid_Click(object sender, RoutedEventArgs e)
         {
             _worldRenderer.RenderGrid = ShowGrid.IsChecked.Value;
+            Update();
+        }
+
+        private void ShowPointers_Click(object sender, RoutedEventArgs e)
+        {
             Update();
         }
 

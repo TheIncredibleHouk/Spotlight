@@ -5,7 +5,7 @@ namespace Spotlight.Models
 {
     public class Rom
     {
-        private string Filename;
+        private const long ROM_SIZE = 786448;
         private byte[] _data;
         private bool[] _dataProtection;
 
@@ -47,14 +47,25 @@ namespace Spotlight.Models
             fileStream.Read(_data, 0, (int)fileStream.Length);
             fileStream.Close();
 
-            Filename = filename;
             AllowWrites();
             return true;
         }
 
-        public bool Save()
+        public void New()
         {
-            FileStream fileStream = new FileStream(Filename, FileMode.Open, FileAccess.Write);
+            _data = new byte[ROM_SIZE];
+            _dataProtection = new bool[ROM_SIZE];
+            AllowWrites();
+        }
+
+        public bool Save(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                File.Create(fileName).Close();
+            }
+
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Write);
             fileStream.Write(_data, 0, _data.Length);
             fileStream.Close();
             AllowWrites();
