@@ -360,10 +360,9 @@ namespace Spotlight.Services
             levelMeta.MaxCherryCount = level.TileData.Where(tile => cherryValues.Contains(tile)).Count();
             levelMeta.TilesUsed = level.TileData.Distinct().ToList();
             levelMeta.TileSet = level.TileSetIndex;
-            levelMeta.ThumbnailImage = thumbnailStream?.ToArray();
+            levelMeta.ThumbnailImage = thumbnailStream?.ToArray() ?? levelInfo.LevelMetaData.ThumbnailImage;
 
-            LevelInfo updateLevelInfo = AllLevels().Where(lInfo => lInfo.Id == level.Id).FirstOrDefault();
-            updateLevelInfo.LevelMetaData = levelMeta;
+            levelInfo.LevelMetaData = levelMeta;
         }
     }
 }

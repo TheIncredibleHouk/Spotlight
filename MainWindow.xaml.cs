@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Spotlight.Models;
+using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,58 @@ namespace Spotlight
         {
             foreach (LevelInfo levelInfo in _levelService.AllLevels())
             {
-                _levelService.GenerateMetaData(_tileService, levelInfo);
+                Level level = _levelService.LoadLevel(levelInfo);
+                if (level.ObjectData.Count == 0)
+                {
+                    continue;
+                }
+
+                level.FirstObjectData.ForEach(o => o.GameObject = _gameObjectService.GetObject(o.GameObjectId));
+                level.SecondObjectData.ForEach(o => o.GameObject = _gameObjectService.GetObject(o.GameObjectId));
+
+                Tile[] staticSet = _graphicsService.GetTileSection(level.StaticTileTableIndex);
+                Tile[] animationSet = _graphicsService.GetTileSection(level.AnimationTileTableIndex);
+                LevelRenderer levelRenderer = new LevelRenderer(
+                    new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles()),
+                    new LevelDataAccessor(level),
+                    _palettesService,
+                    _gameObjectService,
+                    _tileService.GetTerrain());
+
+                levelRenderer.Update(palette: _palettesService.GetPalette(level.PaletteId), tileSet: _tileService.GetTileSet(level.TileSetIndex));
+
+                var startPointObject = level.ObjectData[0];
+
+                int thumbnailX = startPointObject.X * 16 - 120;
+                int thumbnailY = startPointObject.Y * 16 - 120;
+
+                if (thumbnailX < 0)
+                {
+                    thumbnailX = 0;
+                }
+
+                if (thumbnailY < 0)
+                {
+                    thumbnailY = 0;
+                }
+
+                if (thumbnailX + 256 > 256 * level.ScreenLength)
+                {
+                    thumbnailX = 256 * level.ScreenLength - 256;
+                }
+
+                if (thumbnailY + 256 > LevelRenderer.BITMAP_HEIGHT)
+                {
+                    thumbnailY = LevelRenderer.BITMAP_HEIGHT - 256;
+                }
+
+                Int32Rect thumbnailReact = new Int32Rect(thumbnailX, thumbnailY, 256, 256);
+                levelRenderer.Update();
+
+                using (MemoryStream ms = new MemoryStream(levelRenderer.GetRectangle(thumbnailReact)))
+                {
+                    _levelService.GenerateMetaData(_tileService, levelInfo, ms);
+                }
             }
 
             AlertWindow.Alert("Meta data generated for all levels.");
