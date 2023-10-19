@@ -33,7 +33,7 @@ namespace Spotlight.Services
 
             if(x / 16 > _level.ScreenLength)
             {
-                return 0x41;
+                return -1;
             }
 
             int dataOffset = (y * DATA_ROW_LENGTH) + x;

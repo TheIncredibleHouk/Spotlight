@@ -420,8 +420,9 @@ namespace Spotlight
 
                         int i = (int)(point.X);
                         int j = (int)(point.Y);
+                        int currentTileValue;
 
-                        if (checkValue == _levelDataAccessor.GetData(i, j))
+                        if (checkValue == (currentTileValue = _levelDataAccessor.GetData(i, j)) && currentTileValue > -1)
                         {
                             _levelDataAccessor.SetData(i, j, TileSelector.SelectedBlockValue);
 
