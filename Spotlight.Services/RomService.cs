@@ -45,6 +45,11 @@ namespace Spotlight.Services
             _compressionService = new CompressionService();
         }
 
+        private void SetBatterySave()
+        {
+            _rom[0x06] = (byte) (_rom[0x06] | 0x02);
+        }
+
         private void WriteGraphics()
         {
             int address = 0x80010;
@@ -75,11 +80,13 @@ namespace Spotlight.Services
             _dataPointer = CompileLevels();
 
             WriteGraphics();
+            SetBatterySave();
             _rom.Save(fileName);
             romInfo.LevelAddressEnd = _dataPointer;
             romInfo.SpaceRemaining = 0x7C00F - _dataPointer;
             romInfo.LevelsUsed = _levelService.AllLevels().Count;
 
+            
             return romInfo;
         }
 
