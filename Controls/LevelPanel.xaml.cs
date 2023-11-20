@@ -132,6 +132,8 @@ namespace Spotlight
             _tileService.TileSetUpdated += _tileService_TileSetUpdated;
             _levelService.LevelUpdated += _levelService_LevelUpdated;
 
+            NoStars.SelectedIndex = _level.NoStars ? 1 : 0;
+
             _initializing = false;
             _levelRenderer.Ready();
             Update();
@@ -1798,6 +1800,11 @@ namespace Spotlight
             _level.SwitchQuest(_currentQuest);
             _level.ObjectData.Insert(0, startObject);
             Update();
+        }
+
+        private void NoStars_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _level.NoStars = NoStars.SelectedIndex == 1;
         }
     }
 

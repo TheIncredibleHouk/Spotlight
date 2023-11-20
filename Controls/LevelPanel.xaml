@@ -55,6 +55,12 @@
 
                     <Label>Tile Set</Label>
                     <ComboBox SelectionChanged="TileSet_SelectionChanged" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="TileSet" />
+
+                    <Label>Has Stars</Label>
+                    <ComboBox SelectionChanged="NoStars_SelectionChanged" x:Name="NoStars">
+                        <ComboBoxItem>Yes</ComboBoxItem>
+                        <ComboBoxItem>No</ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
             </ScrollViewer>
         </Border>

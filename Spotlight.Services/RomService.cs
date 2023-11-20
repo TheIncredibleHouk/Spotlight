@@ -250,7 +250,7 @@ namespace Spotlight.Services
                 _rom[levelAddress++] = (byte)(byte)(((level.StartX & 0x0F) << 4) | ((level.StartX & 0xF0) >> 4)); ;
                 _rom[levelAddress++] = (byte)(byte)(((yStart & 0x0F) << 4) | ((yStart & 0xF0) >> 4)); ;
                 _rom[levelAddress++] = (byte)(level.MusicValue);
-                _rom[levelAddress++] = (byte)0;
+                _rom[levelAddress++] = (byte)(level.NoStars ? 1 : 0);
                 _rom[levelAddress++] = (byte)((level.LevelPointers.Count << 4) | level.ScrollType);
                 _rom[levelAddress++] = (byte)(level.Effects | level.PaletteEffect);
                 _rom[levelAddress++] = (byte)level.EventType;

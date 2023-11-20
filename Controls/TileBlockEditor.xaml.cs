@@ -139,12 +139,15 @@ namespace Spotlight
 
             AffectedLevels.Children.Clear();
 
-            foreach (var levelInfo in _levelInfos.Where(info => info.LevelMetaData.TileSet == _currentLevel.TileSetIndex && info.LevelMetaData.TilesUsed.Contains(BlockSelector.SelectedBlockValue)))
+            if (_currentLevel != null)
             {
-                AffectedLevels.Children.Add(new Label()
+                foreach (var levelInfo in _levelInfos.Where(info => info.LevelMetaData?.TileSet == _currentLevel.TileSetIndex && info.LevelMetaData.TilesUsed.Contains(BlockSelector.SelectedBlockValue)))
                 {
-                    Content = levelInfo.Name
-                });
+                    AffectedLevels.Children.Add(new Label()
+                    {
+                        Content = levelInfo.Name
+                    });
+                }
             }
         }
 
