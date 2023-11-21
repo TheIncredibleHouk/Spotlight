@@ -49,6 +49,10 @@
                     <StackPanel Margin="11, 27, 0, 0" Orientation="Vertical" Visibility="Collapsed" HorizontalAlignment="Left" x:Name="MapTileDefinitions">
                         <TextBlock>Interaction Overlay Definition</TextBlock>
                         <TextBox TextChanged="MapInteractionOverlay_TextChanged" AcceptsReturn="True" Height="80"  Width="256" VerticalScrollBarVisibility="Visible" Padding="5" HorizontalAlignment="Stretch" FontFamily="Courier New" x:Name="MapInteractionOverlay" Background="Black" VerticalAlignment="Stretch"></TextBox>
+                        <TextBlock>Affected Worlds:</TextBlock>
+                        <ScrollViewer x:Name="AffectedWorldsContainer" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+                            <StackPanel x:Name="AffectedWorlds" Orientation="Vertical"/>
+                        </ScrollViewer>
                     </StackPanel>
                     <Border VerticalAlignment="Center" Margin="10" Width="15" BorderThickness="1"  Padding="10" />
                     <StackPanel Margin="10, 0, 10, 0" Orientation="Vertical" Width="256" HorizontalAlignment="Left" VerticalAlignment="Top">

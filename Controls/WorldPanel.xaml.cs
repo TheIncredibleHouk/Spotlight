@@ -1071,12 +1071,7 @@ namespace Spotlight
             List<KeyValuePair<string, string>> _graphicsSetNames = new List<KeyValuePair<string, string>>();
             for (int i = 0; i < 256; i++)
             {
-                _graphicsSetNames.Add(new KeyValuePair<string, string>(i.ToString(), i.ToString("X")));
-            }
-
-            foreach (var kv in _textService.GetTable("graphics"))
-            {
-                _graphicsSetNames[int.Parse(kv.Key, System.Globalization.NumberStyles.HexNumber)] = new KeyValuePair<string, string>(kv.Key, kv.Value);
+                _graphicsSetNames.Add(new KeyValuePair<string, string>(i.ToString("X"), "0x" + (i * 0x400).ToString("X")));
             }
 
             Music.ItemsSource = _textService.GetTable("music").OrderBy(kv => kv.Value);
@@ -1086,13 +1081,13 @@ namespace Spotlight
 
             Music.SelectedValue = _world.MusicValue.ToString("X");
             PaletteIndex.SelectedValue = _world.PaletteId;
-            GraphicsSet.SelectedValue = _world.TileTableIndex;
+            GraphicsSet.SelectedValue = _world.TileTableIndex.ToString("X");
             Screens.SelectedIndex = _world.ScreenLength - 1;
         }
 
         private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _world.TileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString());
+            _world.TileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
             _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_world.TileTableIndex));
             TileSelector.Update();
             Update();
@@ -1134,7 +1129,7 @@ namespace Spotlight
 
             using (MemoryStream ms = new MemoryStream(_worldRenderer.GetRectangle(new Int32Rect(16, 0, 256, 256))))
             {
-                _worldInfo.ThumbnailImage = ms.ToArray();
+                _worldService.GenerateMetaData(_tileService, _worldInfo, ms);
             }
 
             AlertWindow.Alert(_world.Name + " has been saved!");

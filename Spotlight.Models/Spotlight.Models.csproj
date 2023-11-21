@@ -75,6 +75,7 @@
     <Compile Include="Tiles\TileSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Project\WorldInfo.cs" />
+    <Compile Include="Worlds\WorldMetaData.cs" />
     <Compile Include="Worlds\World.cs" />
     <Compile Include="Worlds\WorldObject.cs" />
     <Compile Include="Worlds\WorldObjectChange.cs" />

@@ -88,5 +88,19 @@ namespace Spotlight.Services
 
             File.Delete(priorFileName);
         }
+
+        public void GenerateMetaData(TileService tileService, WorldInfo worldInfo, MemoryStream thumbnailStream = null)
+        {
+            World world = LoadWorld(worldInfo);
+            TileSet tileSet = tileService.GetTileSet(0);
+            List<TileTerrain> tileTerrain = tileService.GetTerrain();
+            WorldMetaData worldMetaData = new WorldMetaData();
+
+
+            worldMetaData.TilesUsed = world.TileData.Distinct().ToList();
+            worldMetaData.ThumbnailImage = thumbnailStream?.ToArray() ?? worldInfo.MetaData.ThumbnailImage;
+
+            worldInfo.MetaData = worldMetaData;
+        }
     }
 }

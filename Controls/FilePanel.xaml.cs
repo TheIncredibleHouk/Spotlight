@@ -271,14 +271,17 @@ namespace Spotlight
                 }
             } else if(((TreeViewItem) WorldTree.SelectedItem)?.DataContext is WorldInfo worldInfo)
             {
-                if(worldInfo.ThumbnailImage != null)
+                if (worldInfo.MetaData != null)
                 {
-                    Int32Rect thumbnailRect = new Int32Rect(0, 0, 256, 256);
+                    if (worldInfo.MetaData.ThumbnailImage != null)
+                    {
+                        Int32Rect thumbnailRect = new Int32Rect(0, 0, 256, 256);
 
-                    _thumbnailBitmap.Lock();
-                    _thumbnailBitmap.WritePixels(thumbnailRect, worldInfo.ThumbnailImage, 256 * 4, 0, 0);
-                    _thumbnailBitmap.AddDirtyRect(thumbnailRect);
-                    _thumbnailBitmap.Unlock();
+                        _thumbnailBitmap.Lock();
+                        _thumbnailBitmap.WritePixels(thumbnailRect, worldInfo.MetaData.ThumbnailImage, 256 * 4, 0, 0);
+                        _thumbnailBitmap.AddDirtyRect(thumbnailRect);
+                        _thumbnailBitmap.Unlock();
+                    }
                 }
             }
         }

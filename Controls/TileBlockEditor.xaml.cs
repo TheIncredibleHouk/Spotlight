@@ -33,6 +33,7 @@ namespace Spotlight
         private WriteableBitmap _tileBlockBitmap;
 
         private List<LevelInfo> _levelInfos;
+        private List<WorldInfo> _worldInfos;
 
         public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, TextService textService)
         {
@@ -56,6 +57,7 @@ namespace Spotlight
             MapInteractionList.ItemsSource = _localMapTileInteraction = _tileService.GetMapTileInteractionCopy();
 
             _levelInfos = _levelService.AllLevels();
+            _worldInfos = _worldService.AllWorlds();
 
             _graphicsAccessor = new GraphicsAccessor(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
 
@@ -137,15 +139,26 @@ namespace Spotlight
 
             _ignoreChanges = false;
 
-            AffectedLevels.Children.Clear();
 
             if (_currentLevel != null)
             {
+                AffectedLevels.Children.Clear();
                 foreach (var levelInfo in _levelInfos.Where(info => info.LevelMetaData?.TileSet == _currentLevel.TileSetIndex && info.LevelMetaData.TilesUsed.Contains(BlockSelector.SelectedBlockValue)))
                 {
                     AffectedLevels.Children.Add(new Label()
                     {
                         Content = levelInfo.Name
+                    });
+                }
+            }
+            else if (_currentWorld != null)
+            {
+                AffectedWorlds.Children.Clear();
+                foreach (var worldInfo in _worldInfos.Where(info => info.MetaData != null && info.MetaData.TilesUsed.Contains(BlockSelector.SelectedBlockValue)))
+                {
+                    AffectedWorlds.Children.Add(new Label()
+                    {
+                        Content = worldInfo.Name
                     });
                 }
             }
@@ -672,6 +685,7 @@ namespace Spotlight
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             AffectLevelsContainer.Height = Math.Max(this.ActualHeight - 600, 100);
+            AffectedWorldsContainer.Height = Math.Max(this.ActualHeight - 600, 100);
         }
     }
 }
