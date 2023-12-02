@@ -399,7 +399,7 @@ namespace Spotlight.Services
 
                 region = "Writing world object data";
 
-                foreach(WorldObject worldObject in world.ObjectData)
+                foreach(WorldObject worldObject in world.ObjectData.OrderBy(obj => obj.X).ThenBy(obj => obj.Y))
                 {
                     _rom[levelAddress++] = (byte)(worldObject.GameObjectId - 0xC7);
                     _rom[levelAddress++] = (byte)(worldObject.Y + 2);
