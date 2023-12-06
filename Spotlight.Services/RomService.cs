@@ -17,6 +17,7 @@ namespace Spotlight.Services
 
         private Rom _rom;
         private int _dataPointer;
+        private int _extendedDataPointer;
 
         private GraphicsService _graphicsService;
         private PalettesService _palettesService;
@@ -47,7 +48,7 @@ namespace Spotlight.Services
 
         private void SetBatterySave()
         {
-            _rom[0x06] = (byte) (_rom[0x06] | 0x02);
+            _rom[0x06] = (byte)(_rom[0x06] | 0x02);
         }
 
         private void WriteGraphics()
@@ -73,20 +74,24 @@ namespace Spotlight.Services
             WritePalettes(_palettesService.GetPalettes());
             WriteTileBlockData();
 
+            _dataPointer = 0x40010;
+            _extendedDataPointer = 0x32010;
+
+            _dataPointer = CompileLevels();
+            romInfo.SpaceRemaining = 0x7C010 - _dataPointer;
+            romInfo.ExtendedSpaceRemaining = 0x38010 - _extendedDataPointer;
+
             _dataPointer = 0x24010;
             CompileWorlds();
-
-            _dataPointer = 0x40010;
-            _dataPointer = CompileLevels();
 
             WriteGraphics();
             SetBatterySave();
             _rom.Save(fileName);
             romInfo.LevelAddressEnd = _dataPointer;
-            romInfo.SpaceRemaining = 0x7C00F - _dataPointer;
+            
             romInfo.LevelsUsed = _levelService.AllLevels().Count;
 
-            
+
             return romInfo;
         }
 
@@ -118,9 +123,16 @@ namespace Spotlight.Services
 
                     if (level != null)
                     {
-                        _levelAddressTable.Add(_levelIndexTable[level.Id], _dataPointer);
-
-                        _dataPointer = WriteLevel(level, _dataPointer);
+                        if (levelInfo.SaveToExtendedSpace)
+                        {
+                            _levelAddressTable.Add(_levelIndexTable[level.Id], _extendedDataPointer);
+                            _extendedDataPointer = WriteLevel(level, _extendedDataPointer);
+                        }
+                        else
+                        {
+                            _levelAddressTable.Add(_levelIndexTable[level.Id], _dataPointer);
+                            _dataPointer = WriteLevel(level, _dataPointer);
+                        }
                         levelInfo.Size = level.CompressedData.Length;
                         if (_dataPointer >= 0xFC000)
                         {
@@ -225,7 +237,7 @@ namespace Spotlight.Services
             {
                 string name = level.Name.ToUpper();
                 int nameTrimIndex = name.IndexOf("-");
-                if(nameTrimIndex > -1)
+                if (nameTrimIndex > -1)
                 {
                     name = name.Substring(0, nameTrimIndex);
                 }
@@ -325,7 +337,7 @@ namespace Spotlight.Services
                 region = "Compressing level data";
 
                 byte[] levelData = level.CompressedData ?? _compressionService.CompressLevel(level);
-                
+
                 if (level.CompressedData == null)
                 {
                     level.CompressedData = levelData;
@@ -348,7 +360,7 @@ namespace Spotlight.Services
                     _rom[levelAddress++] = (byte)((levelObject.Property << 5) | levelObject.Y);
                 }
 
-                _rom[levelAddress++] = (byte) GameObject.SecondQuestDivider.GameId;
+                _rom[levelAddress++] = (byte)GameObject.SecondQuestDivider.GameId;
 
                 foreach (LevelObject levelObject in level.SecondObjectData.OrderBy(s => s.X).ThenBy(s => s.Y))
                 {
@@ -399,7 +411,7 @@ namespace Spotlight.Services
 
                 region = "Writing world object data";
 
-                foreach(WorldObject worldObject in world.ObjectData.OrderBy(obj => obj.X).ThenBy(obj => obj.Y))
+                foreach (WorldObject worldObject in world.ObjectData.OrderBy(obj => obj.X).ThenBy(obj => obj.Y))
                 {
                     _rom[levelAddress++] = (byte)(worldObject.GameObjectId - 0xC7);
                     _rom[levelAddress++] = (byte)(worldObject.Y + 2);

@@ -61,6 +61,11 @@
                         <ComboBoxItem>Yes</ComboBoxItem>
                         <ComboBoxItem>No</ComboBoxItem>
                     </ComboBox>
+                    <Label>Save In Extended Space</Label>
+                    <ComboBox SelectionChanged="ExtendedSpace_SelectionChanged" x:Name="ExtendedSpace">
+                        <ComboBoxItem>No</ComboBoxItem>
+                        <ComboBoxItem>Yes</ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
             </ScrollViewer>
         </Border>

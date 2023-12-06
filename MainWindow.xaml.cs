@@ -202,7 +202,7 @@ namespace Spotlight
                     }
                     else
                     {
-                        AlertWindow.Alert($"Rom compiled!\nLevels used: {romInfo.LevelsUsed}\nRemaining space: {romInfo.SpaceRemaining} bytes");
+                        AlertWindow.Alert($"Rom compiled!\nLevels used: {romInfo.LevelsUsed}\nRemaining space: {romInfo.SpaceRemaining} bytes\nRemaining extended space: {romInfo.ExtendedSpaceRemaining} bytes");
                     }
 
                     SaveConfiguration();

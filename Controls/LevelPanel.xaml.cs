@@ -91,8 +91,6 @@ namespace Spotlight
             _levelRenderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _palettesService, _gameObjectService, _tileService.GetTerrain());
             _levelRenderer.Initializing();
 
-
-
             Palette palette = _palettesService.GetPalette(_level.PaletteId);
             _levelRenderer.Update(tileSet: _tileSet, palette: palette);
 
@@ -133,6 +131,7 @@ namespace Spotlight
             _levelService.LevelUpdated += _levelService_LevelUpdated;
 
             NoStars.SelectedIndex = _level.NoStars ? 1 : 0;
+            ExtendedSpace.SelectedIndex = _levelInfo.SaveToExtendedSpace ? 1 : 0;
 
             _initializing = false;
             _levelRenderer.Ready();
@@ -469,7 +468,7 @@ namespace Spotlight
             }
             else if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && Keyboard.Modifiers == ModifierKeys.Alt))
             {
-                 _selectionMode = SelectionMode.SelectTiles;
+                _selectionMode = SelectionMode.SelectTiles;
 
                 int x = (int)(clickPoint.X / 16), y = (int)(clickPoint.Y / 16);
 
@@ -1805,6 +1804,11 @@ namespace Spotlight
         private void NoStars_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _level.NoStars = NoStars.SelectedIndex == 1;
+        }
+
+        private void ExtendedSpace_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _levelInfo.SaveToExtendedSpace = ExtendedSpace.SelectedIndex == 1;
         }
     }
 

@@ -32,6 +32,7 @@ namespace Spotlight.Models
         public bool NoStars { get; set; }
         public int MostCommonTile { get; set; }
 
+
         [JsonIgnore]
         public int AnimationTileTableIndex
         {

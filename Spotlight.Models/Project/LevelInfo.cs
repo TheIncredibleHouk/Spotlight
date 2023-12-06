@@ -10,6 +10,7 @@ namespace Spotlight.Models
         public int Size { get; set; }
         public string Name { get; set; }
         public Guid Id { get; set; }
+        public bool SaveToExtendedSpace { get; set; }
         public DateTime LastModified { get; set; }
         public List<LevelInfo> SublevelsInfo { get; set; }
         [JsonIgnore]

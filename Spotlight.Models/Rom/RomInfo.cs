@@ -11,5 +11,6 @@ namespace Spotlight.Models
         public int LevelAddressEnd { get; set; }
         public int LevelsUsed { get; set; }
         public int SpaceRemaining { get; set; }
+        public int ExtendedSpaceRemaining { get; set; }
     }
 }
