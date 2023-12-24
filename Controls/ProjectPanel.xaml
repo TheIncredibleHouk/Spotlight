@@ -45,12 +45,6 @@
                         <TextBlock>New Level</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button x:Name="UpdateMetaDataButton" Click="UpdateMetaDataButton_Click" IsEnabled="True">
-                    <StackPanel Orientation="Vertical">
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Level.png" Height="16" />
-                        <TextBlock>Meta Data</TextBlock>
-                    </StackPanel>
-                </Button>
             </StackPanel>
         </Border>
         <Border Style="{StaticResource Section}">
