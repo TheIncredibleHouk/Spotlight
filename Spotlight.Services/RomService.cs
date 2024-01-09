@@ -88,7 +88,7 @@ namespace Spotlight.Services
             SetBatterySave();
             _rom.Save(fileName);
             romInfo.LevelAddressEnd = _dataPointer;
-            
+
             romInfo.LevelsUsed = _levelService.AllLevels().Count;
 
 
@@ -105,15 +105,29 @@ namespace Spotlight.Services
                 _levelTypeTable.Clear();
                 _levelAddressTable.Clear();
 
-                byte levelIndex = 0;
-                foreach (LevelInfo levelInfo in _levelService.AllLevels())
+                _levelIndexTable.Add(Guid.Empty, 0);
+                _levelTypeTable.Add(0, 0);
+                _levelAddressTable.Add(0, 0);
+
+                byte levelIndex = 1;
+                IEnumerable<LevelInfo> orderedLevels = _levelService.AllLevels().OrderBy(l1 =>
+                {
+                    if (l1.ParentInfo.InfoType == InfoType.World)
+                    {
+                        return -1;
+                    }
+
+                    return 1;
+                }).ToList();
+
+                foreach (LevelInfo levelInfo in orderedLevels)
                 {
                     _levelIndexTable.Add(levelInfo.Id, levelIndex++);
                 }
 
-                levelIndex = 0;
+                levelIndex = 1;
 
-                foreach (LevelInfo levelInfo in _levelService.AllLevels())
+                foreach (LevelInfo levelInfo in orderedLevels)
                 {
                     region = "Loading level " + levelInfo.Name;
 
@@ -151,13 +165,27 @@ namespace Spotlight.Services
                 {
                     region = "Updating level pointer table.";
 
-                    _dataPointer = _levelAddressTable[index];
+                    try
+                    {
+                        _dataPointer = _levelAddressTable[index];
+                    }
+                    catch (Exception e)
+                    {
+                        _errorService.LogError(e, string.Format("Error occurred in writing level data data. Region: {0}\n Address: {1}", region, _dataPointer));
+                    }
                     bank = (byte)((_dataPointer - 0x10) / 0x2000);
                     address = (_dataPointer - 0x10 - (bank * 0x2000) + 0xA000);
                     _rom[0xDC10 + (index * 4)] = (byte)bank;
                     _rom[0xDC11 + (index * 4)] = (byte)(address & 0x00FF);
                     _rom[0xDC12 + (index * 4)] = (byte)((address & 0xFF00) >> 8);
-                    _rom[0xDC13 + (index * 4)] = (byte)_levelTypeTable[index];
+                    try
+                    {
+                        _rom[0xDC13 + (index * 4)] = (byte)_levelTypeTable[index];
+                    }
+                    catch (Exception e)
+                    {
+                        _errorService.LogError(e, string.Format("Error occurred in writing level data data. Region: {0}\n Address: {1}", region, _dataPointer));
+                    }
                 }
 
                 return lastLevelPointer;
