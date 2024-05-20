@@ -129,7 +129,10 @@ namespace Spotlight
             CompressionCommand c = new CompressionCommand();
             c.CommandType = CompressionCommandType.SkipTile;
             c.RepeatTimes = repeatCount;
-            PreviousByte();
+            if (!currentPoint.EOD)
+            {
+                PreviousByte();
+            }
             return c;
         }
 
@@ -138,13 +141,13 @@ namespace Spotlight
             byte repeatTile;
             int repeatCount = 1;
             repeatTile = NextByte();
-            while (repeatTile == NextByte() && repeatCount < 0x40 && !currentPoint.EOD)
+            while (!currentPoint.EOD && repeatTile == NextByte() && repeatCount < 0x40)
             {
                 repeatCount++;
             }
 
             // no well repeatable tiles, return null
-            if (repeatCount == 1)
+              if (repeatCount == 1)
             {
                 return null;
             }
@@ -153,7 +156,11 @@ namespace Spotlight
             c.Data.Add(repeatTile);
             c.CommandType = CompressionCommandType.RepeatTile;
             c.RepeatTimes = repeatCount;
-            PreviousByte();
+
+            if (!currentPoint.EOD)
+            {
+                PreviousByte();
+            }
             return c;
         }
 
@@ -180,11 +187,6 @@ namespace Spotlight
                 for (int j = 0; !currentPoint.EOD && j < i; j++)
                 {
                     patternChunk[j] = NextByte();
-                }
-
-                if (currentPoint.EOD)
-                {
-                    continue;
                 }
 
                 // assume there is a match, if no match, set false and break
@@ -297,7 +299,7 @@ namespace Spotlight
 
         public byte[] CompressWorld(World world)
         {
-             WorldDataAccessor worldDataAccessor = new WorldDataAccessor(world);
+            WorldDataAccessor worldDataAccessor = new WorldDataAccessor(world);
             byte[] data = new byte[9 * 16 * world.ScreenLength];
             int counter = 0;
             for (int p = 0; p < world.ScreenLength; p++)

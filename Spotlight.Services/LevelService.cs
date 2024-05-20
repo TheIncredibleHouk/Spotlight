@@ -41,8 +41,10 @@ namespace Spotlight.Services
             levelInfo.Id = level.Id;
             levelInfo.Name = level.Name;
             levelInfo.SublevelsInfo = new List<LevelInfo>();
+            levelInfo.ParentInfo = worldInfo;
 
             worldInfo.LevelsInfo.Add(levelInfo);
+
             LevelsUpdated(levelInfo);
         }
 
