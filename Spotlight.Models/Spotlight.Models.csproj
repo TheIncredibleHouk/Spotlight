@@ -46,6 +46,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compression\BitList.cs" />
     <Compile Include="Compression\CompressionCommand.cs" />
     <Compile Include="Compression\CompressionCommandType.cs" />
     <Compile Include="Compression\CompressionPoint.cs" />

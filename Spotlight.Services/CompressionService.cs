@@ -1,6 +1,8 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Spotlight
 {
@@ -8,6 +10,82 @@ namespace Spotlight
     {
         private Level _level;
         private LevelDataAccessor _levelDataAccessor;
+
+        //public byte[] CompressLevel(Level level)
+        //{
+        //    List<byte> data = new List<byte>();
+
+        //    List<byte> compressionTable = GetByteFrequencyOrder(level);
+
+        //    List<byte> compressionData = new List<byte>();
+        //    compressionData.Add((byte)compressionTable.Count);
+        //    compressionData.AddRange(compressionTable);
+
+        //    BitList bitField = new BitList();
+
+        //    byte? lastTile = null;
+
+        //    for (int i = 0; i < level.TileData.Length; i++)
+        //    {
+        //        if (lastTile.HasValue)
+        //        {
+        //            if (lastTile.Value == level.TileData[i])
+        //            {
+        //                bitField.Add(0);
+        //                continue;
+        //            }
+        //        }
+
+        //        int j = 0;
+        //        do
+        //        {
+        //            bitField.Add(1);
+        //        } while (level.TileData[i] != compressionTable[j++]);
+
+        //        bitField.Add(0);
+        //        lastTile = (byte)level.TileData[i];
+        //    }
+
+        //    byte bitFieldLengthHigh = (byte)(compressionTable.Count >> 8);
+        //    byte bitfieldLengthLow = (byte)(compressionTable.Count & 0xFF);
+
+        //    data.Add(bitFieldLengthHigh);
+        //    data.Add(bitfieldLengthLow);
+
+        //    for (int i = 0; i < bitField.Count; i += 8)
+        //    {
+        //        data.Add((byte)(bitField[i] << 7 |
+        //                                 bitField[i + 1] << 6 |
+        //                                 bitField[i + 2] << 5 |
+        //                                 bitField[i + 3] << 4 |
+        //                                 bitField[i + 4] << 3 |
+        //                                 bitField[i + 5] << 2 |
+        //                                 bitField[i + 6] << 1 |
+        //                                 bitField[i + 7]));
+        //    }
+
+        //    return data.ToArray();
+        //}
+
+        //private List<byte> GetByteFrequencyOrder(Level level)
+        //{
+        //    Dictionary<byte, int> valueFrequency = new Dictionary<byte, int>()
+        //    {
+        //        [0] = 0
+        //    };
+
+        //    for (byte i = 1; i != 0; i++)
+        //    {
+        //        valueFrequency[i] = 0;
+        //    }
+
+        //    foreach (byte value in level.TileData)
+        //    {
+        //        valueFrequency[value]++;
+        //    }
+
+        //    return valueFrequency.OrderByDescending(kvp => kvp.Value).Where(kvp => kvp.Value > 0).Select(kvp => kvp.Key).ToList();
+        //}
 
         public byte[] CompressLevel(Level level)
         {
@@ -147,7 +225,7 @@ namespace Spotlight
             }
 
             // no well repeatable tiles, return null
-              if (repeatCount == 1)
+            if (repeatCount == 1)
             {
                 return null;
             }
