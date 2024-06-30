@@ -258,9 +258,6 @@ namespace Spotlight
             {
                 patternChunk = new byte[i];
 
-                // reset pointer before getting next pattern
-                RestorePoint();
-
                 // get pattern
                 for (int j = 0; !currentPoint.EOD && j < i; j++)
                 {
@@ -268,7 +265,11 @@ namespace Spotlight
                 }
 
                 // assume there is a match, if no match, set false and break
-                hasMatch = true;
+                if (!currentPoint.EOD)
+                {
+                    hasMatch = true;
+                }
+
                 for (int k = 0; !currentPoint.EOD && k < i; k++)
                 {
                     if (patternChunk[k] != NextByte())
@@ -283,6 +284,9 @@ namespace Spotlight
                     // we have a match, set as smallest matchableChunk
                     smallestChunk = patternChunk;
                 }
+
+                // reset pointer before trying the next pattern
+                RestorePoint();
             }
 
             // no smallestChunk then there was no discernable pattern
