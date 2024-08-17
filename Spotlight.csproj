@@ -136,6 +136,9 @@
     <Compile Include="Controls\PaletteRgbEditor.xaml.cs">
       <DependentUpon>PaletteRgbEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TipEditor.xaml.cs">
+      <DependentUpon>TipEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\WorldPointerEditor.xaml.cs">
       <DependentUpon>WorldPointerEditor.xaml</DependentUpon>
     </Compile>
@@ -200,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PaletteRgbEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TipEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

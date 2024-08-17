@@ -26,4 +26,12 @@ namespace Spotlight.Models
             Interactions = new List<TileInteraction>();
         }
     }
+
+    public static class TileInteractionExteions
+    {
+        public static bool IsTerrain(this int tileProperty, byte terrainType)
+        {
+            return (tileProperty & TileTerrain.Mask) == (int)terrainType;
+        }
+    }
 }

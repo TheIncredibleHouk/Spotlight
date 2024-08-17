@@ -73,17 +73,21 @@ namespace Spotlight.Renderers
 
             RenderTiles(blockX, blockY, blockWidth, blockHeight);
             RenderObjects(blockX, blockY, blockWidth, blockHeight);
-            RenderPointers(blockX, blockY, blockWidth, blockHeight);
+            if (!_asStrategy)
+            {
+                RenderPointers(blockX, blockY, blockWidth, blockHeight);
+            }
         }
 
-        private bool _withSpriteOverlays, _withTerrainOverlay, _withInteractionOverlay;
+        private bool _withSpriteOverlays, _withTerrainOverlay, _withInteractionOverlay, _asStrategy;
         private int? _withTileHighlight;
 
-        public void Update(bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
+        public void Update(bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay, bool asStrategy)
         {
             _withSpriteOverlays = withSpriteOverlays;
             _withTerrainOverlay = withTerrainOverlay;
             _withInteractionOverlay = withInteractionOverlay;
+            _asStrategy = asStrategy;
         }
 
         public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
@@ -94,12 +98,13 @@ namespace Spotlight.Renderers
             Update(rect);
         }
 
-        public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay, int? tileHighlight)
+        public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay, int? tileHighlight, bool asStrategy)
         {
             _withSpriteOverlays = withSpriteOverlays;
             _withTerrainOverlay = withTerrainOverlay;
             _withInteractionOverlay = withInteractionOverlay;
             _withTileHighlight = tileHighlight;
+            _asStrategy = asStrategy;
             Update(rect);
         }
 
@@ -169,6 +174,41 @@ namespace Spotlight.Renderers
                                 RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
                                 RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .85);
                             }
+                        }
+                    }
+
+
+                    if (_asStrategy)
+                    {
+                        if (tile.Property.IsTerrain(TileTerrain.ItemBlock) ||
+                            tile.Property.IsTerrain(TileTerrain.HiddenItemBlock))
+                        {
+
+                            TileInteraction interaction = _terrain.Where(t => t.HasTerrain(tile.Property)).FirstOrDefault()?.Interactions.Where(i => i.HasInteraction(tile.Property)).FirstOrDefault();
+                            if (interaction.Name.Contains("P-Switch"))
+                            {
+                                int flippedTile = _levelDataAccessor.GetData(col, row - 1) - 1;
+                                TileBlock flippedBlock = _tileSet.TileBlocks[flippedTile];
+                                int flippedPaletteIndex = (flippedTile & 0XC0) >> 6;
+
+                                RenderTile(x, y - 16, _graphicsAccessor.GetRelativeTile(flippedBlock.UpperLeft), _buffer, _palette.RgbColors[flippedPaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8, y - 16, _graphicsAccessor.GetRelativeTile(flippedBlock.UpperRight), _buffer, _palette.RgbColors[flippedPaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x, y - 8, _graphicsAccessor.GetRelativeTile(flippedBlock.LowerLeft), _buffer, _palette.RgbColors[flippedPaletteIndex], useTransparency: true, opacity: .75);
+                                RenderTile(x + 8, y - 8, _graphicsAccessor.GetRelativeTile(flippedBlock.LowerRight), _buffer, _palette.RgbColors[flippedPaletteIndex], useTransparency: true, opacity: .75);
+                            }
+                            else if (interaction != null && !interaction.Name.Contains("Brick"))
+                            {
+                                TileBlockOverlay overlay = interaction.Overlay;
+                                if (overlay != null)
+                                {
+                                    RenderTile(x, y - 16, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                    RenderTile(x + 8, y - 16, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                    RenderTile(x, y - 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                    RenderTile(x + 8, y - 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                }
+                            }
+
+                            
                         }
                     }
 

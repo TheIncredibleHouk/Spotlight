@@ -246,7 +246,7 @@ namespace Spotlight
 
                 Int32Rect sourceArea = new Int32Rect(0, 0, Math.Max(0, Math.Min(safeRect.Width, LevelRenderer.BITMAP_WIDTH)), Math.Max(0, Math.Min(safeRect.Height, LevelRenderer.BITMAP_HEIGHT)));
 
-                _levelRenderer.Update(safeRect, true, ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value, _highlightedTile);
+                _levelRenderer.Update(safeRect, true, ShowTerrain.IsChecked.Value, ShowInteraction.IsChecked.Value, _highlightedTile, ShowStrategy.IsChecked.Value);
                 _bitmap.WritePixels(sourceArea, _levelRenderer.GetRectangle(safeRect), safeRect.Width * 4, safeRect.X, safeRect.Y);
                 _bitmap.AddDirtyRect(safeRect);
             }
@@ -1607,6 +1607,20 @@ namespace Spotlight
                     SelectedDrawMode.Opacity = .5;
                     GameObjectProperty.Visibility = Visibility.Hidden;
                     break;
+
+                case 3:
+                    _editMode = EditMode.Tips;
+                    if(GameObjectProperty != null)
+                    {
+                        GameObjectProperty.Visibility = Visibility.Hidden;
+                    }
+
+                    _selectedObject = null;
+                    CursorImage.Opacity = 0;
+                    SelectedDrawMode.IsEnabled = false;
+                    SelectedDrawMode.Opacity = .5;
+                    GameObjectProperty.Visibility = Visibility.Hidden;
+                    break;
             }
         }
 
@@ -1625,6 +1639,11 @@ namespace Spotlight
         {
             Update();
             TileSelector.Update(withInteractionOverlay: ShowInteraction.IsChecked.Value, withTerrainOverlay: ShowTerrain.IsChecked.Value);
+        }
+
+        private void ShowStrategy_Click(object sender,RoutedEventArgs e)
+        {
+            Update();
         }
 
         private void ShowPSwitch_Click(object sender, RoutedEventArgs e)
@@ -1824,7 +1843,8 @@ namespace Spotlight
         PSwitchView,
         Tiles,
         Objects,
-        Pointers
+        Pointers,
+        Tips
     }
 
     public enum SelectionMode

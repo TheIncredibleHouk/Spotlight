@@ -9,6 +9,7 @@ namespace Spotlight.Services
     {
         private int[] _tileData;
         private List<LevelPointer> _pointers;
+        private List<Tip> _tips;
         private const int DATA_ROW_LENGTH = 15 * 16;
         private Level _level;
         private TileSet _tileSet;
@@ -20,6 +21,7 @@ namespace Spotlight.Services
 
             _tileData = _level.TileData;
             _pointers = _level.LevelPointers;
+            _tips = _level.Tips ?? new List<Tip>();
         }
 
         public bool PSwitchActive { get; set; }
@@ -86,6 +88,11 @@ namespace Spotlight.Services
         public List<LevelPointer> GetPointers(Rect area)
         {
             return _pointers.Where(p => p.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
+        }
+
+        public List<Tip> GetTips(Rect area)
+        {
+            return _tips.Where(t => t.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
     }
 }

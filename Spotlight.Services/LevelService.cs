@@ -225,7 +225,7 @@ namespace Spotlight.Services
                 }
 
                 string imageDirectory = basePath + @"\images";
-
+                
                 if (!Directory.Exists(imageDirectory))
                 {
                     Directory.CreateDirectory(imageDirectory);
