@@ -196,6 +196,17 @@ namespace Spotlight.Renderers
                                 RenderTile(x, y - 8, _graphicsAccessor.GetRelativeTile(flippedBlock.LowerLeft), _buffer, _palette.RgbColors[flippedPaletteIndex], useTransparency: true, opacity: .75);
                                 RenderTile(x + 8, y - 8, _graphicsAccessor.GetRelativeTile(flippedBlock.LowerRight), _buffer, _palette.RgbColors[flippedPaletteIndex], useTransparency: true, opacity: .75);
                             }
+                            else if (tile.Property.IsTerrain(TileTerrain.HiddenItemBlock))
+                            {
+                                TileBlockOverlay overlay = interaction.Overlay;
+                                if (overlay != null)
+                                {
+                                    RenderTile(x, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                    RenderTile(x + 8, y, _graphicsAccessor.GetOverlayTile(0, overlay.UpperRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                    RenderTile(x, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerLeft), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                    RenderTile(x + 8, y + 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
+                                }
+                            }
                             else if (interaction != null && !interaction.Name.Contains("Brick"))
                             {
                                 TileBlockOverlay overlay = interaction.Overlay;
@@ -207,8 +218,6 @@ namespace Spotlight.Renderers
                                     RenderTile(x + 8, y - 8, _graphicsAccessor.GetOverlayTile(0, overlay.LowerRight), _buffer, _palette.RgbColors[overlay.PaletteIndex], useTransparency: true, opacity: .75);
                                 }
                             }
-
-                            
                         }
                     }
 
@@ -238,6 +247,14 @@ namespace Spotlight.Renderers
 
             foreach (var levelObject in _levelDataAccessor.GetLevelObjects(updateRect))
             {
+                if (_asStrategy)
+                {
+                    if(levelObject.GameObject.Name.Contains("Magic Star") && levelObject.Property == 7)
+                    {
+                        continue;
+                    }
+                }
+
                 int baseX = levelObject.X * 16, baseY = levelObject.Y * 16;
                 var visibleSprites = levelObject.GameObject.Sprites.Where(s => (s.PropertiesAppliedTo == null ? true : s.PropertiesAppliedTo.Contains(levelObject.Property)) && (_withSpriteOverlays ? true : !s.Overlay)).ToList();
 

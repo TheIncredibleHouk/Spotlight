@@ -1800,7 +1800,7 @@ namespace Spotlight
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
             var encoder = new PngBitmapEncoder();
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)LevelRenderSource.ActualWidth, (int)LevelRenderSource.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)_level.ScreenLength * 16 * 16, (int)LevelRenderSource.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(LevelRenderSource);
 
             BitmapFrame frame = BitmapFrame.Create(bitmap);
