@@ -249,7 +249,7 @@ namespace Spotlight.Renderers
             {
                 if (_asStrategy)
                 {
-                    if(levelObject.GameObject.Name.Contains("Magic Star") && levelObject.Property == 7)
+                    if(levelObject.GameObject.IsStartObject || levelObject.GameObject.Name.Contains("Magic Star") && levelObject.Property == 7)
                     {
                         continue;
                     }
