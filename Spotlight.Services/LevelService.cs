@@ -152,6 +152,7 @@ namespace Spotlight.Services
                 string fileName = _project.DirectoryPath + @"\levels\" + safeFileName + ".json";
                 Level level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
                 level.SwitchQuest(Level.LevelQuest.First);
+                level.LevelPointers = level.LevelPointers.Where(pointer => pointer.LevelId != Guid.Empty).ToList();
                 return level;
             }
             catch (Exception e)

@@ -62,6 +62,26 @@ namespace Spotlight.Services
             }
         }
 
+        private void BuildWorldTable()
+        {
+            string region = "";
+            World world;
+
+            foreach (WorldInfo worldInfo in _worldService.AllWorlds().OrderBy(w => w.Number))
+            {
+                if (worldInfo.Name != "No World")
+                {
+                    region = "Loading world";
+                    world = _worldService.LoadWorld(worldInfo);
+
+                    if (world != null)
+                    {
+                        _worldIndexTable.Add(worldInfo.Id, (byte)worldInfo.Number);
+                    }
+                }
+            }
+        }
+
         public RomInfo CompileRom(string fileName)
         {
             RomInfo romInfo = new RomInfo();
@@ -73,6 +93,7 @@ namespace Spotlight.Services
 
             WritePalettes(_palettesService.GetPalettes());
             WriteTileBlockData();
+            BuildWorldTable();
 
             _dataPointer = 0x40010;
             _extendedDataPointer = 0x32010;
@@ -219,8 +240,6 @@ namespace Spotlight.Services
 
                         if (world != null)
                         {
-                            _worldIndexTable.Add(worldInfo.Id, (byte)worldInfo.Number);
-
                             bank = (byte)(_dataPointer / 0x2000);
                             address = (_dataPointer - 0x10 - (bank * 0x2000) + 0xA000);
 
@@ -309,7 +328,6 @@ namespace Spotlight.Services
                 {
                     if (pointer.ExitsLevel)
                     {
-                        //_rom[levelAddress++] = (byte)(pointer.ExitsLevel ? 1 : 0);
                         if (_worldIndexTable.ContainsKey(pointer.LevelId))
                         {
                             _rom[levelAddress++] = _worldIndexTable[pointer.LevelId];
@@ -323,6 +341,7 @@ namespace Spotlight.Services
                     {
                         if (_levelIndexTable.ContainsKey(pointer.LevelId))
                         {
+
                             _rom[levelAddress++] = _levelIndexTable[pointer.LevelId];
                         }
                         else
@@ -403,6 +422,7 @@ namespace Spotlight.Services
             catch (Exception e)
             {
                 _errorService.LogError(e, string.Format("Error occurred in writing a level. Region: {0}\n Address: {1}\nLevel: {2}", region, levelAddress, level.Name));
+                throw (e);
             }
 
             return 0;
