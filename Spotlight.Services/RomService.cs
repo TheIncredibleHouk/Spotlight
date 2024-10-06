@@ -108,8 +108,8 @@ namespace Spotlight.Services
             WriteGraphics();
             SetBatterySave();
             _rom.Save(fileName);
-            romInfo.LevelAddressEnd = _dataPointer;
 
+            romInfo.LevelAddressEnd = _dataPointer;
             romInfo.LevelsUsed = _levelService.AllLevels().Count;
 
 
@@ -130,25 +130,34 @@ namespace Spotlight.Services
                 _levelTypeTable.Add(0, 0);
                 _levelAddressTable.Add(0, 0);
 
+                
+                IEnumerable<LevelInfo> allLevels = _levelService.AllLevels();
+
                 byte levelIndex = 1;
-                IEnumerable<LevelInfo> orderedLevels = _levelService.AllLevels().OrderBy(l1 =>
+                IEnumerable<LevelInfo> primaryLevels = allLevels.Where(l => l.ParentInfo.InfoType == InfoType.World);
+                foreach(var level in primaryLevels)
                 {
-                    if (l1.ParentInfo.InfoType == InfoType.World)
-                    {
-                        return -1;
-                    }
+                    level.GameId = levelIndex++;
+                }
 
-                    return 1;
-                }).ToList();
+                levelIndex = (byte)(allLevels.Count());
 
-                foreach (LevelInfo levelInfo in orderedLevels)
+                IEnumerable<LevelInfo> secondaryLevels = allLevels.Where(l => l.ParentInfo.InfoType == InfoType.Level);
+                foreach (var level in secondaryLevels)
                 {
-                    _levelIndexTable.Add(levelInfo.Id, levelIndex++);
+                    level.GameId = levelIndex--;
+                }
+
+
+
+                foreach (LevelInfo levelInfo in allLevels)
+                {
+                    _levelIndexTable.Add(levelInfo.Id, levelInfo.GameId);
                 }
 
                 levelIndex = 1;
 
-                foreach (LevelInfo levelInfo in orderedLevels)
+                foreach (LevelInfo levelInfo in allLevels.OrderBy(level => level.GameId))
                 {
                     region = "Loading level " + levelInfo.Name;
 
@@ -161,13 +170,14 @@ namespace Spotlight.Services
                         if (levelInfo.SaveToExtendedSpace)
                         {
                             _levelAddressTable.Add(_levelIndexTable[level.Id], _extendedDataPointer);
-                            _extendedDataPointer = WriteLevel(level, _extendedDataPointer);
+                            _extendedDataPointer = WriteLevel(level, _extendedDataPointer, levelInfo.EnterableFromWorld);
                         }
                         else
                         {
                             _levelAddressTable.Add(_levelIndexTable[level.Id], _dataPointer);
-                            _dataPointer = WriteLevel(level, _dataPointer);
+                            _dataPointer = WriteLevel(level, _dataPointer, levelInfo.EnterableFromWorld);
                         }
+
                         levelInfo.Size = level.CompressedData.Length;
                         if (_dataPointer >= 0xFC000)
                         {
@@ -196,9 +206,11 @@ namespace Spotlight.Services
                     }
                     bank = (byte)((_dataPointer - 0x10) / 0x2000);
                     address = (_dataPointer - 0x10 - (bank * 0x2000) + 0xA000);
+                    
                     _rom[0xDC10 + (index * 4)] = (byte)bank;
                     _rom[0xDC11 + (index * 4)] = (byte)(address & 0x00FF);
                     _rom[0xDC12 + (index * 4)] = (byte)((address & 0xFF00) >> 8);
+
                     try
                     {
                         _rom[0xDC13 + (index * 4)] = (byte)_levelTypeTable[index];
@@ -276,7 +288,7 @@ namespace Spotlight.Services
             return true;
         }
 
-        public int WriteLevel(Level level, int levelAddress)
+        public int WriteLevel(Level level, int levelAddress, bool enterableFromWorld)
         {
             string region = "";
 
@@ -313,7 +325,7 @@ namespace Spotlight.Services
                 _rom[levelAddress++] = (byte)((level.LevelPointers.Count << 4) | level.ScrollType);
                 _rom[levelAddress++] = (byte)(level.Effects | level.PaletteEffect);
                 _rom[levelAddress++] = (byte)level.EventType;
-                _rom[levelAddress++] = (byte)0;
+                _rom[levelAddress++] = (byte)(enterableFromWorld ? 1 : 0);
                 _rom[levelAddress++] = (byte)0;
 
                 region = "Writing level name";
