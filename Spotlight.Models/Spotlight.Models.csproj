@@ -59,6 +59,13 @@
     <Compile Include="Levels\LevelObject.cs" />
     <Compile Include="Levels\LevelObjectChange.cs" />
     <Compile Include="Levels\LevelPointer.cs" />
+    <Compile Include="Music\BlockHeader.cs" />
+    <Compile Include="Music\ChannelData.cs" />
+    <Compile Include="Music\MusicBlock.cs" />
+    <Compile Include="Music\BlockHeaderOffsetTable.cs" />
+    <Compile Include="Music\Tempo.cs" />
+    <Compile Include="Music\Track.cs" />
+    <Compile Include="Music\TrackTable.cs" />
     <Compile Include="Project\IInfo.cs" />
     <Compile Include="Project\LevelInfo.cs" />
     <Compile Include="Palette\Palette.cs" />
