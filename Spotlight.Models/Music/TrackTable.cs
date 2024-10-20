@@ -8,6 +8,6 @@ namespace Spotlight.Models.Music
 {
     public class TrackTable
     {
-        public List<Track> Tracks { get; set; }
+        public List<TrackDefinition> Tracks { get; set; }
     }
 }

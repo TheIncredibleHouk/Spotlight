@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Spotlight.Models.Music
 {
-    public class BlockHeader
+    public class MusicSegmentHeaderTable
     {
-
+        public int Index { get; set; } // points to MusicSegmentHeader
     }
 }

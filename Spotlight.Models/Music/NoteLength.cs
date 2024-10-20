@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace Spotlight.Models.Music
 {
-    public class BlockHeader
+    public enum NoteLength
     {
-
+        Whole,
+        Half,
+        Quarter,
+        Eighth,
+        Sixteenth
     }
 }

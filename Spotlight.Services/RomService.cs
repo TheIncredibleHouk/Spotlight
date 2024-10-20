@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 
 namespace Spotlight.Services
 {
@@ -628,6 +629,11 @@ namespace Spotlight.Services
                     _rom[dataPointer++] = 0x00;
                     _rom[dataPointer++] = 0x00;
                     _rom[dataPointer++] = 0x00;
+
+                    if(dataPointer > 0x2E010)
+                    {
+                        throw new Exception("Overwrite exception");
+                    }
                 }
             }
             catch (Exception e)

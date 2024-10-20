@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Spotlight.Models.Music
 {
-    public class BlockHeader
+    public enum MusicSet
     {
-
+        FanFare_1,
+        Tracks_2A,
+        Tracks_2B
     }
 }

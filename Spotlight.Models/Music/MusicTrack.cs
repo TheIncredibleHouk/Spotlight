@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Spotlight.Models.Music
 {
-    public class BlockHeader
+    public class MusicTrack
     {
+        public TrackDefinition Definition { get; set; }
 
     }
 }

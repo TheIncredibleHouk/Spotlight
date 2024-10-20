@@ -63,8 +63,16 @@
     <Compile Include="Music\ChannelData.cs" />
     <Compile Include="Music\MusicBlock.cs" />
     <Compile Include="Music\BlockHeaderOffsetTable.cs" />
+    <Compile Include="Music\MusicSegment.cs" />
+    <Compile Include="Music\MusicSegmentHeader.cs" />
+    <Compile Include="Music\MusicSegmentHeaderTable.cs" />
+    <Compile Include="Music\MusicSet.cs" />
+    <Compile Include="Music\MusicTrack.cs" />
+    <Compile Include="Music\Note.cs" />
+    <Compile Include="Music\NoteLength.cs" />
+    <Compile Include="Music\PercussionDMC.cs" />
     <Compile Include="Music\Tempo.cs" />
-    <Compile Include="Music\Track.cs" />
+    <Compile Include="Music\TrackDefinition.cs" />
     <Compile Include="Music\TrackTable.cs" />
     <Compile Include="Project\IInfo.cs" />
     <Compile Include="Project\LevelInfo.cs" />
