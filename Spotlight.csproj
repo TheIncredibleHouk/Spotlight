@@ -127,6 +127,9 @@
     <Compile Include="Controls\MoveLevelWindowl.xaml.cs">
       <DependentUpon>MoveLevelWindowl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MusicMeasure.xaml.cs">
+      <DependentUpon>MusicMeasure.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NewLevelWindow.xaml.cs">
       <DependentUpon>NewLevelWindow.xaml</DependentUpon>
     </Compile>
@@ -191,6 +194,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\MoveLevelWindowl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MusicMeasure.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

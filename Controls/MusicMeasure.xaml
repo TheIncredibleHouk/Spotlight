@@ -6,7 +6,24 @@
              xmlns:local="clr-namespace:Spotlight.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <Canvas Height="400" Width="50">
+        <Line Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="0" Y2="0" />
+        <Line Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="100" Y2="100" />
+        <Line Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="200" Y2="200" />
+        <Line Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="300" Y2="300" />
+        
+        <Line StrokeDashArray="4 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="50" Y2="50" />
+        <Line StrokeDashArray="4 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="150" Y2="150" />
+        <Line StrokeDashArray="4 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="250" Y2="250" />
+        <Line StrokeDashArray="4 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="350" Y2="350" />
+
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="25" Y2="25" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="75" Y2="75" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="125" Y2="125" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="175" Y2="175" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="225" Y2="225" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="275" Y2="275" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="325" Y2="325" />
+        <Line StrokeDashArray="2 2" Stroke="Green" StrokeThickness="1" X1="0" X2="50" Y1="375" Y2="375" />
+    </Canvas>
 </UserControl>

@@ -20,6 +20,7 @@ namespace Spotlight.Controls
     /// </summary>
     public partial class MusicMeasure : UserControl
     {
+        public int NoteMode
         public MusicMeasure()
         {
             InitializeComponent();
