@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
@@ -15,7 +16,7 @@ namespace Spotlight.Models
         [JsonIgnore]
         public GameObject GameObject { get; set; }
 
-        public Rect CalcBoundBox()
+        public Rectangle CalcBoundBox()
         {
             int minX = 1000, minY = 1000;
             int maxX = -1000, maxY = -1000;
@@ -38,11 +39,11 @@ namespace Spotlight.Models
                 }
             }
 
-            BoundRectangle = new Rect(X * 16 + minX, Y * 16 + minY, maxX - minX, maxY - minY);
+            BoundRectangle = new Rectangle(X * 16 + minX, Y * 16 + minY, maxX - minX, maxY - minY);
             return BoundRectangle;
         }
 
-        public Rect CalcVisualBox(bool withOverlays)
+        public Rectangle CalcVisualBox(bool withOverlays)
         {
             int minX = 1000, minY = 1000;
             int maxX = -1000, maxY = -1000;
@@ -99,14 +100,14 @@ namespace Spotlight.Models
                 maxY = ((maxY / 16) + 1) * 16;
             }
 
-            VisualRectangle = new Rect(X * 16 + minX, Y * 16 + minY, maxX - minX, maxY - minY);
+            VisualRectangle = new Rectangle(X * 16 + minX, Y * 16 + minY, maxX - minX, maxY - minY);
             return VisualRectangle;
         }
 
         [JsonIgnore]
-        public Rect BoundRectangle { get; private set; }
+        public Rectangle BoundRectangle { get; private set; }
 
         [JsonIgnore]
-        public Rect VisualRectangle { get; private set; }
+        public Rectangle VisualRectangle { get; private set; }
     }
 }

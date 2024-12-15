@@ -1,30 +1,32 @@
-﻿using System;
+﻿using Spotlight.Abstractions;
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Spotlight.Services
 {
-    public class ErrorService
+    public class ErrorService : IErrorService
     {
         public ErrorService()
         {
-            CurrentLog = new List<string>();
+            _logs = new List<string>();
         }
 
-        public List<string> CurrentLog { get; private set; }
+        private List<string> _logs;
 
         public void LogError(string message)
         {
-            CurrentLog.Add(message);
+            _logs.Add(message);
         }
 
         public void LogError(Exception e, string message = "")
         {
-            CurrentLog.Add("Exception caught at:" + e.StackTrace + "\nAddtional message: " + message);
+            _logs.Add("Exception caught at:" + e.StackTrace + "\nAddtional message: " + message);
         }
 
-        public void Reset()
+        public void Clear()
         {
-            CurrentLog.Clear();
+            _logs.Clear();
         }
     }
 }

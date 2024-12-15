@@ -1,5 +1,6 @@
 ﻿using Spotlight.Models;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 
@@ -78,12 +79,12 @@ namespace Spotlight.Services
             }
         }
 
-        public List<LevelObject> GetLevelObjects(Rect area)
+        public List<LevelObject> GetLevelObjects(Rectangle area)
         {
             return _level.ObjectData.Where(o => o.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
 
-        public List<LevelPointer> GetPointers(Rect area)
+        public List<LevelPointer> GetPointers(Rectangle area)
         {
             return _pointers.Where(p => p.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }

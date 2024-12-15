@@ -3,9 +3,7 @@ using Spotlight.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using System.Xml.Linq;
-using static Spotlight.Models.GameObject;
+using System.Drawing;
 
 namespace Spotlight.Services
 {
@@ -177,16 +175,16 @@ namespace Spotlight.Services
 
                 var nextObject = new LevelObject()
                 {
-                    GameObjectId = gameObject.GameId,
+
                     GameObject = gameObject,
                     X = nextX[gameObject.GameObjectType][gameObject.Group],
                     Y = nextY[gameObject.GameObjectType][gameObject.Group]
                 };
 
-                Rect rect = nextObject.CalcBoundBox();
+                Rectangle Rectangle = nextObject.CalcBoundBox();
 
-                int actualX = (int)(rect.X / 16);
-                int actualY = (int)(rect.Y / 16);
+                int actualX = (int)(Rectangle.X / 16);
+                int actualY = (int)(Rectangle.Y / 16);
 
                 if (nextObject.X - actualX >= 1)
                 {
@@ -199,28 +197,28 @@ namespace Spotlight.Services
                         nextObject.X += (nextObject.X - actualX - 1);
                     }
 
-                    rect = nextObject.CalcBoundBox();
+                    Rectangle = nextObject.CalcBoundBox();
                 }
 
                 if (nextObject.Y - actualY >= 1)
                 {
                     nextObject.Y += (nextObject.Y - actualY - 1);
-                    rect = nextObject.CalcBoundBox();
+                    Rectangle = nextObject.CalcBoundBox();
                 }
 
-                if ((int)(rect.Height / 16) > maxHeight[gameObject.GameObjectType][gameObject.Group])
+                if ((int)(Rectangle.Height / 16) > maxHeight[gameObject.GameObjectType][gameObject.Group])
                 {
-                    maxHeight[gameObject.GameObjectType][gameObject.Group] = (int)(rect.Height / 16);
+                    maxHeight[gameObject.GameObjectType][gameObject.Group] = (int)(Rectangle.Height / 16);
                 }
 
-                if (rect.X + rect.Width > 256)
+                if (Rectangle.X + Rectangle.Width > 256)
                 {
                     nextX[gameObject.GameObjectType][gameObject.Group] = nextObject.X = 0;
                     nextY[gameObject.GameObjectType][gameObject.Group] = nextObject.Y += maxHeight[gameObject.GameObjectType][gameObject.Group] + 1;
-                    rect = nextObject.CalcBoundBox();
+                    Rectangle = nextObject.CalcBoundBox();
                 }
 
-                nextX[gameObject.GameObjectType][gameObject.Group] += (int)(rect.Width / 16) + (rect.Width % 16 > 0 ? 2 : 1);
+                nextX[gameObject.GameObjectType][gameObject.Group] += (int)(Rectangle.Width / 16) + (Rectangle.Width % 16 > 0 ? 2 : 1);
 
                 GameObjectTable.AddObject(gameObject.GameObjectType, gameObject.Group, nextObject);
             }

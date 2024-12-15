@@ -1,6 +1,7 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 
@@ -32,7 +33,7 @@ namespace Spotlight.Renderers
         private bool _withInteractionOverlay;
         private bool _withPointers;
 
-        public void Update(Int32Rect? rect = null, Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null, bool? withPointers = null)
+        public void Update(Rectangle? rect = null, Palette palette = null, TileSet tileSet = null, bool? withInteractionOverlay = null, bool? withPointers = null)
         {
             _palette = palette ?? _palette;
             _tileSet = tileSet ?? _tileSet;
@@ -49,17 +50,12 @@ namespace Spotlight.Renderers
             }
         }
 
-        public byte[] GetRectangle(Int32Rect rect)
+        public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
         }
 
-        public void Update(Int32Rect rect)
-        {
-            Update(new Rect(rect.X, rect.Y, rect.Width, rect.Height));
-        }
-
-        public void Update(Rect updateRect)
+        public void Update(Rectangle updateRect)
         {
             int blockX = (int)(updateRect.X / 16),
                 blockY = (int)(updateRect.Y / 16),
@@ -82,7 +78,7 @@ namespace Spotlight.Renderers
 
         public void Update()
         {
-            Update(new Rect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT));
+            Update(new Rectangle(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT));
         }
 
         public void RenderTiles(int blockX = 0, int blockY = 0, int blockWidth = World.BLOCK_WIDTH, int blockHeight = World.BLOCK_HEIGHT)
@@ -142,7 +138,7 @@ namespace Spotlight.Renderers
 
         public void RenderObjects(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT, bool withOverlays = false)
         {
-            Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
+            Rectangle updateRect = new Rectangle(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
 
             foreach (var worldObject in _worldDataAccessor.GetWorldObjects(updateRect))
             {
@@ -166,7 +162,7 @@ namespace Spotlight.Renderers
 
         public void RenderPointers(int blockX = 0, int blockY = 0, int blockWidth = World.BLOCK_WIDTH, int blockHeight = World.BLOCK_HEIGHT)
         {
-            Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
+            Rectangle updateRect = new Rectangle(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
 
             foreach (var pointerObject in _worldDataAccessor.GetPointers(updateRect))
             {

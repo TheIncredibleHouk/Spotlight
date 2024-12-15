@@ -1,5 +1,6 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
+using System.Drawing;
 using System.Windows;
 
 namespace Spotlight.Renderers
@@ -25,7 +26,7 @@ namespace Spotlight.Renderers
             BYTE_STRIDE = 256 * 4;
         }
 
-        public byte[] GetRectangle(Int32Rect rect)
+        public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
         }

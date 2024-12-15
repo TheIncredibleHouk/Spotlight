@@ -1,9 +1,8 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Windows;
+using System.Drawing;
 
 namespace Spotlight.Renderers
 {
@@ -37,7 +36,7 @@ namespace Spotlight.Renderers
             Update(_lastObjects, _lastWithOverlays);
         }
 
-        public byte[] GetRectangle(Int32Rect rect)
+        public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
         }

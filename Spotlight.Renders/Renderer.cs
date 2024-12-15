@@ -29,7 +29,7 @@ namespace Spotlight.Renderers
             _initializing = false;
         }
 
-        public byte[] GetRectangle(Int32Rect rect, byte[] buffer)
+        public byte[] GetRectangle(Rectangle rect, byte[] buffer)
         {
             byte[] copyData = new byte[rect.Width * rect.Height * 4];
             int copyDataPointer = 0;

@@ -44,22 +44,12 @@ namespace Spotlight.Renderers
             }
         }
 
-        public byte[] GetRectangle(Int32Rect rect)
+        public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
         }
 
-        public void Update()
-        {
-            Update(new Rect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT));
-        }
-
-        public void Update(Int32Rect rect)
-        {
-            Update(new Rect(rect.X, rect.Y, rect.Width, rect.Height));
-        }
-
-        public void Update(Rect updateRect)
+        public void Update(Rectangle updateRect)
         {
             int blockX = (int)(updateRect.X / 16),
                 blockY = (int)(updateRect.Y / 16),
@@ -90,7 +80,7 @@ namespace Spotlight.Renderers
             _asStrategy = asStrategy;
         }
 
-        public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
+        public void Update(Rectangle rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay)
         {
             _withSpriteOverlays = withSpriteOverlays;
             _withTerrainOverlay = withTerrainOverlay;
@@ -98,7 +88,7 @@ namespace Spotlight.Renderers
             Update(rect);
         }
 
-        public void Update(Int32Rect rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay, int? tileHighlight, bool asStrategy)
+        public void Update(Rectangle rect, bool withSpriteOverlays, bool withTerrainOverlay, bool withInteractionOverlay, int? tileHighlight, bool asStrategy)
         {
             _withSpriteOverlays = withSpriteOverlays;
             _withTerrainOverlay = withTerrainOverlay;
@@ -243,7 +233,7 @@ namespace Spotlight.Renderers
 
         public void RenderObjects(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT, bool withOverlays = false)
         {
-            Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
+            Rectangle updateRect = new Rectangle(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
 
             foreach (var levelObject in _levelDataAccessor.GetLevelObjects(updateRect))
             {
@@ -279,7 +269,7 @@ namespace Spotlight.Renderers
 
         public void RenderPointers(int blockX = 0, int blockY = 0, int blockWidth = Level.BLOCK_WIDTH, int blockHeight = Level.BLOCK_HEIGHT)
         {
-            Rect updateRect = new Rect(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
+            Rectangle updateRect = new Rectangle(blockX * 16, blockY * 16, blockWidth * 16, blockHeight * 16);
 
             foreach (var pointerObject in _levelDataAccessor.GetPointers(updateRect))
             {

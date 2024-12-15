@@ -1,36 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Spotlight.Abstractions;
+using Spotlight.Models;
 
 namespace Spotlight.Services
 {
-    public class ClipBoardService
+    public class ClipboardService : IClipboardService
     {
-        public ClipBoardItem ClipBoardItem { get; set; }
+        private ClipboardItem _clipboardItem;
 
-        public void Clear()
+        public void ClearClipboard()
         {
-            ClipBoardItem = null;
+            _clipboardItem = null;
         }
-    }
 
-    public class ClipBoardItem
-    {
-        public object Data { get; private set; }
-        public ClipBoardItemType Type { get; private set; }
-
-        public ClipBoardItem(object data, ClipBoardItemType type)
+        public ClipboardItem GetClipboard()
         {
-            Data = data;
-            Type = type;
+            return _clipboardItem;
         }
-    }
 
-    public enum ClipBoardItemType
-    {
-        TileBuffer,
-        SpriteBuffer
+        public void SetClipboard(ClipboardItem item)
+        {
+            _clipboardItem = item;
+        }
     }
 }

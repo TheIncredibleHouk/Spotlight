@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="Spotlight.TileBlockSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             Width="256"
+             Height="256"
+             SnapsToDevicePixels="True"
+             xmlns:local="clr-namespace:Spotlight"
+             mc:Ignorable="d">
+    <Canvas VerticalAlignment="Top" SnapsToDevicePixels="True" UseLayoutRounding="false" Width="258" Height="258">
+        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" Canvas.Left="0" Canvas.Top="0" Width="256" Height="256"  MouseDown="TileRenderSource_MouseDown" x:Name="TileRenderSource" />
+        <Border Canvas.Left="0" Canvas.Right="0" MouseDown="TileRenderSource_MouseDown" SnapsToDevicePixels="True" UseLayoutRounding="False" BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle" Width="16" Height="16">
+            <Border BorderThickness="1" Background="#60FFFFFF" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" />
+        </Border>
+    </Canvas>
+</UserControl>

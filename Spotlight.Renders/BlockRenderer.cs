@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace Spotlight.Renderers
 
         public byte[] GetRectangle()
         {
-            return GetRectangle(new Int32Rect(0, 0, 16, 16), _buffer);
+            return GetRectangle(new Rectangle(0, 0, 16, 16), _buffer);
         }
 
         public void SetPixel(int x, int y, int value)

@@ -1,6 +1,7 @@
 ﻿using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 
@@ -22,7 +23,7 @@ namespace Spotlight.Renderers
             _mapTileInteractions = mapTileInteractions;
         }
 
-        public byte[] GetRectangle(Int32Rect rect)
+        public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
         }

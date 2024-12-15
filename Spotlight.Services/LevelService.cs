@@ -7,7 +7,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -216,7 +215,7 @@ namespace Spotlight.Services
             }
         }
 
-        public void ExportLevelToPng(PngBitmapEncoder encoder, Level level, string basePath = null)
+        public void ExportLevelToPng(Level level, string basePath = null)
         {
             try
             {
@@ -236,7 +235,7 @@ namespace Spotlight.Services
 
                 using (var stream = File.Create(string.Format(@"{0}\{1}.png", imageDirectory, safeFileName)))
                 {
-                    encoder.Save(stream);
+                    //encoder.Save(stream);
                 }
             }
             catch (Exception e)
@@ -257,8 +256,8 @@ namespace Spotlight.Services
 
         public void CleanUpTemps()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
-            foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+            DirectoryInfo DirectoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
+            foreach (FileInfo fileInfo in DirectoryInfo.GetFiles())
             {
                 if (fileInfo.Name.StartsWith("~"))
                 {
@@ -269,8 +268,8 @@ namespace Spotlight.Services
 
         public IEnumerable<FileInfo> FindTemps()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
-            return directoryInfo.GetFiles().Where(file => file.Name.StartsWith("~"));
+            DirectoryInfo DirectoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
+            return DirectoryInfo.GetFiles().Where(file => file.Name.StartsWith("~"));
         }
 
         public void SwapTemp(FileInfo tempFile)

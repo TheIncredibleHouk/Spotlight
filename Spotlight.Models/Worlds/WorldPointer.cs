@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 using System.Xml.Serialization;
 
@@ -11,11 +12,11 @@ namespace Spotlight.Models
         public int X { get; set; }
         public int Y { get; set; }
 
-        public Rect BoundRectangle
+        public Rectangle BoundRectangle
         {
             get
             {
-                return new Rect()
+                return new Rectangle()
                 {
                     X = X * 16,
                     Y = Y * 16,

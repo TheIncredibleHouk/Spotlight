@@ -1,0 +1,161 @@
+﻿<Window x:Class="Spotlight.GraphicsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Spotlight"
+        Closed="Window_Closed"
+        Focusable="True"
+        Background="#303038"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        mc:Ignorable="d"
+        Title="Graphics Editor" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <ComboBox x:Name="GraphicsType" Width="128" SelectionChanged="GraphicsType_SelectionChanged">
+                <ComboBoxItem>Game</ComboBoxItem>
+                <ComboBoxItem>Overlays</ComboBoxItem>
+            </ComboBox>
+            <TextBox KeyUp="GraphicsAddress_KeyUp" x:Name="GraphicsAddress" Width="128" HorizontalAlignment="Right" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top">
+            <Border>
+                <Canvas HorizontalAlignment="Right" Width="258" Height="258">
+                    <Image MouseDown="PatternTable_MouseDown" Canvas.Left="0" Canvas.Top="0" x:Name="PatternTable" HorizontalAlignment="Right" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="False" Width="256" Height="256" />
+                    <Border Canvas.Top="0" Canvas.Left="0" BorderThickness="1" BorderBrush="Red" x:Name="SelectionRectangle">
+                        <Border BorderThickness="1" Width="32" Height="32" BorderBrush="White" />
+                    </Border>
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="16" X2="16" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="32" X2="32" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="48" X2="48" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="64" X2="64" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="80" X2="80" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="96" X2="96" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="112" X2="112" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="128" X2="128" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="144" X2="144" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="160" X2="160" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="176" X2="176" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="192" X2="192" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="208" X2="208" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="224" X2="224" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="240" X2="240" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="16" Y2="16" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="32" Y2="32" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="48" Y2="48" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="64" Y2="64" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="80" Y2="80" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="96" Y2="96" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="112" Y2="112" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="128" Y2="128" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="144" Y2="144" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="160" Y2="160" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="176" Y2="176" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="192" Y2="192" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="208" Y2="208" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="224" Y2="224" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                    <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="240" Y2="240" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                </Canvas>
+            </Border>
+            <ComboBox SelectionChanged="LayoutOrder_SelectionChanged" x:Name="LayoutOrder" Width="256" HorizontalAlignment="Right">
+                <ComboBoxItem>Tile Mode</ComboBoxItem>
+                <ComboBoxItem>Sprite Mode</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+        <ComboBox Grid.Row="0" Grid.Column="2" SelectionChanged="PalettesList_SelectionChanged" x:Name="PalettesList" DisplayMemberPath="Name" Width="256" HorizontalAlignment="Left" />
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <Border>
+                    <Canvas UseLayoutRounding="False" x:Name="EditorCanvas" MouseDown="EditorCanvas_MouseDown" HorizontalAlignment="Right" Width="258" Height="258">
+                        <Image Canvas.Left="0" Canvas.Top="0" x:Name="EditorImage" HorizontalAlignment="Right" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="False" Width="256" Height="256" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="16" X2="16" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="32" X2="32" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="48" X2="48" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="64" X2="64" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="80" X2="80" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="96" X2="96" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="112" X2="112" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="128" X2="128" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="144" X2="144" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="160" X2="160" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="176" X2="176" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="192" X2="192" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="208" X2="208" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="224" X2="224" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" X1="240" X2="240" Y1="0" Y2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="16" Y2="16" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="32" Y2="32" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="48" Y2="48" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="64" Y2="64" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="80" Y2="80" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="96" Y2="96" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="112" Y2="112" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="128" Y2="128" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="144" Y2="144" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="160" Y2="160" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="176" Y2="176" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="192" Y2="192" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="208" Y2="208" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="224" Y2="224" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Line Opacity=".5" Canvas.Left="0" Canvas.Top="0" StrokeDashOffset="1" Y1="240" Y2="240" X1="0" X2="256" Stroke="White" StrokeThickness="1" />
+                        <Border Canvas.Top="0" Canvas.Left="0" BorderThickness="1" BorderBrush="Red" x:Name="EditorRectangle">
+                            <Border BorderThickness="1" Width="15" Height="15" BorderBrush="White" />
+                        </Border>
+                    </Canvas>
+                </Border>
+                <StackPanel Orientation="Vertical">
+                    <RadioButton x:Name="DrawTool"  GroupName="DrawMode">Draw</RadioButton>
+                    <RadioButton x:Name="FillTool" GroupName="DrawMode">Fill</RadioButton>
+                    <RadioButton x:Name="LineTool"  GroupName="DrawMode">Line</RadioButton>
+                    <RadioButton x:Name="OutlineRectangleTool"  GroupName="DrawMode">Outline</RadioButton>
+                    <RadioButton x:Name="SolidRectangleTool" GroupName="DrawMode">Solid</RadioButton>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Canvas Width="128" Margin="0 10" MouseDown="Canvas_MouseDown">
+                    <local:PaletteItem x:Name="ColorsIndex" />
+                    <Border Canvas.Top="0" Canvas.Left="0" BorderThickness="1" BorderBrush="Red" x:Name="IndexRectangle">
+                        <Border BorderThickness="1" Width="32" Height="32" BorderBrush="White" />
+                    </Border>
+                </Canvas>
+                <ComboBox SelectionChanged="ColorChoices_SelectionChanged" Width="172" HorizontalAlignment="Left" SelectedIndex="0" x:Name="ColorChoices">
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors1" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors2" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors3" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors4" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors5" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors6" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors7" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <local:PaletteItem x:Name="Colors8" />
+                    </ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</Window>

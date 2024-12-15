@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight", "Spotlight.csproj", "{BF854660-B87C-4815-8118-1486DD3AF647}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Models", "Spotlight.Models\Spotlight.Models.csproj", "{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Services", "Spotlight.Services\Spotlight.Services.csproj", "{F3B47112-F7FB-4534-9E2F-65BDE77FC71E}"
@@ -13,7 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Tests", "Spotligh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Renderers", "Spotlight.Renders\Spotlight.Renderers.csproj", "{D3A1A2FD-8594-4473-8927-89D008C3CBAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backstage", "..\Backstage\Backstage.csproj", "{2680F486-00E8-41CF-A7B0-A57BE4C91643}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.UI", "Spotlight.UI\Spotlight.UI.csproj", "{9C2B7E83-C849-41D8-93C6-497EEB7E3A71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotlight.Abstractions", "Spotlight.Abstractions\Spotlight.Abstractions.csproj", "{39583C49-87A0-45E4-B41D-D318B4AF221F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BF854660-B87C-4815-8118-1486DD3AF647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF854660-B87C-4815-8118-1486DD3AF647}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF854660-B87C-4815-8118-1486DD3AF647}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF854660-B87C-4815-8118-1486DD3AF647}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C409BEB-9A5F-494E-AE5D-F524E1E9499F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,10 +37,14 @@ Global
 		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3A1A2FD-8594-4473-8927-89D008C3CBAA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2680F486-00E8-41CF-A7B0-A57BE4C91643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2680F486-00E8-41CF-A7B0-A57BE4C91643}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2680F486-00E8-41CF-A7B0-A57BE4C91643}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2680F486-00E8-41CF-A7B0-A57BE4C91643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C2B7E83-C849-41D8-93C6-497EEB7E3A71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C2B7E83-C849-41D8-93C6-497EEB7E3A71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C2B7E83-C849-41D8-93C6-497EEB7E3A71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C2B7E83-C849-41D8-93C6-497EEB7E3A71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39583C49-87A0-45E4-B41D-D318B4AF221F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39583C49-87A0-45E4-B41D-D318B4AF221F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39583C49-87A0-45E4-B41D-D318B4AF221F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39583C49-87A0-45E4-B41D-D318B4AF221F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

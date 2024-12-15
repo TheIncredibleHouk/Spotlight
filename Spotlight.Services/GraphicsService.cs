@@ -9,7 +9,6 @@ namespace Spotlight.Services
 {
     public class GraphicsService
     {
-        private ErrorService _errorService;
         private List<Tile> _tiles;
         private List<Tile> _extraTiles;
         private Project _project;
@@ -24,9 +23,8 @@ namespace Spotlight.Services
 
         public event GraphicsUpdatedHandler ExtraGraphicsUpdated;
 
-        public GraphicsService(ErrorService errorService, Project project)
+        public GraphicsService(Project project)
         {
-            _errorService = errorService;
             _project = project;
             LoadGraphics();
             LoadExtraGraphics();

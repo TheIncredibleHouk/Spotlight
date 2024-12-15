@@ -1,6 +1,8 @@
 ﻿using Spotlight.Models;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Drawing;
 using System.Windows;
 
 namespace Spotlight.Services
@@ -58,12 +60,12 @@ namespace Spotlight.Services
             }
         }
 
-        public List<WorldObject> GetWorldObjects(Rect area)
+        public List<WorldObject> GetWorldObjects(Rectangle area)
         {
             return _worldObjects.Where(o => o.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
 
-        public List<WorldPointer> GetPointers(Rect area)
+        public List<WorldPointer> GetPointers(Rectangle area)
         {
             return _pointers.Where(p => p.BoundRectangle.IntersectsWith(area)).OrderBy(o => o.X).ThenBy(o => o.Y).ToList();
         }
