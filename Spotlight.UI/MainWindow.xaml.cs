@@ -1,5 +1,6 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using Spotlight.Controls;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
@@ -50,6 +51,7 @@ namespace Spotlight
             _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
             _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
             _ProjectPanel.GraphicsEditorClicked += _ProjectPanel_GraphicsEditorClicked;
+            _ProjectPanel.MusicEditorClicked += _ProjectPanel_MusicEditorClicked;
             _ProjectPanel.ExportPaletteClicked += _ProjectPanel_ExportPaletteClicked;
             _ProjectPanel.GenerateMetaDataClicked += _ProjectPanel_GenerateMetaDataClicked;
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
@@ -61,6 +63,25 @@ namespace Spotlight
             {
                 _ProjectPanel.LoadProject(_config.LastProjectPath);
             }
+        }
+
+        private MusicEditor _musicEditor;
+        private void _ProjectPanel_MusicEditorClicked()
+        {
+            if (_musicEditor == null)
+            {
+                _musicEditor = new MusicEditor();
+                _musicEditor.Closed += _musicEditor_Closed;
+                _musicEditor.Show();
+            }
+
+            _musicEditor.Focus();
+        }
+
+        private void _musicEditor_Closed(object sender, EventArgs e)
+        {
+            _musicEditor.Closed -= _musicEditor_Closed;
+            _musicEditor = null;
         }
 
         private void _ProjectPanel_GenerateMetaDataClicked()

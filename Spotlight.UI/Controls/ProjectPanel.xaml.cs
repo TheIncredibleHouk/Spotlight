@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using Spotlight.Models;
 using Spotlight.Services;
 using System.Windows;
@@ -35,8 +35,11 @@ namespace Spotlight
 
         public event NewLevelEventHandler NewLevelClicked;
         
-        public delegate void GraphicsEditorEventHandlder();
-        public event GraphicsEditorEventHandlder GraphicsEditorClicked;
+        public delegate void GraphicsEditorEventHandler();
+        public event GraphicsEditorEventHandler GraphicsEditorClicked;
+
+        public delegate void MusicEditorEventHandler();
+        public event MusicEditorEventHandler MusicEditorClicked;
 
         public delegate void ExportPaletteEventHandler();
         public event ExportPaletteEventHandler ExportPaletteClicked;
@@ -65,7 +68,7 @@ namespace Spotlight
         {
             Project project = ProjectService.LoadProject(filePath);
             ProjectLoaded(project);
-            ExportPaletteButton.IsEnabled = GraphicsEditButton.IsEnabled = ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
+            ExportPaletteButton.IsEnabled = MusicEditButton.IsEnabled = ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
         }
 
         private void SaveProjectButton_Click(object sender, RoutedEventArgs e)

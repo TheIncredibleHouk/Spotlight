@@ -74,10 +74,16 @@
                         <TextBlock>Edit Text</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button x:Name="GraphicsEditButton" Click="GraphicsEditButton_Click"  IsEnabled="False">
+                <!--<Button x:Name="GraphicsEditButton" Click="GraphicsEditButton_Click"  IsEnabled="False">
                     <StackPanel Orientation="Vertical">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="16" />
                         <TextBlock>Edit Graphics</TextBlock>
+                    </StackPanel>
+                </Button>-->
+                <Button x:Name="MusicEditButton" Click="MusicsEditButton_Click"  IsEnabled="False">
+                    <StackPanel Orientation="Vertical">
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="16" />
+                        <TextBlock>Edit Music</TextBlock>
                     </StackPanel>
                 </Button>
             </StackPanel>
