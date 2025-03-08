@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,41 +7,53 @@ using System.Text;
 using System.Threading.Tasks;
 using Spotlight.Abstractions;
 using Spotlight.Models;
+using Spotlight.Models.Events;
 
 namespace Spotlight.Services
 {
     public class EventService : IEventService
     {
-        private List<SpotlightEventSubscription> _eventSubscriptions;
+        private Dictionary<SpotlightEventKey, List<SpotlightEventResponder>> _eventResponders;
+        private Dictionary<Guid, SpotlightEventResponder> _eventRespondersById;
 
         public EventService()
         {
-            _eventSubscriptions = new List<SpotlightEventSubscription>();
+            _eventResponders = new Dictionary<SpotlightEventKey, List<SpotlightEventResponder>>();
+            _eventRespondersById = new Dictionary<Guid, SpotlightEventResponder>();
         }
 
-        public void Emit(SpotlightEventType eventType, object data)
+        public void Emit(SpotlightEventType eventType, object data = null)
         {
-            foreach (SpotlightEventSubscription subscription in _eventSubscriptions.Where(subscription => subscription.EventType == eventType))
-            {
-                subscription.Handler(data);
-            }
+            Emit(eventType, null, data);
         }
 
         public void Emit(SpotlightEventType eventType, string identifier, object data = null)
         {
-            foreach (SpotlightEventSubscription subscription in _eventSubscriptions.Where(subscription => subscription.EventType == eventType && subscription.Identifier == identifier))
+            SpotlightEventKey eventKey = new SpotlightEventKey(identifier, eventType);
+
+            if (_eventResponders.ContainsKey(eventKey))
             {
-                subscription.Handler(data);
+                foreach (SpotlightEventResponder eventResponder in _eventResponders[eventKey])
+                {
+                    eventResponder.Responder(data);
+                }
             }
         }
 
 
-        public Guid Subscribe(SpotlightEventType eventType, Action<object> handler)
+        public Guid Subscribe(string identifier, SpotlightEventType eventType, Action<object> eventResponder)
         {
-            SpotlightEventSubscription subscription = new SpotlightEventSubscription(eventType, handler);
-            _eventSubscriptions.Add(subscription);
+            SpotlightEventKey eventKey = new SpotlightEventKey(identifier, eventType);
+            if (!_eventResponders.ContainsKey(eventKey))
+            {
+                _eventResponders.Add(eventKey, new List<SpotlightEventResponder>());
+            }
 
-            return subscription.Id;
+            SpotlightEventResponder responder = new SpotlightEventResponder(eventKey, eventResponder);
+
+            _eventResponders[eventKey].Add(responder);
+            _eventRespondersById[responder.Id] = responder;
+            return responder.Id;
         }
 
         public Guid Subscribe(SpotlightEventType eventType, string identfier, Action<object> handler)
@@ -53,11 +65,9 @@ namespace Spotlight.Services
 
         public void Unsubscribe(Guid subscriptionId)
         {
-            SpotlightEventSubscription subscription = _eventSubscriptions.Where(subscription => subscription.Id == subscriptionId).FirstOrDefault();
-            if (subscription != null)
-            {
-                _eventSubscriptions.Remove(subscription);
-            }
+            SpotlightEventResponder responder = _eventRespondersById[subscriptionId];
+            _eventResponders[responder.EventKey].Remove(responder);
+            _eventRespondersById.Remove(subscriptionId);
         }
     }
 }

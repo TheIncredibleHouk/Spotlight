@@ -9,6 +9,7 @@ namespace Spotlight.Models
     public enum SpotlightEventType
     {
         GraphicsUpdate,
+        ExtraGraphicsUpdate,
         PaletteUpdate,
         ProjectUpdate,
         GameObjectsUpdated

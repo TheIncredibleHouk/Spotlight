@@ -51,7 +51,7 @@ namespace Spotlight
             _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
             _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
             _ProjectPanel.GraphicsEditorClicked += _ProjectPanel_GraphicsEditorClicked;
-            _ProjectPanel.MusicEditorClicked += _ProjectPanel_MusicEditorClicked;
+            //_ProjectPanel.MusicEditorClicked += _ProjectPanel_MusicEditorClicked;
             _ProjectPanel.ExportPaletteClicked += _ProjectPanel_ExportPaletteClicked;
             _ProjectPanel.GenerateMetaDataClicked += _ProjectPanel_GenerateMetaDataClicked;
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
@@ -218,14 +218,14 @@ namespace Spotlight
                 {
                     RomInfo romInfo = _romService.CompileRom(_config.LastRomPath);
 
-                    if (_errorService.CurrentLog.Count > 0)
-                    {
-                        AlertWindow.Alert("Rom compiled but with the following errors: " + string.Join("\n-", _errorService.CurrentLog));
-                    }
-                    else
-                    {
-                        AlertWindow.Alert($"Rom compiled!\nLevels used: {romInfo.LevelsUsed}\nRemaining space: {romInfo.SpaceRemaining} bytes\nRemaining extended space: {romInfo.ExtendedSpaceRemaining} bytes");
-                    }
+                    //if (_errorService.CurrentLog.Count > 0)
+                    //{
+                    //    AlertWindow.Alert("Rom compiled but with the following errors: " + string.Join("\n-", _errorService.CurrentLog));
+                    //}
+                    //else
+                    //{
+                    //    AlertWindow.Alert($"Rom compiled!\nLevels used: {romInfo.LevelsUsed}\nRemaining space: {romInfo.SpaceRemaining} bytes\nRemaining extended space: {romInfo.ExtendedSpaceRemaining} bytes");
+                    //}
 
                     SaveConfiguration();
                 }

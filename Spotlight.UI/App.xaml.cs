@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
+using Spotlight.Services;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -10,6 +13,17 @@ namespace Spotlight
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+        }
+
+        private IServiceProvider ConfigureServices()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddSingleton<IEventService, EventService>();
+            services.AddSingleton<IErrorService, ErrorService>
+        }
     }
 
     public class ComboBoxWidthConverter : IValueConverter

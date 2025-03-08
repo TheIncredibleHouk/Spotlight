@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+using Spotlight.Abstractions;
+using Spotlight.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,21 +13,21 @@ namespace Spotlight.Services
     {
         private List<Tile> _tiles;
         private List<Tile> _extraTiles;
-        private IProjectService _projectService;
         private byte[] _graphicsData;
+
+        private IProjectService _projectService;
+        private IEventService _eventService;
 
         private DateTime _lastGraphicsUpdate;
         private DateTime _lastExtraGraphicsUpdated;
 
-        public delegate void GraphicsUpdatedHandler();
+        
 
-        public event GraphicsUpdatedHandler GraphicsUpdated;
-
-        public event GraphicsUpdatedHandler ExtraGraphicsUpdated;
-
-        public GraphicsService(IProjectService projectService)
+        public GraphicsService(IProjectService projectService, IEventService eventService)
         {
             _projectService = projectService;
+            _eventService = eventService;
+
             LoadGraphics();
             LoadExtraGraphics();
         }
@@ -40,19 +41,13 @@ namespace Spotlight.Services
             if (File.GetLastWriteTime(fileName) > _lastGraphicsUpdate)
             {
                 LoadGraphics();
-                if (GraphicsUpdated != null)
-                {
-                    GraphicsUpdated();
-                }
+                _eventService.Emit(SpotlightEventType.GraphicsUpdate);
             }
 
             if (File.GetLastWriteTime(extraFileName) > _lastExtraGraphicsUpdated)
             {
                 LoadExtraGraphics();
-                if (ExtraGraphicsUpdated != null)
-                {
-                    ExtraGraphicsUpdated();
-                }
+                _eventService.Emit(SpotlightEventType.ExtraGraphicsUpdate);
             }
         }
 
@@ -60,6 +55,7 @@ namespace Spotlight.Services
         {
             Project project = _projectService.GetProject();
             Color[][] rgbPalette = new Color[4][];
+
             for (int i = 0; i < 4; i++)
             {
                 rgbPalette[i] = new Color[4];
@@ -76,6 +72,7 @@ namespace Spotlight.Services
         {
             Project project = _projectService.GetProject();
             Color[] rgbPalette = new Color[4];
+
             for (int j = 0; j < 4; j++)
             {
                 rgbPalette[j] = project.RgbPalette[Int32.Parse(paletteIndex[j], System.Globalization.NumberStyles.HexNumber)];
@@ -92,6 +89,7 @@ namespace Spotlight.Services
         public void LoadGraphics()
         {
             Project project = _projectService.GetProject();
+
             string fileName = project.DirectoryPath + @"\" + project.Name + @".chr";
 
             _lastGraphicsUpdate = File.GetLastWriteTime(fileName);
@@ -151,17 +149,17 @@ namespace Spotlight.Services
         public Tile[] GetExtraTiles()
         {
             return _extraTiles.ToArray();
-        }
-
+        }
+
         public Tile[] GetExtraTilesAtAddress(int address)
         {
-            int tilesSkipped = address / 16;
+            int tilesSkipped = address / 16;
             return _extraTiles.Skip(tilesSkipped).Take(256).ToArray();
-        }
-
+        }
+
         public Tile GetExtraTileAtAddress(int address, int col, int row )
         {
-            int tilesSkipped = address / 16 + (row * 16) + col;
+            int tilesSkipped = address / 16 + (row * 16) + col;
             return _extraTiles.Skip(tilesSkipped).FirstOrDefault();
         }
 
@@ -185,15 +183,15 @@ namespace Spotlight.Services
             return _projectService.GetProject().RgbPalette.ToList();
         }
 
-        public Tile[] GetTilesAtAddress(int address)
-        {
-            int tilesSkipped = address / 16;
-            return _tiles.Skip(tilesSkipped).Take(256).ToArray();
+        public Tile[] GetTilesAtAddress(int address)
+        {
+            int tilesSkipped = address / 16;
+            return _tiles.Skip(tilesSkipped).Take(256).ToArray();
         }
 
         public Tile GetTileAtAddress(int address, int col, int row)
         {
-            int tilesSkipped = address / 16 + (row * 16) + col;
+            int tilesSkipped = address / 16 + (row * 16) + col;
             return _tiles.Skip(tilesSkipped).FirstOrDefault();
         }
     }
