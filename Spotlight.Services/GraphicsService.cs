@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using Spotlight.Abstractions;
 
 namespace Spotlight.Services
 {
-    public class GraphicsService
+    public class GraphicsService : IGraphicsService
     {
         private List<Tile> _tiles;
         private List<Tile> _extraTiles;
-        private Project _project;
+        private IProjectService _projectService;
         private byte[] _graphicsData;
 
         private DateTime _lastGraphicsUpdate;
@@ -23,17 +24,18 @@ namespace Spotlight.Services
 
         public event GraphicsUpdatedHandler ExtraGraphicsUpdated;
 
-        public GraphicsService(Project project)
+        public GraphicsService(IProjectService projectService)
         {
-            _project = project;
+            _projectService = projectService;
             LoadGraphics();
             LoadExtraGraphics();
         }
 
         public void CheckGraphics()
         {
-            string fileName = _project.DirectoryPath + @"\" + _project.Name + @".chr";
-            string extraFileName = _project.DirectoryPath + @"\" + _project.Name + @".extra.chr";
+            Project project = _projectService.GetProject();
+            string fileName = project.DirectoryPath + @"\" + project.Name + @".chr";
+            string extraFileName = project.DirectoryPath + @"\" + project.Name + @".extra.chr";
 
             if (File.GetLastWriteTime(fileName) > _lastGraphicsUpdate)
             {
@@ -56,13 +58,14 @@ namespace Spotlight.Services
 
         public Color[][] GetRgbPalette(Palette palette)
         {
+            Project project = _projectService.GetProject();
             Color[][] rgbPalette = new Color[4][];
             for (int i = 0; i < 4; i++)
             {
                 rgbPalette[i] = new Color[4];
                 for (int j = 0; j < 4; j++)
                 {
-                    rgbPalette[i][j] = _project.RgbPalette[palette.IndexedColors[(i * 4) + j]];
+                    rgbPalette[i][j] = project.RgbPalette[palette.IndexedColors[(i * 4) + j]];
                 }
             }
 
@@ -71,10 +74,11 @@ namespace Spotlight.Services
 
         public Color[] GetRgbPalette(string[] paletteIndex)
         {
+            Project project = _projectService.GetProject();
             Color[] rgbPalette = new Color[4];
             for (int j = 0; j < 4; j++)
             {
-                rgbPalette[j] = _project.RgbPalette[Int32.Parse(paletteIndex[j], System.Globalization.NumberStyles.HexNumber)];
+                rgbPalette[j] = project.RgbPalette[Int32.Parse(paletteIndex[j], System.Globalization.NumberStyles.HexNumber)];
             }
 
             return rgbPalette;
@@ -87,7 +91,8 @@ namespace Spotlight.Services
 
         public void LoadGraphics()
         {
-            string fileName = _project.DirectoryPath + @"\" + _project.Name + @".chr";
+            Project project = _projectService.GetProject();
+            string fileName = project.DirectoryPath + @"\" + project.Name + @".chr";
 
             _lastGraphicsUpdate = File.GetLastWriteTime(fileName);
 
@@ -113,7 +118,8 @@ namespace Spotlight.Services
 
         public void LoadExtraGraphics()
         {
-            string extraFileName = _project.DirectoryPath + @"\" + _project.Name + @".extra.chr";
+            Project project = _projectService.GetProject();
+            string extraFileName = project.DirectoryPath + @"\" + project.Name + @".extra.chr";
 
             _lastExtraGraphicsUpdated = File.GetLastWriteTime(extraFileName);
 
@@ -171,12 +177,12 @@ namespace Spotlight.Services
 
         public Palette GetPalette(int index)
         {
-            return _project.Palettes[index];
+            return _projectService.GetProject().Palettes[index];
         }
 
         public List<Color> GetColors()
         {
-            return _project.RgbPalette.ToList();
+            return _projectService.GetProject().RgbPalette.ToList();
         }
 
         public Tile[] GetTilesAtAddress(int address)

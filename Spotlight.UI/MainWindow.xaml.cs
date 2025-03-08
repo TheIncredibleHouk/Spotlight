@@ -26,12 +26,12 @@ namespace Spotlight
         private GraphicsService _graphicsService;
         private WorldService _worldService;
         private LevelService _levelService;
-        private PalettesService _palettesService;
+        private PaletteService _palettesService;
         private TileService _tileService;
         private TextService _textService;
         private GameObjectService _gameObjectService;
         private RomService _romService;
-        private Project _project;
+        private IProjectService _project;
         private Configuration _config;
         private ClipboardService _clipBoardService;
 
@@ -65,24 +65,24 @@ namespace Spotlight
             }
         }
 
-        private MusicEditor _musicEditor;
-        private void _ProjectPanel_MusicEditorClicked()
-        {
-            if (_musicEditor == null)
-            {
-                _musicEditor = new MusicEditor();
-                _musicEditor.Closed += _musicEditor_Closed;
-                _musicEditor.Show();
-            }
+        //private MusicEditor _musicEditor;
+        //private void _ProjectPanel_MusicEditorClicked()
+        //{
+        //    if (_musicEditor == null)
+        //    {
+        //        _musicEditor = new MusicEditor();
+        //        _musicEditor.Closed += _musicEditor_Closed;
+        //        _musicEditor.Show();
+        //    }
 
-            _musicEditor.Focus();
-        }
+        //    _musicEditor.Focus();
+        //}
 
-        private void _musicEditor_Closed(object sender, EventArgs e)
-        {
-            _musicEditor.Closed -= _musicEditor_Closed;
-            _musicEditor = null;
-        }
+        //private void _musicEditor_Closed(object sender, EventArgs e)
+        //{
+        //    _musicEditor.Closed -= _musicEditor_Closed;
+        //    _musicEditor = null;
+        //}
 
         private void _ProjectPanel_GenerateMetaDataClicked()
         {
@@ -100,8 +100,8 @@ namespace Spotlight
                 Tile[] staticSet = _graphicsService.GetTileSection(level.StaticTileTableIndex);
                 Tile[] animationSet = _graphicsService.GetTileSection(level.AnimationTileTableIndex);
                 LevelRenderer levelRenderer = new LevelRenderer(
-                    new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles()),
-                    new LevelDataAccessor(level),
+                    new GraphicsManager(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles()),
+                    new LevelDataManager(level),
                     _palettesService,
                     _gameObjectService,
                     _tileService.GetTerrain());
@@ -341,7 +341,7 @@ namespace Spotlight
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
-        private void _ProjectPanel_ProjectLoaded(Project project)
+        private void _ProjectPanel_ProjectLoaded(IProjectService project)
         {
             _project = project;
             _projectService = new ProjectService(new ErrorService(), project);

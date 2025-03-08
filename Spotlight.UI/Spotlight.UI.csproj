@@ -42,6 +42,12 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Mushroom Mayhem\**" />
+    <EmbeddedResource Remove="Mushroom Mayhem\**" />
+    <None Remove="Mushroom Mayhem\**" />
+    <Page Remove="Mushroom Mayhem\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Controls\Icons\Save.png" />
     <Resource Include="Controls\Icons\World.png" />
   </ItemGroup>

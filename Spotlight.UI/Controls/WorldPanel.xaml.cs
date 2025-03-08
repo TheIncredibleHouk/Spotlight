@@ -22,7 +22,7 @@ namespace Spotlight
         private World _world;
         private WorldInfo _worldInfo;
         private WorldService _worldService;
-        private PalettesService _palettesService;
+        private PaletteService _palettesService;
         private WorldRenderer _worldRenderer;
         private TileSet _tileSet;
         private TextService _textService;
@@ -30,8 +30,8 @@ namespace Spotlight
         private CompressionService _compressionService;
         private GameObjectService _gameObjectService;
         private TileService _tileService;
-        private GraphicsAccessor _graphicsAccessor;
-        private WorldDataAccessor _worldDataAccessor;
+        private GraphicsManager _graphicsAccessor;
+        private WorldDataManager _worldDataAccessor;
         private WriteableBitmap _bitmap;
         private HistoryService _historyService;
         private List<MapTileInteraction> _interactions;
@@ -42,7 +42,7 @@ namespace Spotlight
 
         private bool _initializing = true;
 
-        public WorldPanel(GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, WorldService worldService, LevelService levelService, GameObjectService gameObjectService, WorldInfo worldInfo)
+        public WorldPanel(GraphicsService graphicsService, PaletteService palettesService, TextService textService, TileService tileService, WorldService worldService, LevelService levelService, GameObjectService gameObjectService, WorldInfo worldInfo)
         {
             InitializeComponent();
 
@@ -62,8 +62,8 @@ namespace Spotlight
             Tile[] bottomTableSet = _graphicsService.GetTileSection(_world.TileTableIndex);
             Tile[] topTableSet = _graphicsService.GetTileSection(_world.AnimationTileTableIndex);
 
-            _graphicsAccessor = new GraphicsAccessor(topTableSet, bottomTableSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
-            _worldDataAccessor = new WorldDataAccessor(_world);
+            _graphicsAccessor = new GraphicsManager(topTableSet, bottomTableSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _worldDataAccessor = new WorldDataManager(_world);
 
             _bitmap = new WriteableBitmap(WorldRenderer.BITMAP_WIDTH, WorldRenderer.BITMAP_HEIGHT, 96, 96, PixelFormats.Bgra32, null);
             _worldRenderer = new WorldRenderer(_graphicsAccessor, _worldDataAccessor, _palettesService, _tileService.GetMapTileInteractions());

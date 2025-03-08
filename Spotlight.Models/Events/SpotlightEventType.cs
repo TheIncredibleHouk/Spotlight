@@ -10,6 +10,7 @@ namespace Spotlight.Models
     {
         GraphicsUpdate,
         PaletteUpdate,
-        ProjectUpdate
+        ProjectUpdate,
+        GameObjectsUpdated
     }
 }

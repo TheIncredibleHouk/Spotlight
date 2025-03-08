@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Drawing;
-using System.Windows;
+
+using Spotlight.Abstractions;
 
 namespace Spotlight.Services
 {
-    public class WorldDataAccessor
+    public class WorldDataManager : IWorldDataManager
     {
         private int[] _tileData;
         private List<WorldObject> _worldObjects;
@@ -15,7 +15,7 @@ namespace Spotlight.Services
 
         private const int DATA_ROW_LENGTH = 4 * 16;
 
-        public WorldDataAccessor(World _world)
+        public WorldDataManager(World _world)
         {
             _tileData = _world.TileData;
             _pointers = _world.Pointers;

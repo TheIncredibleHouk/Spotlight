@@ -1,9 +1,10 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using System.Collections.Generic;
 
 namespace Spotlight.Services
 {
-    public class HistoryService
+    public class HistoryService : IHistoryService
     {
         public HistoryService()
         {

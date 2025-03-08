@@ -4,17 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
+using Spotlight.Abstractions;
 
 namespace Spotlight.Services
 {
-    public class GameObjectService
+    public class GameObjectService : IGameObjectService
     {
         public delegate void GameObjectEventHandler(GameObject gameObject);
 
         public event GameObjectEventHandler GameObjectUpdated;
 
-        private readonly ErrorService _errorService;
-        private readonly Project _project;
+        private readonly IErrorService _errorService;
+        private readonly IProjectService _projectService;
 
         private static Dictionary<char, int> hexToSprite = new Dictionary<char, int>()
         {
@@ -65,12 +66,12 @@ namespace Spotlight.Services
         public GameObjectTable GameObjectTable { get; private set; }
         private GameObject[] localGameObjects;
 
-        public GameObjectService(ErrorService errorService, Project project)
+        public GameObjectService(IErrorService errorService, IProjectService projectService)
         {
             _errorService = errorService;
-            _project = project;
+            _projectService = projectService;
             GameObjectTable = new GameObjectTable();
-            localGameObjects = JsonConvert.DeserializeObject<GameObject[]>(JsonConvert.SerializeObject(_project.GameObjects));
+            localGameObjects = JsonConvert.DeserializeObject<GameObject[]>(JsonConvert.SerializeObject(_projectService.GetProject().GameObjects));
 
             for (int i = 0; i < localGameObjects.Length; i++)
             {
@@ -120,22 +121,22 @@ namespace Spotlight.Services
             };
         }
 
-        public List<string> GetGroups(GameObjectType type)
+        public List<string> GetObjectGroups(GameObjectType type)
         {
             return GameObjectTable.ObjectTable[type].Keys.ToList();
         }
 
-        public List<LevelObject> GetObjects(GameObjectType type, string group)
+        public List<LevelObject> GetObjectsByGroup(GameObjectType type, string group)
         {
             return GameObjectTable.ObjectTable[type][group];
         }
 
-        public List<GameObject> GetObjects(IEnumerable<int> gameObjectIds)
+        public List<GameObject> GetObjectsByIds(IEnumerable<int> gameObjectIds)
         {
             return localGameObjects.Where(gameObject => gameObjectIds.Contains(gameObject.GameId)).ToList();
         }
 
-        public GameObject GetObject(int gameObjectId)
+        public GameObject GetObjectById(int gameObjectId)
         {
             return localGameObjects[gameObjectId];
         }
@@ -157,7 +158,7 @@ namespace Spotlight.Services
             Dictionary<GameObjectType, Dictionary<string, int>> nextY = new Dictionary<GameObjectType, Dictionary<string, int>>();
             Dictionary<GameObjectType, Dictionary<string, int>> maxHeight = new Dictionary<GameObjectType, Dictionary<string, int>>();
 
-            foreach (GameObject gameObject in _project.GameObjects.Where(g => g != null).OrderBy(g => g.Name))
+            foreach (GameObject gameObject in _projectService.GetProject().GameObjects.Where(g => g != null).OrderBy(g => g.Name))
             {
                 if (!nextX.ContainsKey(gameObject.GameObjectType))
                 {
@@ -232,7 +233,7 @@ namespace Spotlight.Services
 
         public void CommitGameObject(GameObject gameObject)
         {
-            GameObject globalGameObject = _project.GameObjects[gameObject.GameId];
+            GameObject globalGameObject = _projectService.GetProject().GameObjects[gameObject.GameId];
             globalGameObject.Name = gameObject.Name;
             globalGameObject.Group = gameObject.Group;
             globalGameObject.GameObjectType = gameObject.GameObjectType;
@@ -246,19 +247,19 @@ namespace Spotlight.Services
             }
         }
 
-        public IEnumerable<LevelInfo> FindInLevels(GameObject gameObject)
-        {
-            List<LevelInfo> foundLevels = new List<LevelInfo>();
-            LevelService levelService = new LevelService(_errorService, _project, null);
-            foreach(LevelInfo levelInfo in levelService.AllLevels())
-            {
-                if(levelService.LoadLevel(levelInfo).ObjectData.Exists(obj => obj.GameObjectId == gameObject.GameId))
-                {
-                    foundLevels.Add(levelInfo);
-                }
-            }
+        //public IEnumerable<LevelInfo> FindInLevels(GameObject gameObject)
+        //{
+        //    List<LevelInfo> foundLevels = new List<LevelInfo>();
+        //    LevelService levelService = new LevelService(_errorService, _project, null);
+        //    foreach(LevelInfo levelInfo in levelService.AllLevels())
+        //    {
+        //        if(levelService.LoadLevel(levelInfo).ObjectData.Exists(obj => obj.GameObjectId == gameObject.GameId))
+        //        {
+        //            foundLevels.Add(levelInfo);
+        //        }
+        //    }
 
-            return foundLevels;
-        }
+        //    return foundLevels;
+        //}
     }
 }

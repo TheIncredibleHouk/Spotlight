@@ -15,10 +15,10 @@ namespace Spotlight.Renderers
     {
         private byte[] _buffer;
 
-        private PalettesService _palettesService;
+        private PaletteService _palettesService;
         private PaletteType _paletteType;
 
-        public PaletteRenderer(PalettesService paletteService, PaletteType paletteType) : base(null)
+        public PaletteRenderer(PaletteService paletteService, PaletteType paletteType) : base(null)
         {
             _buffer = new byte[256 * (paletteType == PaletteType.Full ? 64 : 32) * BYTES_PER_BLOCK];
             _paletteType = paletteType;

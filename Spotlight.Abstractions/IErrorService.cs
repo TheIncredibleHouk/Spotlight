@@ -9,7 +9,7 @@ namespace Spotlight.Abstractions
     public interface IErrorService
     {
         void LogError(string message);
-        void LogError(Exception exception, string message);
+        void LogError(Exception exception, string message = null);
         void Clear();
     }
 }

@@ -23,10 +23,10 @@ namespace Spotlight
         private GraphicsService _graphicsService;
         private TileService _tileService;
         private TextService _textService;
-        private GraphicsAccessor _graphicsAccessor;
+        private GraphicsManager _graphicsAccessor;
         private WorldService _worldService;
         private LevelService _levelService;
-        private PalettesService _palettesService;
+        private PaletteService _palettesService;
         private TileSetRenderer _tileSetRenderer;
         private GraphicsSetRender _graphicsSetRenderer;
         private WriteableBitmap _graphicsSetBitmap;
@@ -35,7 +35,7 @@ namespace Spotlight
         private List<LevelInfo> _levelInfos;
         private List<WorldInfo> _worldInfos;
 
-        public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, TextService textService)
+        public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, PaletteService palettesService, TileService tileService, TextService textService)
         {
             _ignoreChanges = true;
             InitializeComponent();
@@ -59,7 +59,7 @@ namespace Spotlight
             _levelInfos = _levelService.AllLevels();
             _worldInfos = _worldService.AllWorlds();
 
-            _graphicsAccessor = new GraphicsAccessor(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _graphicsAccessor = new GraphicsManager(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
 
             _graphicsSetRenderer = new GraphicsSetRender(_graphicsAccessor);
             _tileSetRenderer = new TileSetRenderer(_graphicsAccessor, _localTileTerrain, _localMapTileInteraction);

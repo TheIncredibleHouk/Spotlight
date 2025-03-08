@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Services;
 using System.Drawing;
 using System.Windows;
@@ -10,11 +11,11 @@ namespace Spotlight.Renderers
         public bool RenderGrid { get; set; }
         public bool ScreenBorders { get; set; }
 
-        protected GraphicsAccessor _graphicsAccessor;
+        protected IGraphicsManager _graphicsManager;
 
-        public Renderer(GraphicsAccessor graphicsAccessor)
+        public Renderer(IGraphicsManager graphicsAccessor)
         {
-            _graphicsAccessor = graphicsAccessor;
+            _graphicsManager = graphicsAccessor;
         }
 
         protected bool _initializing;

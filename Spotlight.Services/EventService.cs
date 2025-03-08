@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -11,27 +12,52 @@ namespace Spotlight.Services
 {
     public class EventService : IEventService
     {
-        private Dictionary<string, Func<SpotlightEvent, object>> _eventResponders;
+        private List<SpotlightEventSubscription> _eventSubscriptions;
 
         public EventService()
         {
-            _eventResponders = new Dictionary<string, Func<SpotlightEvent, object>>();
+            _eventSubscriptions = new List<SpotlightEventSubscription>();
         }
 
-        public void Emit(string identifier, SpotlightEventType eventType, object data = null)
+        public void Emit(SpotlightEventType eventType, object data)
         {
-            throw new NotImplementedException();
+            foreach (SpotlightEventSubscription subscription in _eventSubscriptions.Where(subscription => subscription.EventType == eventType))
+            {
+                subscription.Handler(data);
+            }
+        }
+
+        public void Emit(SpotlightEventType eventType, string identifier, object data = null)
+        {
+            foreach (SpotlightEventSubscription subscription in _eventSubscriptions.Where(subscription => subscription.EventType == eventType && subscription.Identifier == identifier))
+            {
+                subscription.Handler(data);
+            }
         }
 
 
-        public Guid Subscribe(string identifier, SpotlightEventType eventType)
+        public Guid Subscribe(SpotlightEventType eventType, Action<object> handler)
         {
-            throw new NotImplementedException();
+            SpotlightEventSubscription subscription = new SpotlightEventSubscription(eventType, handler);
+            _eventSubscriptions.Add(subscription);
+
+            return subscription.Id;
+        }
+
+        public Guid Subscribe(SpotlightEventType eventType, string identfier, Action<object> handler)
+        {
+            SpotlightEventSubscription subscription = new SpotlightEventSubscription(eventType, handler, identfier);
+
+            return subscription.Id; ;
         }
 
         public void Unsubscribe(Guid subscriptionId)
         {
-            throw new NotImplementedException();
+            SpotlightEventSubscription subscription = _eventSubscriptions.Where(subscription => subscription.Id == subscriptionId).FirstOrDefault();
+            if (subscription != null)
+            {
+                _eventSubscriptions.Remove(subscription);
+            }
         }
     }
 }

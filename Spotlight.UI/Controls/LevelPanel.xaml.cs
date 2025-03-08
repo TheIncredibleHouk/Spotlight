@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
@@ -21,25 +22,27 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for LevelPanel.xaml
     /// </summary>
-    public partial class LevelPanel : UserControl, IDetachEvents, IKeyDownHandler
+    public partial class LevelPanel : UserControl, IKeyDownHandler
     {
+        private ILevelService _levelService;
+        private IPaletteService _palettesService;
+        private ITextService _textService;
+        private IGraphicsService _graphicsService;
+        private ITileService _tileService;
+        private ICompressionService _compressionService;
+        private IGameObjectService _gameObjectService;
+        private IGraphicsManager _graphicsManager;
+        private ILevelDataManager _levelDataManager;
+        private IHistoryService _historyService;
+        private IClipboardService _clipBoardService;
+        private IEventService _eventService;
+
         private Level _level;
         private LevelInfo _levelInfo;
-        private LevelService _levelService;
-        private PalettesService _palettesService;
         private LevelRenderer _levelRenderer;
         private TileSet _tileSet;
-        private TextService _textService;
-        private GraphicsService _graphicsService;
-        private TileService _tileService;
-        private CompressionService _compressionService;
-        private GameObjectService _gameObjectService;
-        private GraphicsAccessor _graphicsAccessor;
-        private LevelDataAccessor _levelDataAccessor;
         private WriteableBitmap _bitmap;
         private WriteableBitmap _cursorBitmap;
-        private HistoryService _historyService;
-        private ClipboardService _clipBoardService;
         private List<TileTerrain> _terrain;
 
         public delegate void LevelEditorExitSelectedHandled(int x, int y);
@@ -47,26 +50,41 @@ namespace Spotlight
         public event LevelEditorExitSelectedHandled LevelEditorExitSelected;
 
         private bool _initializing = true;
+        private List<Guid> _subscriptions;
 
-        public LevelPanel(ProjectService projectService, GraphicsService graphicsService, PalettesService palettesService, TextService textService, TileService tileService, GameObjectService gameObjectService, LevelService levelService, ClipboardService clipBoardService, LevelInfo levelInfo)
+        public LevelPanel(IProjectService projectService,
+                        IGraphicsService graphicsService,
+                        IPaletteService palettesService,
+                        ITextService textService,
+                        ITileService tileService,
+                        IGameObjectService gameObjectService,
+                        ILevelService levelService,
+                        IClipboardService clipBoardService,
+                        IHistoryService historyService,
+                        ICompressionService compressionService,
+                        IEventService eventService)
         {
             InitializeComponent();
 
-            _levelInfo = levelInfo;
+            
             _textService = textService;
             _graphicsService = graphicsService;
             _gameObjectService = gameObjectService;
             _tileService = tileService;
             _palettesService = palettesService;
             _levelService = levelService;
-            _historyService = new HistoryService();
-            _compressionService = new CompressionService();
+            _historyService = historyService;
+            _compressionService = compressionService;
             _clipBoardService = clipBoardService;
+            _eventService = eventService;
+
+            _subscriptions = new List<Guid>();
+
             _terrain = _tileService.GetTerrain();
             _level = _levelService.LoadLevel(_levelInfo);
 
-            _level.FirstObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
-            _level.SecondObjectData.ForEach(o => o.GameObject = gameObjectService.GetObject(o.GameObjectId));
+            _level.FirstObjectData.ForEach(o => o.GameObject = gameObjectService.GetObjectById(o.GameObjectId));
+            _level.SecondObjectData.ForEach(o => o.GameObject = gameObjectService.GetObjectById(o.GameObjectId));
 
             _level.FirstObjectData.Insert(0, new LevelObject()
             {
@@ -78,14 +96,14 @@ namespace Spotlight
             Tile[] staticSet = _graphicsService.GetTileSection(_level.StaticTileTableIndex);
             Tile[] animationSet = _graphicsService.GetTileSection(_level.AnimationTileTableIndex);
 
-            _graphicsAccessor = new GraphicsAccessor(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _graphicsManager = new GraphicsManager(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
 
-            _levelDataAccessor = new LevelDataAccessor(_level, _tileSet);
+            _levelDataManager = new LevelDataManager(_level, _tileSet);
 
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-            _levelRenderer = new LevelRenderer(_graphicsAccessor, _levelDataAccessor, _palettesService, _gameObjectService, _tileService.GetTerrain());
+            _levelRenderer = new LevelRenderer(_graphicsManager, _levelDataManager, _palettesService, _gameObjectService, _tileService.GetTerrain());
             _levelRenderer.Initializing();
 
             Palette palette = _palettesService.GetPalette(_level.PaletteId);
@@ -113,8 +131,8 @@ namespace Spotlight
 
             SelectedEditMode.SelectedIndex = SelectedDrawMode.SelectedIndex = 0;
 
-            TileSelector.Initialize(_graphicsAccessor, _tileService, _tileSet, palette);
-            ObjectSelector.Initialize(_gameObjectService, _palettesService, _graphicsAccessor, palette);
+            TileSelector.Initialize(_graphicsManager, _tileService, _tileSet, palette);
+            ObjectSelector.Initialize(_gameObjectService, _palettesService, _eventService, _graphicsManager, palette);
             PointerEditor.Initialize(_levelService, _levelInfo);
 
             UpdateTextTables();
@@ -135,6 +153,11 @@ namespace Spotlight
             Update();
         }
 
+        public void LoadLevel(LevelInfo levelInfo)
+        {
+            _levelInfo = levelInfo;
+        }
+
         private void _levelService_LevelUpdated(LevelInfo levelInfo)
         {
             if (levelInfo.Id == _level.Id)
@@ -149,16 +172,16 @@ namespace Spotlight
             TileSelector.Update(_tileSet);
         }
 
-        public void DetachEvents()
-        {
-            _gameObjectService.GameObjectUpdated -= GameObjectService_GameObjectsUpdated;
-            ObjectSelector.GameObjectDoubleClicked -= ObjectSelector_GameObjectDoubleClicked;
-            _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
-            _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
-            _palettesService.PalettesChanged -= _palettesService_PalettesChanged;
-            _levelService.LevelUpdated -= _levelService_LevelUpdated;
-            ObjectSelector.DetachEvents();
-        }
+        //public void DetachEvents()
+        //{
+        //    _gameObjectService.GameObjectUpdated -= GameObjectService_GameObjectsUpdated;
+        //    ObjectSelector.GameObjectDoubleClicked -= ObjectSelector_GameObjectDoubleClicked;
+        //    _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
+        //    _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
+        //    _palettesService.PalettesChanged -= _palettesService_PalettesChanged;
+        //    _levelService.LevelUpdated -= _levelService_LevelUpdated;
+        //    ObjectSelector.DetachEvents();
+        //}
 
         private void _palettesService_PalettesChanged()
         {
@@ -176,9 +199,9 @@ namespace Spotlight
 
         private void _graphicsService_GraphicsUpdated()
         {
-            _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
-            _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
-            _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _graphicsManager.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
+            _graphicsManager.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+            _graphicsManager.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             TileSelector.Update();
             Update();
         }
@@ -361,7 +384,7 @@ namespace Spotlight
                 CursorImage.Opacity = .75;
 
                 int x = (int)(clickPoint.X / 16), y = (int)(clickPoint.Y / 16);
-                int tileValue = _levelDataAccessor.GetData(x, y);
+                int tileValue = _levelDataManager.GetData(x, y);
 
                 if (Keyboard.Modifiers == ModifierKeys.Shift || Keyboard.Modifiers == ModifierKeys.Control)
                 {
@@ -386,13 +409,13 @@ namespace Spotlight
                         {
                             for (int col = 0; col < Level.BLOCK_WIDTH; col++)
                             {
-                                tileChange.Data[col, row] = _levelDataAccessor.GetData(col, row);
+                                tileChange.Data[col, row] = _levelDataManager.GetData(col, row);
                             }
                         }
 
                         _historyService.UndoTiles.Push(tileChange);
 
-                        _levelDataAccessor.ReplaceValue(tileValue, TileSelector.SelectedBlockValue);
+                        _levelDataManager.ReplaceValue(tileValue, TileSelector.SelectedBlockValue);
                         Update();
                     }
                 }
@@ -401,7 +424,7 @@ namespace Spotlight
                     Stack<Point> stack = new Stack<Point>();
                     stack.Push(new Point(x, y));
 
-                    int checkValue = _levelDataAccessor.GetData(x, y);
+                    int checkValue = _levelDataManager.GetData(x, y);
                     if (checkValue == TileSelector.SelectedBlockValue)
                     {
                         return;
@@ -421,9 +444,9 @@ namespace Spotlight
                         int j = (int)(point.Y);
                         int currentTileValue;
 
-                        if (checkValue == (currentTileValue = _levelDataAccessor.GetData(i, j)) && currentTileValue > -1)
+                        if (checkValue == (currentTileValue = _levelDataManager.GetData(i, j)) && currentTileValue > -1)
                         {
-                            _levelDataAccessor.SetData(i, j, TileSelector.SelectedBlockValue);
+                            _levelDataManager.SetData(i, j, TileSelector.SelectedBlockValue);
 
                             if (i < lowestX)
                             {
@@ -455,7 +478,7 @@ namespace Spotlight
                     {
                         for (int i = 0, col = lowestX; col <= highestX; col++, i++)
                         {
-                            tileChange.Data[i, j] = _levelDataAccessor.GetData(col, row) == TileSelector.SelectedBlockValue ? checkValue : -1;
+                            tileChange.Data[i, j] = _levelDataManager.GetData(col, row) == TileSelector.SelectedBlockValue ? checkValue : -1;
                         }
                     }
 
@@ -707,7 +730,7 @@ namespace Spotlight
             }
 
             int blockX = (int)tilePoint.X / 16, blockY = (int)tilePoint.Y / 16;
-            int tileValue = _levelDataAccessor.GetData(blockX, blockY);
+            int tileValue = _levelDataManager.GetData(blockX, blockY);
             if (tileValue == -1)
             {
                 InteractionDescription.Text = "";
@@ -909,8 +932,8 @@ namespace Spotlight
                 {
                     for (int c = startX, x = 0; c < endX; c++, x++)
                     {
-                        tileChange.Data[x, y] = _copyBuffer[x, y] = _levelDataAccessor.GetData(c, r);
-                        _levelDataAccessor.SetData(c, r, 0x41);
+                        tileChange.Data[x, y] = _copyBuffer[x, y] = _levelDataManager.GetData(c, r);
+                        _levelDataManager.SetData(c, r, 0x41);
                     }
                 }
 
@@ -925,7 +948,7 @@ namespace Spotlight
 
                 _selectionMode = SelectionMode.SetTiles;
                 CursorImage.Opacity = .75;
-                _clipBoardService.ClipBoardItem = new ClipboardItem(_copyBuffer, ClipBoardItemType.TileBuffer);
+                _clipBoardService.SetClipboard(new ClipboardItem(_copyBuffer, ClipBoardItemType.TileBuffer));
             }
         }
 
@@ -944,8 +967,8 @@ namespace Spotlight
                 {
                     for (int c = startX, x = 0; c < endX; c++, x++)
                     {
-                        tileChange.Data[x, y] = _levelDataAccessor.GetData(c, r);
-                        _levelDataAccessor.SetData(c, r, 0x41);
+                        tileChange.Data[x, y] = _levelDataManager.GetData(c, r);
+                        _levelDataManager.SetData(c, r, 0x41);
                     }
                 }
 
@@ -974,22 +997,24 @@ namespace Spotlight
                 {
                     for (int c = startX, x = 0; c < endX; c++, x++)
                     {
-                        _copyBuffer[x, y] = _levelDataAccessor.GetData(c, r);
+                        _copyBuffer[x, y] = _levelDataManager.GetData(c, r);
                     }
                 }
 
                 _selectionMode = SelectionMode.SetTiles;
                 CursorImage.Opacity = .75;
-                SetSelectionRectangle(new Rectangle((int) _dragStartPoint.X, (int) _dragStartPoint.Y, 16, 16));
-                _clipBoardService.ClipBoardItem = new ClipboardItem(_copyBuffer, ClipBoardItemType.TileBuffer);
+                SetSelectionRectangle(new Rectangle((int)_dragStartPoint.X, (int)_dragStartPoint.Y, 16, 16));
+                _clipBoardService.SetClipboard(new ClipboardItem(_copyBuffer, ClipBoardItemType.TileBuffer));
             }
         }
 
         private void PasteSelection()
         {
-            if (_clipBoardService.ClipBoardItem != null && _clipBoardService.ClipBoardItem.Type == ClipBoardItemType.TileBuffer)
+            ClipboardItem clipboardItem = _clipBoardService.GetClipboard();
+
+            if (clipboardItem.Type == ClipBoardItemType.TileBuffer)
             {
-                int[,] _copyBuffer = (int[,])_clipBoardService.ClipBoardItem.Data;
+                int[,] _copyBuffer = (int[,])clipboardItem.Data;
                 int startX = (int)((Canvas.GetLeft(SelectionRectangle) + 2) / 16);
                 int endX = (int)((SelectionRectangle.Width - 4) / 16) + startX;
                 int startY = (int)((Canvas.GetTop(SelectionRectangle) + 2) / 16);
@@ -1018,8 +1043,8 @@ namespace Spotlight
                     {
                         for (int c = startX, x = 0; x < bufferWidth; c++, x++)
                         {
-                            tileChange.Data[x, y] = _levelDataAccessor.GetData(c, r);
-                            _levelDataAccessor.SetData(c, r, _copyBuffer[x % bufferWidth, y % bufferHeight]);
+                            tileChange.Data[x, y] = _levelDataManager.GetData(c, r);
+                            _levelDataManager.SetData(c, r, _copyBuffer[x % bufferWidth, y % bufferHeight]);
                         }
                     }
 
@@ -1033,9 +1058,9 @@ namespace Spotlight
                     {
                         for (int c = startX, x = 0; c < endX; c++, x++)
                         {
-                            tileChange.Data[x, y] = _levelDataAccessor.GetData(c, r);
+                            tileChange.Data[x, y] = _levelDataManager.GetData(c, r);
 
-                            _levelDataAccessor.SetData(c, r, _copyBuffer[x % bufferWidth, y % bufferHeight]);
+                            _levelDataManager.SetData(c, r, _copyBuffer[x % bufferWidth, y % bufferHeight]);
                         }
                     }
 
@@ -1049,7 +1074,7 @@ namespace Spotlight
 
                 _selectionMode = SelectionMode.SetTiles;
                 CursorImage.Opacity = .75;
-                SetSelectionRectangle(new Rectangle((int) _dragStartPoint.X, (int) _dragStartPoint.Y, 16, 16));
+                SetSelectionRectangle(new Rectangle((int)_dragStartPoint.X, (int)_dragStartPoint.Y, 16, 16));
             }
         }
 
@@ -1149,8 +1174,8 @@ namespace Spotlight
                 {
                     if (tileChange.Data[i, j] > -1)
                     {
-                        reverseTileChange.Data[i, j] = _levelDataAccessor.GetData(c, r);
-                        _levelDataAccessor.SetData(c, r, tileChange.Data[i, j]);
+                        reverseTileChange.Data[i, j] = _levelDataManager.GetData(c, r);
+                        _levelDataManager.SetData(c, r, tileChange.Data[i, j]);
                     }
                 }
             }
@@ -1185,7 +1210,7 @@ namespace Spotlight
                 objectChange.OriginalObject.X = objectChange.X;
                 objectChange.OriginalObject.Y = objectChange.Y;
                 objectChange.OriginalObject.GameObjectId = objectChange.GameId;
-                objectChange.OriginalObject.GameObject = _gameObjectService.GetObject(objectChange.GameId);
+                objectChange.OriginalObject.GameObject = _gameObjectService.GetObjectById(objectChange.GameId);
                 objectChange.OriginalObject.Property = objectChange.Property;
                 updateRects.Add(objectChange.OriginalObject.CalcVisualBox(true));
                 _selectedObject = objectChange.OriginalObject;
@@ -1218,8 +1243,8 @@ namespace Spotlight
                     {
                         for (int r = rowStart, j = 0; r <= rowEnd; r++, j++)
                         {
-                            tileChange.Data[i, j] = _levelDataAccessor.GetData(c, r);
-                            _levelDataAccessor.SetData(c, r, TileSelector.SelectedBlockValue);
+                            tileChange.Data[i, j] = _levelDataManager.GetData(c, r);
+                            _levelDataManager.SetData(c, r, TileSelector.SelectedBlockValue);
                         }
                     }
 
@@ -1227,7 +1252,7 @@ namespace Spotlight
                     _historyService.RedoTiles.Clear();
 
                     Update(new Rectangle(columnStart * 16, rowStart * 16, (columnEnd - columnStart + 1) * 16, (rowEnd - rowStart + 1) * 16));
-                    SetSelectionRectangle(new Rectangle((int) mousePoint.X, (int) mousePoint.Y, 16, 16));
+                    SetSelectionRectangle(new Rectangle((int)mousePoint.X, (int)mousePoint.Y, 16, 16));
                 }
             }
         }
@@ -1355,7 +1380,7 @@ namespace Spotlight
         private void AnimationType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _level.AnimationType = int.Parse(AnimationType.SelectedValue.ToString());
-            _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
+            _graphicsManager.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
             TileSelector.Update();
             Update();
         }
@@ -1363,7 +1388,7 @@ namespace Spotlight
         private void GraphicsSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _level.StaticTileTableIndex = int.Parse(GraphicsSet.SelectedValue.ToString(), System.Globalization.NumberStyles.HexNumber);
-            _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
+            _graphicsManager.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
             TileSelector.Update();
             Update();
         }
@@ -1649,13 +1674,13 @@ namespace Spotlight
             if (_editMode != EditMode.PSwitchView)
             {
                 _editMode = EditMode.PSwitchView;
-                _levelDataAccessor.PSwitchActive = true;
+                _levelDataManager.PSwitchActive = true;
                 ShowPSwitch.IsChecked = true;
             }
             else
             {
                 _editMode = EditMode.Tiles;
-                _levelDataAccessor.PSwitchActive = false;
+                _levelDataManager.PSwitchActive = false;
                 ShowPSwitch.IsChecked = false;
             }
 
@@ -1789,7 +1814,7 @@ namespace Spotlight
                         _isDragging = false;
                         _selectionMode = SelectionMode.SetTiles;
                         CursorImage.Opacity = .75;
-                        SetSelectionRectangle(new Rectangle((int) _dragStartPoint.X, (int) _dragStartPoint.Y, 16, 16));
+                        SetSelectionRectangle(new Rectangle((int)_dragStartPoint.X, (int)_dragStartPoint.Y, 16, 16));
                     }
                     break;
             }

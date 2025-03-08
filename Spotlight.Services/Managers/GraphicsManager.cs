@@ -1,14 +1,15 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 
 namespace Spotlight.Services
 {
-    public class GraphicsAccessor
+    public class GraphicsManager : IGraphicsManager
     {
         private Tile[] _relativeTable;
         private Tile[] _globalTable;
         private Tile[] _overlayTable;
 
-        public GraphicsAccessor(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
+        public GraphicsManager(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
         {
             _relativeTable = new Tile[256];
             for (int i = 0; i < 128; i++)
@@ -21,13 +22,13 @@ namespace Spotlight.Services
             _overlayTable = overlayTable;
         }
 
-        public GraphicsAccessor(Tile[] globalTable, Tile[] extraTable)
+        public GraphicsManager(Tile[] globalTable, Tile[] extraTable)
         {
             _globalTable = globalTable;
             _overlayTable = extraTable;
         }
 
-        public GraphicsAccessor(Tile[] fullTable)
+        public GraphicsManager(Tile[] fullTable)
         {
             _relativeTable = new Tile[256];
 

@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,26 +8,26 @@ using System.Linq;
 
 namespace Spotlight.Services
 {
-    public class PalettesService
+    public class PaletteService : IPaletteService
     {
-        private ErrorService _errorService;
-        private Project _project;
+        private IErrorService _errorService;
+        private IProjectService _projectService;
 
         public delegate void PaletteServiceEventHandler();
 
         public event PaletteServiceEventHandler PalettesChanged;
 
-        public PalettesService(ErrorService errorService, Project project)
+        public PaletteService(IErrorService errorService, IProjectService projectService)
         {
             _errorService = errorService;
-            _project = project;
+            _projectService = projectService;
 
             CacheRgbPalettes();
         }
 
         public void CommitPalette(Palette palette)
         {
-            Palette commitPalette = _project.Palettes.Where(p => p.Id == palette.Id).FirstOrDefault();
+            Palette commitPalette = _projectService.GetProject().Palettes.Where(p => p.Id == palette.Id).FirstOrDefault();
 
             if (commitPalette != null)
             {
@@ -56,7 +57,7 @@ namespace Spotlight.Services
             palette.Id = Guid.NewGuid();
             CacheRgbPalettes(palette);
 
-            _project.Palettes.Add(palette);
+            _projectService.GetProject().Palettes.Add(palette);
 
             if (PalettesChanged != null)
             {
@@ -68,10 +69,11 @@ namespace Spotlight.Services
 
         public void RemovePalette(Palette palette)
         {
-            Palette foundPalette = _project.Palettes.Where(p => p.Id == palette.Id).FirstOrDefault();
+            Project project = _projectService.GetProject();
+            Palette foundPalette = project.Palettes.Where(p => p.Id == palette.Id).FirstOrDefault();
             if (foundPalette != null)
             {
-                _project.Palettes.Remove(foundPalette);
+                project.Palettes.Remove(foundPalette);
             }
 
             if (PalettesChanged != null)
@@ -82,12 +84,12 @@ namespace Spotlight.Services
 
         public List<Palette> GetPalettes()
         {
-            return _project.Palettes.ToList();
+            return _projectService.GetProject().Palettes.ToList();
         }
 
         public void CacheRgbPalettes()
         {
-            foreach (var palette in _project.Palettes)
+            foreach (var palette in _projectService.GetProject().Palettes)
             {
                 for (int i = 0; i < 8; i++)
                 {
@@ -101,6 +103,7 @@ namespace Spotlight.Services
 
         public void CacheRgbPalettes(Palette palette)
         {
+            Project project = _projectService.GetProject();
             palette.IndexedColors[0x11] = 0x0F;
             palette.IndexedColors[0x12] = 0x36;
             palette.IndexedColors[0x13] = 0x06;
@@ -111,17 +114,19 @@ namespace Spotlight.Services
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    palette.RgbColors[i][j] = _project.RgbPalette[palette.IndexedColors[paletteIndex++]];
+                    palette.RgbColors[i][j] = project.RgbPalette[palette.IndexedColors[paletteIndex++]];
                 }
             }
         }
 
         public Palette GetPalette(Guid paletteId)
         {
-            Palette returnedPalette = _project.Palettes.Where(p => p.Id == paletteId).FirstOrDefault();
+            Project project = _projectService.GetProject();
+
+            Palette returnedPalette = project.Palettes.Where(p => p.Id == paletteId).FirstOrDefault();
             if (returnedPalette == null)
             {
-                returnedPalette = _project.Palettes[0];
+                returnedPalette = project.Palettes[0];
             }
 
             return returnedPalette;
@@ -131,12 +136,14 @@ namespace Spotlight.Services
         {
             get
             {
-                return _project.RgbPalette;
+                return _projectService.GetProject().RgbPalette;
             }
         }
 
         public Color[] GetRgbPalette(string[] paletteIndex)
         {
+            Project project = _projectService.GetProject();
+
             Color[] rgbPalette = new Color[4];
             for (int j = 0; j < 4; j++)
             {
@@ -149,7 +156,7 @@ namespace Spotlight.Services
                 {
                 }
 
-                rgbPalette[j] = _project.RgbPalette[colorIndex];
+                rgbPalette[j] = project.RgbPalette[colorIndex];
             }
 
             return rgbPalette;
@@ -157,7 +164,7 @@ namespace Spotlight.Services
 
         public void CommitRgbPalette(Color[] rgbPalette)
         {
-            _project.RgbPalette = rgbPalette;
+            _projectService.GetProject().RgbPalette = rgbPalette;
             CacheRgbPalettes();
             if (PalettesChanged != null)
             {
@@ -169,7 +176,7 @@ namespace Spotlight.Services
         {
             byte[] outputBytes = new byte[3 * 0x40];
             int byteCounter = 0;
-            foreach(Color c in _project.RgbPalette)
+            foreach (Color c in _projectService.GetProject().RgbPalette)
             {
                 outputBytes[byteCounter++] = c.R;
                 outputBytes[byteCounter++] = c.G;

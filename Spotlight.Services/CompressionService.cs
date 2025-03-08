@@ -10,7 +10,7 @@ namespace Spotlight
     public class CompressionService : ICompressionService
     {
         private Level _level;
-        private LevelDataAccessor _levelDataAccessor;
+        private LevelDataManager _levelDataAccessor;
         private static CompressionPoint _currentPoint, _savedPoint;
 
         public byte[] CompressLevel(Level level)
@@ -24,7 +24,7 @@ namespace Spotlight
             ResetPoint();
 
             _level = level;
-            _levelDataAccessor = new LevelDataAccessor(level);
+            _levelDataAccessor = new LevelDataManager(level);
 
             while (!_currentPoint.EOD)
             {
@@ -121,7 +121,7 @@ namespace Spotlight
 
         public byte[] CompressWorld(World world)
         {
-            WorldDataAccessor worldDataAccessor = new WorldDataAccessor(world);
+            WorldDataManager worldDataAccessor = new WorldDataManager(world);
             byte[] data = new byte[9 * 16 * world.ScreenLength];
             int counter = 0;
 

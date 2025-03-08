@@ -14,11 +14,11 @@ namespace Spotlight.Renderers
 
         private byte[] _buffer;
 
-        private WorldDataAccessor _worldDataAccessor;
-        private PalettesService _paletteService;
+        private WorldDataManager _worldDataAccessor;
+        private PaletteService _paletteService;
         private List<MapTileInteraction> _terrain;
 
-        public WorldRenderer(GraphicsAccessor graphicsAccessor, WorldDataAccessor worldDataAccessor, PalettesService paletteService, List<MapTileInteraction> terrain) : base(graphicsAccessor)
+        public WorldRenderer(GraphicsManager graphicsAccessor, WorldDataManager worldDataAccessor, PaletteService paletteService, List<MapTileInteraction> terrain) : base(graphicsAccessor)
         {
             _worldDataAccessor = worldDataAccessor;
             _paletteService = paletteService;

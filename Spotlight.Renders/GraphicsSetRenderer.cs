@@ -9,7 +9,7 @@ namespace Spotlight.Renderers
     {
         private byte[] _buffer;
         private Tile[,] _tileMap;
-        public GraphicsSetRender(GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
+        public GraphicsSetRender(GraphicsManager graphicsAccessor) : base(graphicsAccessor)
         {
             _buffer = new byte[BYTES_PER_PIXEL * PIXELS_PER_TILE * TILES_PER_COLUMN * TILES_PER_ROW];
             _graphicsAccessor = graphicsAccessor;

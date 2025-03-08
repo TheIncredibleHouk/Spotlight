@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,11 @@ using System.Xml.Serialization;
 
 namespace Spotlight.Services
 {
-    public class LevelService
+    public class LevelService : ILevelService
     {
-        private readonly ErrorService _errorService;
-        private readonly Project _project;
+        private readonly IErrorService _errorService;
+        private readonly Abstractions.IProjectService _projectService;
+        private IGameObjectService _gameObjectService;
 
         public delegate void LevelUpdatedEventHandler(LevelInfo levelInfo);
         public event LevelUpdatedEventHandler LevelUpdated;
@@ -23,12 +25,12 @@ namespace Spotlight.Services
         public delegate void LevelsUpdatedHandler(LevelInfo newLevel);
         public event LevelsUpdatedHandler LevelsUpdated;
 
-        private GameObjectService _gameObjectService;
+        
 
-        public LevelService(ErrorService errorService, Project project, GameObjectService gameObjectService)
+        public LevelService(IErrorService errorService, Abstractions.IProjectService projectService, IGameObjectService gameObjectService)
         {
             _errorService = errorService;
-            _project = project;
+            _projectService = projectService;
             _gameObjectService = gameObjectService;
         }
 
@@ -53,7 +55,7 @@ namespace Spotlight.Services
             info.ParentInfo.SublevelsInfo.Remove(info);
             info.ParentInfo.SublevelsInfo.InsertRange(levelIndex, info.SublevelsInfo ?? new List<LevelInfo>());
 
-            string fileName = _project.DirectoryPath + SafeFileName(info);
+            string fileName = _projectService.GetProject().DirectoryPath + SafeFileName(info);
             if (File.Exists(fileName))
             {
                 File.Delete(fileName);
@@ -65,16 +67,17 @@ namespace Spotlight.Services
             }
         }
 
-        public List<IInfo> AllWorldsLevels(LevelInfo currentLevel = null)
+        public List<IInfo> GetAllWorldsAndLevels(LevelInfo currentLevel = null)
         {
             List<IInfo> infos = new List<IInfo>();
-            List<WorldInfo> worldInfos = _project.WorldInfo.ToList();
+            Project project = _projectService.GetProject();
+            List<WorldInfo> worldInfos = project.WorldInfo.ToList();
 
-            worldInfos.Add(_project.EmptyWorld);
+            worldInfos.Add(project.EmptyWorld);
 
             foreach (var world in worldInfos)
             {
-                if (world == _project.EmptyWorld)
+                if (world == project.EmptyWorld)
                 {
                     continue;
                 }
@@ -105,7 +108,7 @@ namespace Spotlight.Services
             }
         }
 
-        public void NotifyUpdate(LevelInfo levelInfo)
+        private void NotifyUpdate(LevelInfo levelInfo)
         {
             if (LevelUpdated != null)
             {
@@ -116,8 +119,10 @@ namespace Spotlight.Services
         public List<LevelInfo> AllLevels()
         {
             List<LevelInfo> levelInfos = new List<LevelInfo>();
-            List<WorldInfo> worldInfos = _project.WorldInfo.ToList();
-            worldInfos.Add(_project.EmptyWorld);
+            Project project = _projectService.GetProject();
+            List<WorldInfo> worldInfos = project.WorldInfo.ToList();
+
+            worldInfos.Add(project.EmptyWorld);
             foreach (var worldInfo in worldInfos)
             {
                 levelInfos.AddRange(FlattenLevelInfos(worldInfo.LevelsInfo).OrderBy(l => l.Name));
@@ -126,7 +131,7 @@ namespace Spotlight.Services
             return levelInfos;
         }
 
-        public List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos)
+        private List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos)
         {
             List<LevelInfo> returnLevelInfos = new List<LevelInfo>();
             foreach (var levelInfo in levelInfos)
@@ -148,7 +153,7 @@ namespace Spotlight.Services
             {
                 string safeFileName = levelInfo.Name.Replace("!", "").Replace("?", "");
 
-                string fileName = _project.DirectoryPath + @"\levels\" + safeFileName + ".json";
+                string fileName = _projectService.GetProject().DirectoryPath + @"\levels\" + safeFileName + ".json";
                 Level level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(fileName));
                 level.SwitchQuest(Level.LevelQuest.First);
                 level.LevelPointers = level.LevelPointers.Where(pointer => pointer.LevelId != Guid.Empty).ToList();
@@ -165,7 +170,7 @@ namespace Spotlight.Services
         public void RenameLevel(string previousName, string newName)
         {
             string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
-            string priorFileName = string.Format(@"{0}\{1}.json", _project.DirectoryPath + @"\levels", safePriorLevelName);
+            string priorFileName = string.Format(@"{0}\{1}.json", _projectService.GetProject().DirectoryPath + @"\levels", safePriorLevelName);
 
             Level level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(priorFileName));
             level.Name = newName;
@@ -190,7 +195,7 @@ namespace Spotlight.Services
             {
                 if (basePath == null)
                 {
-                    basePath = _project.DirectoryPath;
+                    basePath = _projectService.GetProject().DirectoryPath;
                 }
 
                 string levelDirectory = basePath + @"\levels";
@@ -221,7 +226,7 @@ namespace Spotlight.Services
             {
                 if (basePath == null)
                 {
-                    basePath = _project.DirectoryPath;
+                    basePath = _projectService.GetProject().DirectoryPath;
                 }
 
                 string imageDirectory = basePath + @"\images";
@@ -246,7 +251,7 @@ namespace Spotlight.Services
 
         public void CleanUpTemp(Level level)
         {
-            string tempFile = _project.DirectoryPath + SafeFileName(level);
+            string tempFile = _projectService.GetProject().DirectoryPath + SafeFileName(level);
 
             if (File.Exists(tempFile))
             {
@@ -256,7 +261,7 @@ namespace Spotlight.Services
 
         public void CleanUpTemps()
         {
-            DirectoryInfo DirectoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
+            DirectoryInfo DirectoryInfo = new DirectoryInfo(_projectService.GetProject().DirectoryPath + @"\levels\");
             foreach (FileInfo fileInfo in DirectoryInfo.GetFiles())
             {
                 if (fileInfo.Name.StartsWith("~"))
@@ -268,16 +273,18 @@ namespace Spotlight.Services
 
         public IEnumerable<FileInfo> FindTemps()
         {
-            DirectoryInfo DirectoryInfo = new DirectoryInfo(_project.DirectoryPath + @"\levels\");
+
+            DirectoryInfo DirectoryInfo = new DirectoryInfo(_projectService.GetProject().DirectoryPath + @"\levels\");
             return DirectoryInfo.GetFiles().Where(file => file.Name.StartsWith("~"));
         }
 
         public void SwapTemp(FileInfo tempFile)
         {
-            string originalFile = _project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1);
+            Project project = _projectService.GetProject();
+            string originalFile = project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1);
             if (File.Exists(originalFile))
             {
-                string backupFile = _project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1) + ".bak";
+                string backupFile = project.DirectoryPath + @"\levels\" + tempFile.Name.Substring(1) + ".bak";
                 if (File.Exists(backupFile))
                 {
                     File.Delete(backupFile);
@@ -298,7 +305,7 @@ namespace Spotlight.Services
 
             List<int> gameObjectIds = level.ObjectData.Select(obj => obj.GameObjectId).Distinct().ToList();
 
-            levelMeta.UniqueGameObjects = _gameObjectService.GetObjects(gameObjectIds).Select(gameObject => gameObject.Name).ToList();
+            levelMeta.UniqueGameObjects = _gameObjectService.GetObjectsByIds(gameObjectIds).Select(gameObject => gameObject.Name).ToList();
 
             List<int> coinValues = new List<int>();
             List<int> cherryValues = new List<int>();

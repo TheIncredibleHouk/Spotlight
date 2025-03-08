@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
@@ -28,20 +29,20 @@ namespace Spotlight
             InitializeComponent();
         }
 
-        private GraphicsAccessor _graphicsAccessor;
+        private IGraphicsManager _graphicsManager;
         private TileSetRenderer _tileSetRenderer;
         private WriteableBitmap _bitmap;
         private TileSet _tileSet;
         private List<TileTerrain> _terrain;
         private List<MapTileInteraction> _mapTileInteractions;
 
-        public void Initialize(GraphicsAccessor graphicsAccessor, TileService tileService, TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
+        public void Initialize(IGraphicsManager graphicsManager, ITileService tileService, TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
         {
-            _graphicsAccessor = graphicsAccessor;
+            _graphicsManager = graphicsManager;
             _tileSet = tileSet;
             _terrain = tileService.GetTerrain();
             _mapTileInteractions = tileService.GetMapTileInteractions();
-            _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(graphicsAccessor, _terrain, _mapTileInteractions);
+            _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(_graphicsManager, _terrain, _mapTileInteractions);
 
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);

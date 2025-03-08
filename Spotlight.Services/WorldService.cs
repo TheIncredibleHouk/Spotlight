@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using System;
 using System.Collections.Generic;
@@ -9,25 +10,28 @@ using System.Xml.Serialization;
 
 namespace Spotlight.Services
 {
-    public class WorldService
+    public class WorldService : IWorldService
     {
-        private readonly ErrorService _errorService;
-        private readonly Project _project;
+        private readonly ITileService _tileService;
+        private readonly IErrorService _errorService;
+        private readonly IProjectService _projectService;
 
         public delegate void WorldUpdatedEventHandler(WorldInfo worldInfo);
 
         public event WorldUpdatedEventHandler WorldUpdated;
 
-        public WorldService(ErrorService errorService, Project project)
+        public WorldService(IErrorService errorService, IProjectService projectService, ITileService tileService)
         {
             _errorService = errorService;
-            _project = project;
+            _projectService = projectService;
+            _tileService = tileService;
         }
 
         public List<WorldInfo> AllWorlds()
         {
-            List<WorldInfo> worldList = _project.WorldInfo.ToList();
-            worldList.Add(_project.EmptyWorld);
+            Project project = _projectService.GetProject();
+            List<WorldInfo> worldList = project.WorldInfo.ToList();
+            worldList.Add(project.EmptyWorld);
             return worldList;
         }
 
@@ -43,7 +47,7 @@ namespace Spotlight.Services
         {
             try
             {
-                string fileName = _project.DirectoryPath + @"\worlds\" + worldInfo.Name + ".json";
+                string fileName = _projectService.GetProject().DirectoryPath + @"\worlds\" + worldInfo.Name + ".json";
                 return JsonConvert.DeserializeObject<World>(File.ReadAllText(fileName));
             }
             catch (Exception e)
@@ -59,7 +63,7 @@ namespace Spotlight.Services
             {
                 if (basePath == null)
                 {
-                    basePath = _project.DirectoryPath;
+                    basePath = _projectService.GetProject().DirectoryPath;
                 }
 
                 string worldDirectory = basePath + @"\worlds";
@@ -80,7 +84,7 @@ namespace Spotlight.Services
         public void RenameWorld(string previousName, string newName)
         {
             string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
-            string priorFileName = string.Format(@"{0}\{1}.json", _project.DirectoryPath + @"\worlds", safePriorLevelName);
+            string priorFileName = string.Format(@"{0}\{1}.json", _projectService.GetProject().DirectoryPath + @"\worlds", safePriorLevelName);
 
             World world = JsonConvert.DeserializeObject<World>(File.ReadAllText(priorFileName));
             world.Name = newName;
@@ -89,11 +93,11 @@ namespace Spotlight.Services
             File.Delete(priorFileName);
         }
 
-        public void GenerateMetaData(TileService tileService, WorldInfo worldInfo, MemoryStream thumbnailStream = null)
+        public void GenerateMetaData(WorldInfo worldInfo, MemoryStream thumbnailStream = null)
         {
             World world = LoadWorld(worldInfo);
-            TileSet tileSet = tileService.GetTileSet(0);
-            List<TileTerrain> tileTerrain = tileService.GetTerrain();
+            TileSet tileSet = _tileService.GetTileSet(0);
+            List<TileTerrain> tileTerrain = _tileService.GetTerrain();
             WorldMetaData worldMetaData = new WorldMetaData();
 
 

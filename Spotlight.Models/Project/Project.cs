@@ -6,11 +6,6 @@ namespace Spotlight.Models
 {
     public class Project
     {
-        public Project()
-        {
-          
-        }
-
         public string Name { get; set; }
         public string DirectoryPath { get; set; }
         public List<Palette> Palettes { get; set; }

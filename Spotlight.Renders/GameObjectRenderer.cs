@@ -3,16 +3,17 @@ using Spotlight.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
+using Spotlight.Abstractions;
 
 namespace Spotlight.Renderers
 {
     public class GameObjectRenderer : Renderer
     {
         private byte[] _buffer;
-        private GameObjectService _gameObjectService;
-        private PalettesService _palettesService;
+        private IGameObjectService _gameObjectService;
+        private IPaletteService _palettesService;
 
-        public GameObjectRenderer(GameObjectService gameObjectService, PalettesService palettesService, GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
+        public GameObjectRenderer(IGameObjectService gameObjectService, IPaletteService palettesService, IGraphicsManager graphicsAccessor) : base(graphicsAccessor)
         {
             BYTE_STRIDE = 256 * 4;
             _buffer = new byte[256 * 256 * 4];
@@ -96,8 +97,8 @@ namespace Spotlight.Renderers
                 {
                     int paletteIndex = sprite.PaletteIndex;
 
-                    Tile topTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex);
-                    Tile bottomTile = sprite.Overlay ? _graphicsAccessor.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsAccessor.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
+                    Tile topTile = sprite.Overlay ? _graphicsManager.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex) : _graphicsManager.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex);
+                    Tile bottomTile = sprite.Overlay ? _graphicsManager.GetOverlayTile(sprite.TileTableIndex, sprite.TileValueIndex + 1) : _graphicsManager.GetAbsoluteTile(sprite.TileTableIndex, sprite.TileValueIndex + 1);
                     int x = baseX + sprite.X, y = baseY + sprite.Y;
 
                     RenderTile(x, y, sprite.VerticalFlip ? bottomTile : topTile, _buffer, sprite.CustomPalette != null ? _palettesService.GetRgbPalette(sprite.CustomPalette) : _rgbPalette[paletteIndex + 4], sprite.HorizontalFlip, sprite.VerticalFlip, true);

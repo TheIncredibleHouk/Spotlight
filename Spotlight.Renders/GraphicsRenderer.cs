@@ -8,7 +8,7 @@ namespace Spotlight
     {
         private byte[] _buffer;
 
-        public GraphicsRenderer(GraphicsAccessor graphicsAccessor) : base(graphicsAccessor)
+        public GraphicsRenderer(GraphicsManager graphicsAccessor) : base(graphicsAccessor)
         {
             _buffer = new byte[256 * 256 * BYTES_PER_BLOCK];
         }

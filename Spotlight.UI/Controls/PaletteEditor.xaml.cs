@@ -22,7 +22,7 @@ namespace Spotlight
         private System.Drawing.Color[] _rgbPalette;
         private List<PaletteRgbEditor> _rgbEditors;
 
-        public PaletteEditor(ProjectService projectService, PalettesService palettesService)
+        public PaletteEditor(ProjectService projectService, PaletteService palettesService)
         {
             InitializeComponent();
 
@@ -75,7 +75,7 @@ namespace Spotlight
         private PaletteRenderer _rendererSection;
         private PaletteRenderer _rendererFull;
 
-        private PalettesService _palettesService;
+        private PaletteService _palettesService;
         private ProjectService _projectService;
 
         private void Update()

@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Services;
 using System;
 using System.Windows;
@@ -16,15 +17,15 @@ namespace Spotlight
             InitializeComponent();
         }
 
-        private LevelService _levelService;
+        private ILevelService _levelService;
         private LevelInfo _levelInfo;
 
-        public void Initialize(LevelService levelService, LevelInfo levelInfo)
+        public void Initialize(ILevelService levelService, LevelInfo levelInfo)
         {
             _levelService = levelService;
             _levelInfo = levelInfo;
 
-            LevelList.ItemsSource = _levelService.AllWorldsLevels();
+            LevelList.ItemsSource = _levelService.GetAllWorldsAndLevels();
         }
 
         private LevelPointer _pointer;

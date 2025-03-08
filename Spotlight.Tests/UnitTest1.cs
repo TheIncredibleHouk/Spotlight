@@ -15,7 +15,7 @@ namespace Spotlight.Tests
         {
 
             ProjectService projectService = new ProjectService(new ErrorService());
-            Project project = projectService.LoadProject(@"E:\Mushroom Mayhem\Game\Mushroom Mayhem\Mushroom Mayhem.json");
+            IProjectService project = projectService.LoadProject(@"E:\Mushroom Mayhem\Game\Mushroom Mayhem\Mushroom Mayhem.json");
             LevelService levelService = new LevelService(new ErrorService(), project, null);
 
             foreach (IInfo info in levelService.AllWorldsLevels())

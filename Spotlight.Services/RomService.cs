@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Security.Principal;
 
 namespace Spotlight.Services
 {
-    public class RomService
+    public class RomService : IRomService
     {
         private Dictionary<Guid, byte> _levelIndexTable;
         private Dictionary<Guid, byte> _worldIndexTable;
@@ -20,16 +21,16 @@ namespace Spotlight.Services
         private int _dataPointer;
         private int _extendedDataPointer;
 
-        private GraphicsService _graphicsService;
-        private PalettesService _palettesService;
-        private TileService _tileService;
-        private LevelService _levelService;
-        private WorldService _worldService;
-        private TextService _textService;
-        private CompressionService _compressionService;
-        private ErrorService _errorService;
+        private IGraphicsService _graphicsService;
+        private IPaletteService _palettesService;
+        private ITileService _tileService;
+        private ILevelService _levelService;
+        private IWorldService _worldService;
+        private ITextService _textService;
+        private ICompressionService _compressionService;
+        private IErrorService _errorService;
 
-        public RomService(ErrorService errorService, GraphicsService graphicsService, PalettesService palettesService, TileService tileService, LevelService levelService, WorldService worldService, TextService textService)
+        public RomService(IErrorService errorService, IGraphicsService graphicsService, IPaletteService palettesService, ITileService tileService, ILevelService levelService, IWorldService worldService, ITextService textService)
         {
             _errorService = errorService;
             _levelIndexTable = new Dictionary<Guid, byte>();

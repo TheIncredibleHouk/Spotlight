@@ -11,7 +11,7 @@ namespace Spotlight
     /// </summary>
     public partial class ProjectPanel : UserControl
     {
-        public delegate void ProjectLoadEventHandler(Project project);
+        public delegate void ProjectLoadEventHandler(IProjectService project);
 
         public event ProjectLoadEventHandler ProjectLoaded;
 
@@ -66,7 +66,7 @@ namespace Spotlight
 
         public void LoadProject(string filePath)
         {
-            Project project = ProjectService.LoadProject(filePath);
+            IProjectService project = ProjectService.LoadProject(filePath);
             ProjectLoaded(project);
             ExportPaletteButton.IsEnabled = MusicEditButton.IsEnabled = ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
         }

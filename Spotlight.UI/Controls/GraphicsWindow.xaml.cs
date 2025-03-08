@@ -24,16 +24,16 @@ namespace Spotlight
     {
         private readonly GraphicsService _graphicsService;
         private readonly TileService _tileService;
-        private readonly PalettesService _paletteService;
+        private readonly PaletteService _paletteService;
 
-        private GraphicsAccessor _graphicsAccessor;
+        private GraphicsManager _graphicsAccessor;
         private GraphicsSetRender _graphicsRenderer;
         private BlockRenderer _blockRenderer;
 
         private WriteableBitmap _graphicsBitmap;
         private WriteableBitmap _editorBitmap;
 
-        public GraphicsWindow(GraphicsService graphicsService, TileService tileService, PalettesService palettesService)
+        public GraphicsWindow(GraphicsService graphicsService, TileService tileService, PaletteService palettesService)
         {
             InitializeComponent();
 
@@ -41,7 +41,7 @@ namespace Spotlight
             _tileService = tileService;
             _paletteService = palettesService;
 
-            _graphicsAccessor = new GraphicsAccessor(_graphicsService.GetTilesAtAddress(0));
+            _graphicsAccessor = new GraphicsManager(_graphicsService.GetTilesAtAddress(0));
             _graphicsRenderer = new GraphicsSetRender(_graphicsAccessor);
             _blockRenderer = new BlockRenderer();
 

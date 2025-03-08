@@ -22,16 +22,16 @@ namespace Spotlight
         }
 
         private ProjectService _projectService;
-        private GraphicsAccessor _graphicsAccessor;
+        private GraphicsManager _graphicsAccessor;
         private GraphicsService _graphicsService;
         private GameObjectService _gameObjectService;
-        private PalettesService _palettesService;
+        private PaletteService _palettesService;
         private GameObjectRenderer _renderer;
         private LevelObject viewObject = new LevelObject() { X = 8, Y = 7, Property = -1 };
         private List<LevelObject> viewObjects = new List<LevelObject>();
         private WriteableBitmap _bitmap;
 
-        public GameObjectEditor(ProjectService projectService, PalettesService palettesService, GraphicsService graphicsService, GameObjectService gameObjectService)
+        public GameObjectEditor(ProjectService projectService, PaletteService palettesService, GraphicsService graphicsService, GameObjectService gameObjectService)
         {
             InitializeComponent();
 
@@ -39,7 +39,7 @@ namespace Spotlight
             _gameObjectService = gameObjectService;
             _graphicsService = graphicsService;
             _palettesService = palettesService;
-            _graphicsAccessor = new GraphicsAccessor(graphicsService.GetGlobalTiles(), graphicsService.GetExtraTiles());
+            _graphicsAccessor = new GraphicsManager(graphicsService.GetGlobalTiles(), graphicsService.GetExtraTiles());
             viewObjects.Add(viewObject);
 
             Dpi dpi = this.GetDpi();
