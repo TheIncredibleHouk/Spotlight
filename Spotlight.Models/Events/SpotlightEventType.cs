@@ -10,8 +10,13 @@ namespace Spotlight.Models
     {
         GraphicsUpdate,
         ExtraGraphicsUpdate,
+        PaletteAdded,
         PaletteUpdate,
+        PaletteRemoved,
+        RgbColorsUpdated,
         ProjectUpdate,
-        GameObjectsUpdated
+        ProjectLoaded,
+        GameObjectsUpdated,
+        TileSetUpdated
     }
 }

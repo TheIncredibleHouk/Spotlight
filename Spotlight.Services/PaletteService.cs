@@ -11,16 +11,14 @@ namespace Spotlight.Services
     public class PaletteService : IPaletteService
     {
         private IErrorService _errorService;
+        private IEventService _eventService;
         private IProjectService _projectService;
 
-        public delegate void PaletteServiceEventHandler();
-
-        public event PaletteServiceEventHandler PalettesChanged;
-
-        public PaletteService(IErrorService errorService, IProjectService projectService)
+        public PaletteService(IErrorService errorService, IProjectService projectService, IEventService eventService)
         {
             _errorService = errorService;
             _projectService = projectService;
+            _eventService = eventService;
 
             CacheRgbPalettes();
         }
@@ -38,10 +36,7 @@ namespace Spotlight.Services
 
                 CacheRgbPalettes(commitPalette);
 
-                if (PalettesChanged != null)
-                {
-                    PalettesChanged();
-                }
+                _eventService.Emit(SpotlightEventType.PaletteUpdate, palette.Id, palette);
             }
         }
 
@@ -59,10 +54,7 @@ namespace Spotlight.Services
 
             _projectService.GetProject().Palettes.Add(palette);
 
-            if (PalettesChanged != null)
-            {
-                PalettesChanged();
-            }
+            _eventService.Emit(SpotlightEventType.PaletteAdded, palette);
 
             return palette;
         }
@@ -76,10 +68,7 @@ namespace Spotlight.Services
                 project.Palettes.Remove(foundPalette);
             }
 
-            if (PalettesChanged != null)
-            {
-                PalettesChanged();
-            }
+            _eventService.Emit(SpotlightEventType.PaletteRemoved, palette);
         }
 
         public List<Palette> GetPalettes()
@@ -166,10 +155,7 @@ namespace Spotlight.Services
         {
             _projectService.GetProject().RgbPalette = rgbPalette;
             CacheRgbPalettes();
-            if (PalettesChanged != null)
-            {
-                PalettesChanged();
-            }
+            _eventService.Emit(SpotlightEventType.RgbColorsUpdated);
         }
 
         public void ExportRgbPalette(string fileName)

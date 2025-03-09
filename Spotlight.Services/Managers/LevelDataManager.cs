@@ -15,13 +15,17 @@ namespace Spotlight.Services
         private Level _level;
         private TileSet _tileSet;
 
-        public LevelDataManager(Level level, TileSet tileSet = null)
+        public LevelDataManager()
         {
-            _level = level;
-            _tileSet = tileSet;
 
             _tileData = _level.TileData;
             _pointers = _level.LevelPointers;
+        }
+
+        public void Setup(Level level, TileSet tileSet = null)
+        {
+            _level = level;
+            _tileSet = tileSet;
         }
 
         public bool PSwitchActive { get; set; }
@@ -33,7 +37,7 @@ namespace Spotlight.Services
                 return -1;
             }
 
-            if(x / 16 > _level.ScreenLength)
+            if (x / 16 > _level.ScreenLength)
             {
                 return -1;
             }

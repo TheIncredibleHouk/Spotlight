@@ -16,10 +16,6 @@ namespace Spotlight.Services
         private readonly IErrorService _errorService;
         private readonly IProjectService _projectService;
 
-        public delegate void WorldUpdatedEventHandler(WorldInfo worldInfo);
-
-        public event WorldUpdatedEventHandler WorldUpdated;
-
         public WorldService(IErrorService errorService, IProjectService projectService, ITileService tileService)
         {
             _errorService = errorService;
@@ -33,14 +29,6 @@ namespace Spotlight.Services
             List<WorldInfo> worldList = project.WorldInfo.ToList();
             worldList.Add(project.EmptyWorld);
             return worldList;
-        }
-
-        public void NotifyUpdate(WorldInfo worldInfo)
-        {
-            if (WorldUpdated != null)
-            {
-                WorldUpdated(worldInfo);
-            }
         }
 
         public World LoadWorld(WorldInfo worldInfo)

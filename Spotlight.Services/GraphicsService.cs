@@ -20,16 +20,10 @@ namespace Spotlight.Services
 
         private DateTime _lastGraphicsUpdate;
         private DateTime _lastExtraGraphicsUpdated;
-
-        
-
         public GraphicsService(IProjectService projectService, IEventService eventService)
         {
             _projectService = projectService;
             _eventService = eventService;
-
-            LoadGraphics();
-            LoadExtraGraphics();
         }
 
         public void CheckGraphics()

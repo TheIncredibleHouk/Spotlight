@@ -10,17 +10,15 @@ namespace Spotlight.Services
 {
     public class TileService : ITileService
     {
-        public delegate void TileSetEventHandler(int index, TileSet tileSet);
-
-        public event TileSetEventHandler TileSetUpdated;
-
         private readonly IErrorService _errorService;
         private readonly IProjectService _projectService;
+        private readonly IEventService _eventService;
 
-        public TileService(IErrorService errorService, IProjectService projectService)
+        public TileService(IErrorService errorService, IProjectService projectService, IEventService eventService)
         {
             _errorService = errorService;
             _projectService = projectService;
+            _eventService = eventService;
         }
 
         public IEnumerable<TileSet> GetTileSets()
@@ -51,10 +49,7 @@ namespace Spotlight.Services
                 project.MapTileInteractions[i] = mapTileInterations[i];
             }
 
-            if (TileSetUpdated != null)
-            {
-                TileSetUpdated(index, tileSet);
-            }
+            _eventService.Emit(SpotlightEventType.TileSetUpdated, tileSet);
         }
 
         public byte[] GetTilePropertyData()

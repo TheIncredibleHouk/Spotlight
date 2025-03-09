@@ -15,7 +15,11 @@ namespace Spotlight.Services
 
         private const int DATA_ROW_LENGTH = 4 * 16;
 
-        public WorldDataManager(World _world)
+        public WorldDataManager()
+        {
+        }
+
+        public void Setup(World _world)
         {
             _tileData = _world.TileData;
             _pointers = _world.Pointers;

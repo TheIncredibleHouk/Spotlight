@@ -15,18 +15,21 @@ namespace Spotlight.Renderers
         private List<TileTerrain> _terrain;
         private List<MapTileInteraction> _mapTileInteractions;
 
-        public TileSetRenderer(IGraphicsManager graphicsManager, List<TileTerrain> terrain, List<MapTileInteraction> mapTileInteractions) : base(graphicsManager)
+        public TileSetRenderer(IGraphicsManager graphicsManager) : base(graphicsManager)
         {
             _buffer = new byte[256 * 256 * BYTES_PER_BLOCK];
             BYTE_STRIDE = 16 * 16 * 4;
-
-            _terrain = terrain;
-            _mapTileInteractions = mapTileInteractions;
         }
 
         public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
+        }
+
+        public void SetTilesAndTerrain(List<TileTerrain> terrain, List<MapTileInteraction> mapTileInteractions)
+        {
+            _terrain = terrain;
+            _mapTileInteractions = mapTileInteractions;
         }
 
         private TileSet _tileSet;

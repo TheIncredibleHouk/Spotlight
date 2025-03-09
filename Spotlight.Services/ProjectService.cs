@@ -9,11 +9,13 @@ namespace Spotlight.Services
     public class ProjectService : IProjectService
     {
         private IErrorService _errorService;
+        private IEventService _eventService;
         private Project _currentProject;
 
-        public ProjectService(IErrorService errorService)
+        public ProjectService(IErrorService errorService, IEventService eventService)
         {
             _errorService = errorService;
+            _eventService = eventService;
         }
 
         public ProjectService()
@@ -60,6 +62,8 @@ namespace Spotlight.Services
 
                 LinkLevelTree(project.EmptyWorld);
 
+                _eventService.Emit(SpotlightEventType.ProjectLoaded);
+
                 return true;
             }
             catch (Exception ex)
@@ -85,6 +89,7 @@ namespace Spotlight.Services
             try
             {
                 File.WriteAllText(projectFilePath, fileContents);
+                _eventService.Emit(SpotlightEventType.ProjectUpdate);
                 return true;
             }
             catch (Exception e)

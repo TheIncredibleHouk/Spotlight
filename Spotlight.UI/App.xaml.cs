@@ -13,16 +13,34 @@ namespace Spotlight
     /// </summary>
     public partial class App : Application
     {
+        IServiceProvider services;
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            services = ConfigureServices();
         }
 
         private IServiceProvider ConfigureServices()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddSingleton<IEventService, EventService>();
-            services.AddSingleton<IErrorService, ErrorService>
+            services.AddSingleton<IErrorService, ErrorService>();
+            services.AddScoped<IGraphicsManager, GraphicsManager>();
+            services.AddScoped<ILevelDataManager, LevelDataManager>();
+            services.AddScoped<IWorldDataManager, WorldDataManager>();
+            services.AddSingleton<IClipboardService, ClipboardService>();
+            services.AddSingleton<ICompressionService, CompressionService>();
+            services.AddSingleton<IGameObjectService, GameObjectService>();
+            services.AddSingleton<IGraphicsService, GraphicsService>();
+            services.AddScoped<IHistoryService, HistoryService>();
+            services.AddSingleton<ILevelService, LevelService>();
+            services.AddSingleton<IPaletteService, PaletteService>();
+            services.AddSingleton<IProjectService, ProjectService>();
+            services.AddSingleton<IRomService, RomService>();
+            services.AddSingleton<ITextService, TextService>();
+            services.AddSingleton<ITileService, TileService>();
+            services.AddSingleton<IWorldService, WorldService>();
+            return services.BuildServiceProvider();
         }
     }
 

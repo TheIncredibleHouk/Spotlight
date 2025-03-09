@@ -8,7 +8,7 @@ namespace Spotlight
     {
         private byte[] _buffer;
 
-        public GraphicsRenderer(GraphicsManager graphicsAccessor) : base(graphicsAccessor)
+        public GraphicsRenderer(GraphicsManager graphicsManager) : base(graphicsManager)
         {
             _buffer = new byte[256 * 256 * BYTES_PER_BLOCK];
         }
@@ -19,7 +19,7 @@ namespace Spotlight
             {
                 int x = i % 16;
                 int y = i / 16;
-                RenderTile(x, y, _graphicsAccessor.GetRelativeTile(i), _buffer, palette.RgbColors[paletteIndex]);
+                RenderTile(x, y, _graphicsManager.GetRelativeTile(i), _buffer, palette.RgbColors[paletteIndex]);
             }
         }
     }

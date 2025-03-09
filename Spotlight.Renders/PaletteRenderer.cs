@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Services;
 using System.Drawing;
 using System.Windows;
@@ -15,13 +16,12 @@ namespace Spotlight.Renderers
     {
         private byte[] _buffer;
 
-        private PaletteService _palettesService;
+        private IPaletteService _palettesService;
         private PaletteType _paletteType;
 
-        public PaletteRenderer(PaletteService paletteService, PaletteType paletteType) : base(null)
+        public PaletteRenderer(IPaletteService paletteService) : base(null)
         {
-            _buffer = new byte[256 * (paletteType == PaletteType.Full ? 64 : 32) * BYTES_PER_BLOCK];
-            _paletteType = paletteType;
+            
             _palettesService = paletteService;
             BYTE_STRIDE = 256 * 4;
         }
@@ -29,6 +29,12 @@ namespace Spotlight.Renderers
         public byte[] GetRectangle(Rectangle rect)
         {
             return GetRectangle(rect, _buffer);
+        }
+
+        public void SetPaletteType(PaletteType paletteType)
+        {
+            _paletteType = paletteType;
+            _buffer = new byte[256 * (paletteType == PaletteType.Full ? 64 : 32) * BYTES_PER_BLOCK];
         }
 
         private Palette _palette;

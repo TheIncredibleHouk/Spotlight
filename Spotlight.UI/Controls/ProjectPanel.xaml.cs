@@ -1,6 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Services;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,48 +14,57 @@ namespace Spotlight
     /// </summary>
     public partial class ProjectPanel : UserControl
     {
-        public delegate void ProjectLoadEventHandler(IProjectService project);
+        //public delegate void ProjectLoadEventHandler(IProjectService project);
 
-        public event ProjectLoadEventHandler ProjectLoaded;
+        //public event ProjectLoadEventHandler ProjectLoaded;
 
-        public delegate void TileBlockEditorOpenEventHandler();
+        //public delegate void TileBlockEditorOpenEventHandler();
 
-        public event TileBlockEditorOpenEventHandler TileBlockEditorOpened;
+        //public event TileBlockEditorOpenEventHandler TileBlockEditorOpened;
 
-        public delegate void TextEditorOpenEventHandler();
+        //public delegate void TextEditorOpenEventHandler();
 
-        public event TextEditorOpenEventHandler TextEditorOpened;
+        //public event TextEditorOpenEventHandler TextEditorOpened;
 
-        public delegate void RomSavedEventHandler();
+        //public delegate void RomSavedEventHandler();
 
-        public event RomSavedEventHandler RomSaved;
+        //public event RomSavedEventHandler RomSaved;
 
-        public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
+        //public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
 
-        public event ObjectEditorEventHandler ObjectEditorOpened;
+        //public event ObjectEditorEventHandler ObjectEditorOpened;
 
-        public delegate void NewLevelEventHandler();
+        //public delegate void NewLevelEventHandler();
 
-        public event NewLevelEventHandler NewLevelClicked;
-        
-        public delegate void GraphicsEditorEventHandler();
-        public event GraphicsEditorEventHandler GraphicsEditorClicked;
+        //public event NewLevelEventHandler NewLevelClicked;
 
-        public delegate void MusicEditorEventHandler();
-        public event MusicEditorEventHandler MusicEditorClicked;
+        //public delegate void GraphicsEditorEventHandler();
+        //public event GraphicsEditorEventHandler GraphicsEditorClicked;
 
-        public delegate void ExportPaletteEventHandler();
-        public event ExportPaletteEventHandler ExportPaletteClicked;
+        //public delegate void MusicEditorEventHandler();
+        //public event MusicEditorEventHandler MusicEditorClicked;
 
-        public delegate void GenerateMetaDataEventHandler();
-        public event GenerateMetaDataEventHandler GenerateMetaDataClicked;
+        //public delegate void ExportPaletteEventHandler();
+        //public event ExportPaletteEventHandler ExportPaletteClicked;
 
-        public ProjectService ProjectService { get; set; }
-        public RomService RomService { get; set; }
+        //public delegate void GenerateMetaDataEventHandler();
+        //public event GenerateMetaDataEventHandler GenerateMetaDataClicked;
+
+        private IEventService _eventService;
+        private IProjectService _projectService;
+
+        public IProjectService ProjectService { get; set; }
+        public IRomService RomService { get; set; }
 
         public ProjectPanel()
         {
             InitializeComponent();
+        }
+
+        public void Configure(IServiceProvider services)
+        {
+            _eventService = services.GetService<IEventService>();
+            _projectService = services.GetService<IProjectService>();
         }
 
         private void LoadProject(object sender, RoutedEventArgs e)
@@ -66,14 +78,13 @@ namespace Spotlight
 
         public void LoadProject(string filePath)
         {
-            IProjectService project = ProjectService.LoadProject(filePath);
-            ProjectLoaded(project);
+            _projectService.LoadProject(filePath);
             ExportPaletteButton.IsEnabled = MusicEditButton.IsEnabled = ObjectButton.IsEnabled = NewWorldButton.IsEnabled = NewLevelButton.IsEnabled = SaveRomButton.IsEnabled = PaletteButton.IsEnabled = TileSetButton.IsEnabled = TextEditButton.IsEnabled = true;
         }
 
         private void SaveProjectButton_Click(object sender, RoutedEventArgs e)
         {
-            ProjectService.SaveProject();
+            _projectService.SaveProject();
             AlertWindow.Alert("Project saved.");
         }
 

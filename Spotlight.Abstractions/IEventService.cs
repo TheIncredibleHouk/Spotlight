@@ -10,9 +10,9 @@ namespace Spotlight.Abstractions
     public interface IEventService
     {
         Guid Subscribe(SpotlightEventType eventType, Action<object> function);
-        Guid Subscribe(SpotlightEventType eventType, string identifier, Action<object> function);
+        Guid Subscribe(SpotlightEventType eventType, Guid identifier, Action<object> function);
         void Emit(SpotlightEventType eventType, object data = null);
-        void Emit(SpotlightEventType eventType, string identifier, object data = null);
+        void Emit(SpotlightEventType eventType, Guid identifier, object data = null);
         void Unsubscribe(Guid subscriptionId);
     }
 }

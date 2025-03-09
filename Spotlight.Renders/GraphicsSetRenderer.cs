@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Services;
 using System.Drawing;
 using System.Windows;
@@ -9,10 +10,9 @@ namespace Spotlight.Renderers
     {
         private byte[] _buffer;
         private Tile[,] _tileMap;
-        public GraphicsSetRender(GraphicsManager graphicsAccessor) : base(graphicsAccessor)
+        public GraphicsSetRender(IGraphicsManager graphicsManager) : base(graphicsManager)
         {
             _buffer = new byte[BYTES_PER_PIXEL * PIXELS_PER_TILE * TILES_PER_COLUMN * TILES_PER_ROW];
-            _graphicsAccessor = graphicsAccessor;
             _tileMap = new Tile[16, 16];
 
             BYTE_STRIDE = 128 * 4;
@@ -55,7 +55,7 @@ namespace Spotlight.Renderers
                     {
                         int tileValue = row * 16 + col;
                         int x = col * 8, y = row * 8;
-                        Tile tile = _graphicsAccessor.GetRelativeTile(tileValue);
+                        Tile tile = _graphicsManager.GetRelativeTile(tileValue);
 
                         RenderTile(x, y, tile, _buffer, _palette.RgbColors[_paletteIndex]);
                         _tileMap[col, row] = tile;
@@ -71,7 +71,7 @@ namespace Spotlight.Renderers
                         int tileValue = row * 16 + col;
                         int x = ((col / 2) * 8) + ((row % 2) * 64);
                         int y = ((col % 2) * 8) + ((row / 2) * 16);
-                        Tile tile = _graphicsAccessor.GetRelativeTile(tileValue);
+                        Tile tile = _graphicsManager.GetRelativeTile(tileValue);
 
                         RenderTile(x, y, tile, _buffer, _palette.RgbColors[_paletteIndex]);
                         _tileMap[x / 8, y / 8] = tile;

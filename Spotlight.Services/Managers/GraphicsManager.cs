@@ -9,7 +9,12 @@ namespace Spotlight.Services
         private Tile[] _globalTable;
         private Tile[] _overlayTable;
 
-        public GraphicsManager(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
+        public GraphicsManager()
+        {
+
+        }
+
+        public void Setup(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
         {
             _relativeTable = new Tile[256];
             for (int i = 0; i < 128; i++)

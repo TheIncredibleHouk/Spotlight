@@ -23,13 +23,11 @@ namespace Spotlight.Renderers
         public LevelRenderer(IGraphicsManager graphicsManager,
                             ILevelDataManager levelDataManager,
                             IPaletteService paletteService,
-                            IGameObjectService gameObjectService,
-                            List<TileTerrain> terrain) : base(graphicsManager)
+                            IGameObjectService gameObjectService) : base(graphicsManager)
         {
             _levelDataManager = levelDataManager;
             _gameObjectService = gameObjectService;
             _paletteService = paletteService;
-            _terrain = terrain;
             _buffer = new byte[BITMAP_WIDTH * BITMAP_HEIGHT * 4];
 
             _highlightPalette[1] = _paletteService.RgbPalette[0x0F];
@@ -38,6 +36,11 @@ namespace Spotlight.Renderers
 
         private TileSet _tileSet;
         private Palette _palette;
+
+        public void SetTerrain(List<TileTerrain> terrain)
+        {
+            _terrain = terrain;
+        }
 
         public void Update(Palette palette = null, TileSet tileSet = null)
         {
@@ -244,7 +247,7 @@ namespace Spotlight.Renderers
             {
                 if (_asStrategy)
                 {
-                    if(levelObject.GameObject.IsStartObject || levelObject.GameObject.Name.Contains("Magic Star") && levelObject.Property == 7)
+                    if (levelObject.GameObject.IsStartObject || levelObject.GameObject.Name.Contains("Magic Star") && levelObject.Property == 7)
                     {
                         continue;
                     }

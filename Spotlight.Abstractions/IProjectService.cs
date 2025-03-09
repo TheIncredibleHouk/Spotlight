@@ -10,7 +10,7 @@ namespace Spotlight.Abstractions
     public interface IProjectService
     {
         bool LoadProject(string projectPath);
-        bool SaveProject(string basePath);
+        bool SaveProject(string basePath = null);
         Project GetProject();
     }
 }

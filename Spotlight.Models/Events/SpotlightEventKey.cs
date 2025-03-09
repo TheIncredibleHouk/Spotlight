@@ -8,10 +8,10 @@ namespace Spotlight.Models.Events
 {
     public class SpotlightEventKey
     {
-        public string Identifier { get; private set; }
+        public Guid Identifier { get; private set; }
         public SpotlightEventType Type { get; private set; }
 
-        public SpotlightEventKey(string identifier, SpotlightEventType type)
+        public SpotlightEventKey(Guid identifier, SpotlightEventType type)
         {
             Identifier = identifier;
             Type = type;
@@ -19,7 +19,7 @@ namespace Spotlight.Models.Events
 
         public override int GetHashCode()
         {
-            if(Identifier == null)
+            if(Identifier == Guid.Empty)
             {
                 return Type.GetHashCode();
             }
@@ -37,6 +37,8 @@ namespace Spotlight.Models.Events
 
             if (obj is SpotlightEventKey)
             {
+                SpotlightEventKey eventKey = (SpotlightEventKey)obj;
+
                 return ((SpotlightEventKey)obj).Identifier == Identifier &&
                        ((SpotlightEventKey)obj).Type == Type;
             }

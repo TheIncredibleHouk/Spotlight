@@ -24,10 +24,10 @@ namespace Spotlight.Services
 
         public void Emit(SpotlightEventType eventType, object data = null)
         {
-            Emit(eventType, null, data);
+            Emit(eventType, Guid.Empty, data);
         }
 
-        public void Emit(SpotlightEventType eventType, string identifier, object data = null)
+        public void Emit(SpotlightEventType eventType, Guid identifier, object data = null)
         {
             SpotlightEventKey eventKey = new SpotlightEventKey(identifier, eventType);
 
@@ -40,8 +40,12 @@ namespace Spotlight.Services
             }
         }
 
+        public Guid Subscribe(SpotlightEventType eventType, Action<object> eventResponder)
+        {
+            return Subscribe(eventType, Guid.Empty, eventResponder);
+        }
 
-        public Guid Subscribe(string identifier, SpotlightEventType eventType, Action<object> eventResponder)
+        public Guid Subscribe(SpotlightEventType eventType, Guid identifier, Action<object> eventResponder)
         {
             SpotlightEventKey eventKey = new SpotlightEventKey(identifier, eventType);
             if (!_eventResponders.ContainsKey(eventKey))
@@ -54,13 +58,6 @@ namespace Spotlight.Services
             _eventResponders[eventKey].Add(responder);
             _eventRespondersById[responder.Id] = responder;
             return responder.Id;
-        }
-
-        public Guid Subscribe(SpotlightEventType eventType, string identfier, Action<object> handler)
-        {
-            SpotlightEventSubscription subscription = new SpotlightEventSubscription(eventType, handler, identfier);
-
-            return subscription.Id; ;
         }
 
         public void Unsubscribe(Guid subscriptionId)
