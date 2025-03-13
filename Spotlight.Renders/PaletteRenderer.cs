@@ -1,4 +1,5 @@
 ﻿using Spotlight.Abstractions;
+using Spotlight.Abstractions.Renderers;
 using Spotlight.Models;
 using Spotlight.Services;
 using System.Drawing;
@@ -6,13 +7,7 @@ using System.Windows;
 
 namespace Spotlight.Renderers
 {
-    public enum PaletteType
-    {
-        Section,
-        Full,
-    }
-
-    public class PaletteRenderer : Renderer
+    public class PaletteRenderer : Renderer, IPaletteRenderer
     {
         private byte[] _buffer;
 
@@ -31,7 +26,7 @@ namespace Spotlight.Renderers
             return GetRectangle(rect, _buffer);
         }
 
-        public void SetPaletteType(PaletteType paletteType)
+        public void Initialize(PaletteType paletteType)
         {
             _paletteType = paletteType;
             _buffer = new byte[256 * (paletteType == PaletteType.Full ? 64 : 32) * BYTES_PER_BLOCK];

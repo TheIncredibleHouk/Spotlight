@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Spotlight.Renderers
 {
-    public class Renderer
+    public class Renderer : IRenderer
     {
         public bool RenderGrid { get; set; }
         public bool ScreenBorders { get; set; }
@@ -63,17 +63,27 @@ namespace Spotlight.Renderers
             return copyData;
         }
 
-        public const int BYTES_PER_PIXEL = 4;
-        public const int PIXELS_PER_TILE = 8 * 8;
-        public const int PIXELS_PER_BLOCK_ROW = 16;
-        public const int TILES_PER_ROW = 16;
-        public const int TILES_PER_COLUMN = 16;
-        public const int PIXELS_PER_BLOCK = 16 * 16;
-        public const int BYTES_PER_BLOCK = BYTES_PER_PIXEL * PIXELS_PER_BLOCK;
-        public const int BLOCKS_PER_SCREEN = 16;
-        public const int SCREENS_PER_LEVEL = 15;
+        public int BytesPerPixel { get => BYTES_PER_PIXEL; }
+        public int PixelsPerTile { get => PIXELS_PER_TILE; }
+        public int PixelsPerBlockPerRow { get => PIXELS_PER_BLOCK_ROW; }
+        public int TilesPerRow { get => TILES_PER_ROW; }
+        public int TilesPerColumn { get => TILES_PER_COLUMN; }
+        public int PixelsPerBlock { get => PIXELS_PER_BLOCK; }
+        public int BytesPerBlock { get => BYTES_PER_BLOCK; }
+        public int BlocksPerScreen { get => BLOCKS_PER_SCREEN; }
+        public int ScreensPerLevel { get => SCREENS_PER_LEVEL; }
+        public int ByteStride { get => BYTE_STRIDE; }
 
-        public int BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK_ROW * BLOCKS_PER_SCREEN * SCREENS_PER_LEVEL;
+        protected const int BYTES_PER_PIXEL = 4;
+        protected const int PIXELS_PER_TILE = 8 * 8;
+        protected const int PIXELS_PER_BLOCK_ROW = 16;
+        protected const int TILES_PER_ROW = 16;
+        protected const int TILES_PER_COLUMN = 16;
+        protected const int PIXELS_PER_BLOCK = 16 * 16;
+        protected const int BYTES_PER_BLOCK = BYTES_PER_PIXEL * PIXELS_PER_BLOCK;
+        protected const int BLOCKS_PER_SCREEN = 16;
+        protected const int SCREENS_PER_LEVEL = 15;
+        protected int BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK_ROW * BLOCKS_PER_SCREEN * SCREENS_PER_LEVEL;
 
         protected void RenderTile(int x, int y, Tile tile, byte[] buffer, Color[] palette, bool horizontalFlip = false, bool verticalFlip = false, bool useTransparency = false, double opacity = 1)
         {

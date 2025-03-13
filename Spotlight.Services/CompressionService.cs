@@ -4,15 +4,22 @@ using Spotlight.Services;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Spotlight
 {
     public class CompressionService : ICompressionService
     {
         private Level _level;
-        private LevelDataManager _levelDataAccessor;
+        private ILevelDataManager _levelDataManager;
+        private IWorldDataManager _worldDataManager;
         private static CompressionPoint _currentPoint, _savedPoint;
 
+        public CompressionService(ILevelDataManager levelDataManager, IWorldDataManager worldDataManager)
+        {
+            _levelDataManager = levelDataManager;
+            _worldDataManager = worldDataManager;
+        }
         public byte[] CompressLevel(Level level)
         {
             List<byte> returnBytes = new List<byte>();
@@ -24,7 +31,7 @@ namespace Spotlight
             ResetPoint();
 
             _level = level;
-            _levelDataAccessor = new LevelDataManager(level);
+            _levelDataManager.Initialize(level);
 
             while (!_currentPoint.EOD)
             {
@@ -121,7 +128,7 @@ namespace Spotlight
 
         public byte[] CompressWorld(World world)
         {
-            WorldDataManager worldDataAccessor = new WorldDataManager(world);
+            _worldDataManager.Initialize(world);
             byte[] data = new byte[9 * 16 * world.ScreenLength];
             int counter = 0;
 
@@ -131,7 +138,7 @@ namespace Spotlight
                 {
                     for (int x = 0; x < 16; x++)
                     {
-                        data[counter++] = (byte)worldDataAccessor.GetData((p * 16) + x, y);
+                        data[counter++] = (byte)_worldDataManager.GetData((p * 16) + x, y);
                     }
                 }
             }
@@ -304,7 +311,7 @@ namespace Spotlight
                 return 0xFF;
             }
 
-            int data = _levelDataAccessor.GetData(_currentPoint.XPointer, _currentPoint.YPointer);
+            int data = _levelDataManager.GetData(_currentPoint.XPointer, _currentPoint.YPointer);
 
             _currentPoint.XPointer++;
             if (_currentPoint.XPointer >= 0x10 * _level.ScreenLength)

@@ -10,6 +10,7 @@ namespace Spotlight.Abstractions
 {
     public interface IWorldDataManager
     {
+        public void Initialize(World _world);
         public int GetData(int x, int y);
         public void SetData(int x, int y, int tileValue);
         public void ReplaceValue(int existingValue, int newValue);

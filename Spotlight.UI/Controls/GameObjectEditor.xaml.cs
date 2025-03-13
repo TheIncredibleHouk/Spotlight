@@ -1,7 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -14,64 +18,63 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for GameObjectEditor.xaml
     /// </summary>
-    public partial class GameObjectEditor : UserControl, IDetachEvents
+    public partial class GameObjectEditor : UserControl, IUnsubscribe
     {
-        public GameObjectEditor()
-        {
-            InitializeComponent();
-        }
+        private IProjectService _projectService;
+        private IGraphicsManager _graphicsManager;
+        private IGraphicsService _graphicsService;
+        private IGameObjectService _gameObjectService;
+        private IPaletteService _palettesService;
+        private IGameObjectRenderer _gameObjectRenderer;
+        private IEventService _eventService;
 
-        private ProjectService _projectService;
-        private GraphicsManager _graphicsAccessor;
-        private GraphicsService _graphicsService;
-        private GameObjectService _gameObjectService;
-        private PaletteService _palettesService;
-        private GameObjectRenderer _renderer;
         private LevelObject viewObject = new LevelObject() { X = 8, Y = 7, Property = -1 };
         private List<LevelObject> viewObjects = new List<LevelObject>();
         private WriteableBitmap _bitmap;
 
-        public GameObjectEditor(ProjectService projectService, PaletteService palettesService, GraphicsService graphicsService, GameObjectService gameObjectService)
+        private List<Guid> _subscriptionIds = new List<Guid>();
+        public GameObjectEditor()
         {
             InitializeComponent();
 
-            _projectService = projectService;
-            _gameObjectService = gameObjectService;
-            _graphicsService = graphicsService;
-            _palettesService = palettesService;
-            _graphicsAccessor = new GraphicsManager(graphicsService.GetGlobalTiles(), graphicsService.GetExtraTiles());
-            viewObjects.Add(viewObject);
-
-            Dpi dpi = this.GetDpi();
-            _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-            _renderer = new GameObjectRenderer(_gameObjectService, _palettesService, _graphicsAccessor);
-            _renderer.RenderGrid = true;
-
+            _projectService = App.Services.GetService<IProjectService>();
+            _gameObjectService = App.Services.GetService<IGameObjectService>();
+            _graphicsService = App.Services.GetService<IGraphicsService>();
+            _palettesService = App.Services.GetService<IPaletteService>();
+            _graphicsManager = App.Services.GetService<IGraphicsManager>();
+            _eventService = App.Services.GetService<IEventService>();
+            
             GameObjectRenderer.Source = _bitmap;
 
-            List<Palette> palettes = _palettesService.GetPalettes();
+            _subscriptionIds.Add(_eventService.Subscribe(SpotlightEventType.GraphicsUpdated, GraphicsUpdated));
+            _subscriptionIds.Add(_eventService.Subscribe(SpotlightEventType.ExtraGraphicsUpdated, GraphicsUpdated));
+        }
 
-            ObjectSelector.Initialize(_gameObjectService, _palettesService, _graphicsAccessor, palettes[0]);
+        private void Initialize()
+        {
+            _graphicsManager.Initialize(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _gameObjectRenderer = new GameObjectRenderer(_gameObjectService, _palettesService, _graphicsManager);
+            _gameObjectRenderer.RenderGrid = true;
+            viewObjects.Add(viewObject);
 
-            PaletteSelector.ItemsSource = palettes;
+        }
+
+        private void InitializeUI()
+        {
+            Dpi dpi = this.GetDpi();
+            _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+            ObjectSelector.Initialize(_gameObjectService, _palettesService, App.Services.GetService<IEventService>(), _graphicsManager, _palettesService.GetPalettes()[0]);
+
+            PaletteSelector.ItemsSource = _palettesService.GetPalettes();
             PaletteSelector.SelectedIndex = 0;
-
-            _graphicsService.GraphicsUpdated += _graphicsService_GraphicsUpdated;
-            _graphicsService.ExtraGraphicsUpdated += _graphicsService_GraphicsUpdated;
         }
+       
 
-        public void DetachEvents()
+        private void GraphicsUpdated()
         {
-            _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
-            _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
-            ObjectSelector.DetachEvents();
-        }
-
-        private void _graphicsService_GraphicsUpdated()
-        {
-            _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
-            Update();
+            _graphicsManager.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             ObjectSelector.Update();
+            Update();
         }
 
         public void SelectObject(GameObject gameObject, Palette palette)
@@ -87,7 +90,7 @@ namespace Spotlight
         private void PaletteSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Palette selectedPalette = _palettesService.GetPalette(((Palette)PaletteSelector.SelectedItem).Id);
-            _renderer.Update(selectedPalette);
+            _gameObjectRenderer.Update(selectedPalette);
             ObjectSelector.Update(selectedPalette);
             Update();
         }
@@ -108,14 +111,14 @@ namespace Spotlight
         private void Update()
         {
             Int32Rect sourceArea = new Int32Rect(0, 0, 256, 256);
-            _renderer.Clear();
+            _gameObjectRenderer.Clear();
             if (viewObject.GameObject != null)
             {
-                _renderer.Update(viewObjects, _showOverlays);
+                _gameObjectRenderer.Update(viewObjects, _showOverlays);
             }
 
             _bitmap.Lock();
-            _bitmap.WritePixels(sourceArea, _renderer.GetRectangle(sourceArea.AsRectangle()), sourceArea.Width * 4, sourceArea.X, sourceArea.Y);
+            _bitmap.WritePixels(sourceArea, _gameObjectRenderer.GetRectangle(sourceArea.AsRectangle()), sourceArea.Width * 4, sourceArea.X, sourceArea.Y);
             _bitmap.AddDirtyRect(sourceArea);
             _bitmap.Unlock();
         }
@@ -167,16 +170,10 @@ namespace Spotlight
             Update();
         }
 
-        private void FindButton_Click(object sender, RoutedEventArgs e)
+        public void Unsubscribe()
         {
-            GameObject gameObject = viewObject.GameObject;
-            string output = string.Join("\n", _gameObjectService.FindInLevels(gameObject).Select(level => level.Name));
-            if (output.Length == 0)
-            {
-                output = "Not found in any levels";
-            }
-
-            AlertWindow.Alert($"{gameObject.Name} found in the following levels: \n{output}");
+            _eventService.Unsubscribe(_subscriptionIds);
         }
+
     }
 }

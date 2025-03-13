@@ -4,6 +4,8 @@ using Spotlight.Services;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Spotlight.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Spotlight
 {
@@ -12,11 +14,19 @@ namespace Spotlight
     /// </summary>
     public partial class MoveLevelWindow : Window
     {
-        public static MoveLevelResult Show(LevelService levelService, WorldService worldService, WorldInfo hostWorld, LevelInfo parentLevel)
+        private readonly ILevelService _levelService;
+        private readonly IWorldService _worldService;
+        public MoveLevelWindow(ILevelService levelService, IWorldService worldService) : base()
+        {
+            _levelService = levelService;
+            _worldService = worldService;
+        }
+
+        public static MoveLevelResult Show(WorldInfo hostWorld, LevelInfo parentLevel)
         {
             MoveLevelResult moveLevelResult = null;
 
-            MoveLevelWindow window = new MoveLevelWindow(levelService, worldService, hostWorld, parentLevel);
+            MoveLevelWindow window = new MoveLevelWindow(App.Services.GetService<ILevelService>(), App.Services.GetService<IWorldService>());
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
 
@@ -41,11 +51,9 @@ namespace Spotlight
         }
 
 
-        LevelService _levelService;
-        WorldService _worldService;
         LevelInfo _defaultParentLevel;
 
-        public MoveLevelWindow(LevelService levelService, WorldService worldService, WorldInfo hostWorld, LevelInfo parentLevel)
+        public MoveLevelWindow(ILevelService levelService, WorldService worldService, WorldInfo hostWorld, LevelInfo parentLevel)
         {
             InitializeComponent();
 

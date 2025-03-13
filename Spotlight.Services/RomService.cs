@@ -30,7 +30,7 @@ namespace Spotlight.Services
         private ICompressionService _compressionService;
         private IErrorService _errorService;
 
-        public RomService(IErrorService errorService, IGraphicsService graphicsService, IPaletteService palettesService, ITileService tileService, ILevelService levelService, IWorldService worldService, ITextService textService)
+        public RomService(IErrorService errorService, IGraphicsService graphicsService, IPaletteService palettesService, ITileService tileService, ILevelService levelService, IWorldService worldService, ITextService textService, ICompressionService compressionService)
         {
             _errorService = errorService;
             _levelIndexTable = new Dictionary<Guid, byte>();
@@ -45,7 +45,7 @@ namespace Spotlight.Services
             _worldService = worldService;
             _textService = textService;
             _levelService = levelService;
-            _compressionService = new CompressionService();
+            _compressionService = compressionService;
         }
 
         private void SetBatterySave()

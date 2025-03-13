@@ -7,13 +7,13 @@ using Spotlight.Abstractions;
 
 namespace Spotlight.Renderers
 {
-    public class GameObjectRenderer : Renderer
+    public class GameObjectRenderer : Renderer, IGameObjectRenderer
     {
         private byte[] _buffer;
         private IGameObjectService _gameObjectService;
         private IPaletteService _palettesService;
 
-        public GameObjectRenderer(IGameObjectService gameObjectService, IPaletteService palettesService, IGraphicsManager graphicsAccessor) : base(graphicsAccessor)
+        public GameObjectRenderer(IGameObjectService gameObjectService, IPaletteService palettesService, IGraphicsManager graphicsManager) : base(graphicsManager)
         {
             BYTE_STRIDE = 256 * 4;
             _buffer = new byte[256 * 256 * 4];

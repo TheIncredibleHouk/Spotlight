@@ -1,4 +1,6 @@
-﻿using Spotlight.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
 using System.IO;
@@ -15,47 +17,51 @@ namespace Spotlight
     /// </summary>
     public partial class FilePanel : UserControl
     {
-        public delegate void LevelOpenEventHandler(LevelInfo levelInfo);
-        public event LevelOpenEventHandler LevelOpened;
-
-        public delegate void WorldOpenEventHandler(WorldInfo worldInfo);
-        public event WorldOpenEventHandler WorldOpened;
-
-        public delegate void NameUpdatedHandler(NameUpdate nameUpdate);
-        public event NameUpdatedHandler NameUpdated;
-
-        public delegate void LevelTreeUpdatedHandler();
-        public event LevelTreeUpdatedHandler LevelTreeUpdated;
+        private IWorldService _worldService;
+        private ILevelService _levelService;
+        private IEventService _eventService;
 
         public FilePanel()
         {
+            InitializeServices();
             InitializeComponent();
-
+            InitializeUI();
         }
 
-        private WorldService _worldService;
-        private LevelService _levelService;
-        public void Initialize(LevelService levelService, WorldService worldService)
-        {
-            _levelService = levelService;
-            _worldService = worldService;
-            _levelService.LevelUpdated += _levelService_LevelUpdated;
-            _levelService.LevelsUpdated += _levelService_LevelsUpdated;
 
-            Dpi dpi = this.GetDpi();
-            _thumbnailBitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-            ThumbnailPreview.Source = _thumbnailBitmap;
+        private void InitializeServices()
+        {
+            _levelService = App.Services.GetService<ILevelService>();
+            _worldService = App.Services.GetService<IWorldService>();
+
+            _eventService.Subscribe<LevelInfo>(SpotlightEventType.LevelAdded, LevelAdded);
+            _eventService.Subscribe<LevelInfo>(SpotlightEventType.LevelUpdated, LevelUpdated);
+            _eventService.Subscribe(SpotlightEventType.LevelRemoved, LevelRemoved);
+
+
             BuildTree();
         }
 
-        private void _levelService_LevelUpdated(LevelInfo levelInfo)
+        public void InitializeUI()
+        {
+            Dpi dpi = this.GetDpi();
+            _thumbnailBitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+            ThumbnailPreview.Source = _thumbnailBitmap;
+        }
+
+        private void LevelAdded(LevelInfo levelInfo)
         {
             BuildTree(levelInfo);
         }
 
-        private void _levelService_LevelsUpdated(LevelInfo levelInfo)
+        private void LevelUpdated(LevelInfo levelInfo)
         {
             BuildTree(levelInfo);
+        }
+
+        private void LevelRemoved()
+        {
+            BuildTree();
         }
 
         public void BuildTree(LevelInfo defaultSelection = null)
@@ -143,13 +149,13 @@ namespace Spotlight
 
                 if (dataContext is LevelInfo)
                 {
-                    LevelOpened((LevelInfo)dataContext);
+                    _eventService.Emit(SpotlightEventType.LevelOpened, (LevelInfo)dataContext);
                     Expanded = false;
                     UpdateCollapsedState();
                 }
                 else if (dataContext is WorldInfo)
                 {
-                    WorldOpened((WorldInfo)dataContext);
+                    _eventService.Emit(SpotlightEventType.WorldOpened, (WorldInfo)dataContext);
                     Expanded = false;
                     UpdateCollapsedState();
                 }
@@ -174,11 +180,8 @@ namespace Spotlight
                         LevelInfo existingInfo = _levelService.AllLevels().Where(l => l.Name.Equals(newName, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (existingInfo == null)
                         {
-                            _levelService.RenameLevel(levelInfo.Name, newName);
-                            levelInfo.Name = newName;
-
-                            _levelService.NotifyUpdate(levelInfo);
-                            NameUpdated(new NameUpdate((IInfo)levelInfo, previousName, levelInfo.Name));
+                            LevelInfo newLevelInfo = _levelService.RenameLevel(levelInfo, newName);
+                            ((TreeViewItem)WorldTree.SelectedItem).DataContext = newLevelInfo;
                             ((TreeViewItem)WorldTree.SelectedItem).Header = levelInfo.Name;
                         }
                         else
@@ -198,10 +201,8 @@ namespace Spotlight
                         WorldInfo existingInfo = _worldService.AllWorlds().Where(w => w.Name.Equals(newName, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (existingInfo == null)
                         {
-                            _worldService.RenameWorld(worldInfo.Name, newName);
-                            worldInfo.Name = newName;
-
-                            NameUpdated(new NameUpdate((IInfo)worldInfo, previousName, worldInfo.Name));
+                            WorldInfo newInfo = _worldService.RenameWorld(worldInfo, newName);
+                            ((TreeViewItem)WorldTree.SelectedItem).DataContext = newInfo;
                             ((TreeViewItem)WorldTree.SelectedItem).Header = worldInfo.Name;
                         }
                         else
@@ -229,7 +230,7 @@ namespace Spotlight
 
             WorldInfo hostWorldInfo = (WorldInfo)parentWorldItem.DataContext;
 
-            MoveLevelResult result = MoveLevelWindow.Show(_levelService, _worldService, hostWorldInfo, parentLevelInfo);
+            MoveLevelResult result = MoveLevelWindow.Show(hostWorldInfo, parentLevelInfo);
 
             if (result != null)
             {
@@ -242,7 +243,6 @@ namespace Spotlight
                 result.InfoNode.SublevelsInfo.Add(levelInfo);
 
                 BuildTree();
-                LevelTreeUpdated();
                 SetSelectedItem(levelInfo);
             }
         }
@@ -269,7 +269,8 @@ namespace Spotlight
                         _thumbnailBitmap.Unlock();
                     }
                 }
-            } else if(((TreeViewItem) WorldTree.SelectedItem)?.DataContext is WorldInfo worldInfo)
+            }
+            else if (((TreeViewItem)WorldTree.SelectedItem)?.DataContext is WorldInfo worldInfo)
             {
                 if (worldInfo.MetaData != null)
                 {

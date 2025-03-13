@@ -9,6 +9,8 @@ namespace Spotlight.Abstractions
 {
     public interface IGraphicsManager
     {
+        public void Initialize(Tile[] globalTable, Tile[] overlayTable);
+        public void Initialize(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable);
         public Tile GetAbsoluteTile(int tileTableIndex, int tileIndex);
         public Tile GetRelativeTile(int tileIndex);
         public Tile GetOverlayTile(int bank, int tileIndex);

@@ -12,7 +12,7 @@ namespace Spotlight.Abstractions
         List<WorldInfo> AllWorlds();
         World LoadWorld(WorldInfo worldInfo);
         void SaveWorld(World world, string basePath = null);
-        void RenameWorld(string previousName, string newName);
+        WorldInfo RenameWorld(WorldInfo worldInfo, string newName);
         void GenerateMetaData(WorldInfo worldInfo, MemoryStream thumbnailStream = null);
     }
 }

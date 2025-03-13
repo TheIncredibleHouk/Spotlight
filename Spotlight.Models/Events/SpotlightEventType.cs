@@ -8,15 +8,22 @@ namespace Spotlight.Models
 {
     public enum SpotlightEventType
     {
-        GraphicsUpdate,
-        ExtraGraphicsUpdate,
+        GraphicsUpdated,
+        ExtraGraphicsUpdated,
         PaletteAdded,
-        PaletteUpdate,
+        PaletteUpdated,
         PaletteRemoved,
         RgbColorsUpdated,
-        ProjectUpdate,
+        ProjectUpdated,
         ProjectLoaded,
         GameObjectsUpdated,
-        TileSetUpdated
+        TileSetUpdated,
+        LevelAdded,
+        LevelUpdated,
+        LevelRenamed,
+        LevelRemoved,
+        LevelOpened,
+        WorldOpened,
+        WorldRenamed
     }
 }

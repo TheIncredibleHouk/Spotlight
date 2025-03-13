@@ -19,7 +19,7 @@ namespace Spotlight.Services
         {
         }
 
-        public void Setup(World _world)
+        public void Initialize(World _world)
         {
             _tileData = _world.TileData;
             _pointers = _world.Pointers;

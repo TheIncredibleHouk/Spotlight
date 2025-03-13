@@ -54,18 +54,19 @@ namespace Spotlight
         {
             _gameObjectService = gameObjectService;
             _eventService = eventService;
-            _graphicsAccessor = graphicsAccessor;
+            _graphicsAccessor = graphicsManager;
             _palette = palette;
             _palettesService = palettesService;
 
             _objectTypes = new List<GameObjectType>();
+            _selectedGroup = new Dictionary<GameObjectType, string>();
 
-            _renderer = new GameObjectRenderer(gameObjectService, _palettesService, graphicsAccessor);
+            _renderer = new GameObjectRenderer(gameObjectService, _palettesService, graphicsManager);
 
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
-            _selectedGroup = new Dictionary<GameObjectType, string>();
+            
 
             switch (ObjectGroup)
             {
@@ -95,16 +96,20 @@ namespace Spotlight
             
 
             _selectedObject = null;
+            _gameObjectsServiceSubId = _eventService.Subscribe(SpotlightEventType.GameObjectsUpdated, GameObjectsUpdated);
+        }
+
+        private void InitializeUI()
+        {
 
             GameObjectImage.Source = _bitmap;
             GameObjectTypes.ItemsSource = _objectTypes;
 
-            _renderer.Update(palette);
-
-            CanvasArea.Background = new SolidColorBrush(palette.RgbColors[0][0].ToMediaColor());
+            CanvasArea.Background = new SolidColorBrush(_palette.RgbColors[0][0].ToMediaColor());
             GameObjectTypes.SelectedIndex = 0;
 
-            _gameObjectsServiceSubId = _eventService.Subscribe(SpotlightEventType.GameObjectsUpdated, GameObjectsUpdated);
+            _renderer.Update(_palette);
+
         }
 
         public void DetachEvents()
@@ -112,9 +117,9 @@ namespace Spotlight
             _eventService.Unsubscribe(_gameObjectsServiceSubId);
         }
 
-        private void GameObjectsUpdated(object gameObject)
+        private void GameObjectsUpdated()
         {
-            GameObjectType_SelectionChanged(null, null);
+            UpdateSelectedObject();
             Update();
         }
 
@@ -167,6 +172,12 @@ namespace Spotlight
 
         private void GameObjectType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            UpdateGameObjectUI();
+            
+        }
+
+        private void UpdateGameObjectUI()
+        {
             GameObjectGroups.ItemsSource = _gameObjectService.GetObjectGroups((GameObjectType)GameObjectTypes.SelectedItem).OrderBy(group => group);
             GameObjectGroups.SelectedItem = _selectedGroup[(GameObjectType)GameObjectTypes.SelectedItem];
 
@@ -176,8 +187,6 @@ namespace Spotlight
             }
 
             _selectedObject = null;
-            Update();
-            UpdateSelectedObject();
         }
 
         private void GameObjectGroups_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -231,10 +240,11 @@ namespace Spotlight
 
                 if (e.ClickCount > 1)
                 {
-                    if (GameObjectDoubleClicked != null && _selectedObject != null)
-                    {
-                        GameObjectDoubleClicked(_selectedObject.GameObject);
-                    }
+                    GlobalPanels.EditGameObject(_selectedObject.GameObject, _palette);
+                    //if (GameObjectDoubleClicked != null && _selectedObject != null)
+                    //{
+                    //    GameObjectDoubleClicked(_selectedObject.GameObject);
+                    //}
                 }
             }
         }

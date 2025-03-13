@@ -1,14 +1,15 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
 
 namespace Spotlight
 {
-    public class GraphicsRenderer : Renderer
+    public class GraphicsRenderer : Renderer, IGraphicsRenderer
     {
         private byte[] _buffer;
 
-        public GraphicsRenderer(GraphicsManager graphicsManager) : base(graphicsManager)
+        public GraphicsRenderer(IGraphicsManager graphicsManager) : base(graphicsManager)
         {
             _buffer = new byte[256 * 256 * BYTES_PER_BLOCK];
         }

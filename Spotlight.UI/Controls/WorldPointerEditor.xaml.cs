@@ -16,10 +16,10 @@ namespace Spotlight
             InitializeComponent();
         }
 
-        private LevelService _levelService;
+        private ILevelService _levelService;
         private WorldInfo _worldInfo;
 
-        public void Initialize(LevelService levelService, WorldInfo worldInfo)
+        public void Initialize(ILevelService levelService, WorldInfo worldInfo)
         {
             _levelService = levelService;
             _worldInfo = worldInfo;

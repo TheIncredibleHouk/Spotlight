@@ -89,7 +89,7 @@ namespace Spotlight.Services
             try
             {
                 File.WriteAllText(projectFilePath, fileContents);
-                _eventService.Emit(SpotlightEventType.ProjectUpdate);
+                _eventService.Emit(SpotlightEventType.ProjectUpdated);
                 return true;
             }
             catch (Exception e)

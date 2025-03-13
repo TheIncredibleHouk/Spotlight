@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Spotlight.Abstractions;
 using Spotlight.Controls;
 using Spotlight.Models;
 using Spotlight.Renderers;
@@ -21,31 +23,23 @@ namespace Spotlight
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ProjectService _projectService;
-        private ErrorService _errorService;
-        private GraphicsService _graphicsService;
-        private WorldService _worldService;
-        private LevelService _levelService;
-        private PaletteService _palettesService;
-        private TileService _tileService;
-        private TextService _textService;
-        private GameObjectService _gameObjectService;
-        private RomService _romService;
-        private IProjectService _project;
+
         private Configuration _config;
-        private ClipboardService _clipBoardService;
+        private IEventService _eventService;
+        //private ILevelService _levelService;
+        //private IWorldService _worldService;
 
         public MainWindow()
         {
-            _errorService = new ErrorService();
-            _projectService = new ProjectService(_errorService);
+
             _config = new Configuration();
+            _eventService = App.Services.GetService<IEventService>();
 
             LoadConfiguration();
             InitializeComponent();
 
-            _ProjectPanel.ProjectService = _projectService;
-            _ProjectPanel.ProjectLoaded += _ProjectPanel_ProjectLoaded;
+            _eventService.Subscribe<Project>(SpotlightEventType.ProjectLoaded, ProjectLoaded);
+
             _ProjectPanel.TextEditorOpened += _ProjectPanel_TextEditorOpened;
             _ProjectPanel.ObjectEditorOpened += OpenGameObjectEditor;
             _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
@@ -205,7 +199,7 @@ namespace Spotlight
                 {
                     Filter = "NES ROM|*.nes"
                 };
-                
+
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     _config.LastRomPath = saveFileDialog.FileName;
@@ -341,48 +335,64 @@ namespace Spotlight
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
-        private void _ProjectPanel_ProjectLoaded(IProjectService project)
+        private void ProjectLoaded(Project project)
         {
-            _project = project;
-            _projectService = new ProjectService(new ErrorService(), project);
-            _graphicsService = new GraphicsService(_errorService, project);
-            _gameObjectService = new GameObjectService(_errorService, project);
-            _levelService = new LevelService(_errorService, project, _gameObjectService);
-            _palettesService = new PalettesService(_errorService, project);
-            _worldService = new WorldService(_errorService, project);
-            _tileService = new TileService(_errorService, project);
-            _textService = new TextService(_errorService, project);
-            _clipBoardService = new ClipboardService();
-            _romService = new RomService(_errorService, _graphicsService, _palettesService, _tileService, _levelService, _worldService, _textService);
+            //_project = project;
+            //_projectService = new ProjectService(new ErrorService(), project);
+            //_graphicsService = new GraphicsService(_errorService, project);
+            //_gameObjectService = new GameObjectService(_errorService, project);
+            //_levelService = new LevelService(_errorService, project, _gameObjectService);
+            //_palettesService = new PalettesService(_errorService, project);
+            //_worldService = new WorldService(_errorService, project);
+            //_tileService = new TileService(_errorService, project);
+            //_textService = new TextService(_errorService, project);
+            //_clipBoardService = new ClipboardService();
+            //_romService = new RomService(_errorService, _graphicsService, _palettesService, _tileService, _levelService, _worldService, _textService);
 
-            _levelService.LevelUpdated += _levelService_LevelUpdated;
-            _worldService.WorldUpdated += _worldService_WorldUpdated;
+            //_levelService.LevelUpdated += _levelService_LevelUpdated;
+            //_worldService.WorldUpdated += _worldService_WorldUpdated;
 
 
             List<WorldInfo> worldInfos = new List<WorldInfo>();
             worldInfos.AddRange(project.WorldInfo);
             worldInfos.Add(project.EmptyWorld);
 
-            FilePanel.Initialize(_levelService, _worldService);
+            FilePanel.Initialize(_serviceProvider.GetService<ILevelService>(), _serviceProvider.GetService<IWorldService>(), _serviceProvider.GetService<IEventService>());
 
             SplashText.Visibility = Visibility.Collapsed;
-            _config.LastProjectPath = _project.DirectoryPath + "\\" + _project.Name + ".json";
+            _config.LastProjectPath = project.DirectoryPath + "\\" + project.Name + ".json";
         }
 
         public List<TabItem> OpenedTabs = new List<TabItem>();
 
-        public LevelPanel OpenLevelEditor(LevelInfo levelInfo)
+        public void OpenLevelEditor(LevelInfo levelInfo)
         {
             var existingTab = OpenedTabs.Where(t => t.DataContext == levelInfo).FirstOrDefault();
 
             if (existingTab != null)
             {
                 TabsOpen.SelectedItem = SelectedTabItem = existingTab;
-                return (LevelPanel)existingTab.Content;
+                return;
             }
 
             TabItem tabItem = new TabItem();
-            LevelPanel levelPanel = new LevelPanel(_projectService, _graphicsService, _palettesService, _textService, _tileService, _gameObjectService, _levelService, _clipBoardService, levelInfo);
+            LevelPanel levelPanel = new LevelPanel(
+                App.Services.GetService<IProjectService>(),
+                App.Services.GetService<IGraphicsService>(),
+                App.Services.GetService<IPaletteService>(),
+                App.Services.GetService<ITextService>(),
+                App.Services.GetService<ITileService>(),
+                App.Services.GetService<IGameObjectService>(),
+                App.Services.GetService<ILevelService>(),
+                App.Services.GetService<IClipboardService>(),
+                App.Services.GetService<IHistoryService>(),
+                App.Services.GetService<ICompressionService>(),
+                App.Services.GetService<IEventService>(),
+                App.Services.GetService<IGraphicsManager>(),
+                App.Services.GetService<ILevelDataManager>(),
+                App.Services.GetService<ILevelRenderer>());
+
+            levelPanel.Initialize(levelInfo);
 
             tabItem.Header = levelInfo.Name;
             tabItem.Content = levelPanel;
@@ -392,8 +402,6 @@ namespace Spotlight
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
-
-            return levelPanel;
         }
 
         public WorldPanel OpenWorldEditor(WorldInfo worldInfo)

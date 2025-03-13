@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Spotlight.Renderers
 {
-    public class LevelRenderer : Renderer
+    public class LevelRenderer : Renderer, ILevelRenderer
     {
         public const int BITMAP_HEIGHT = Level.BLOCK_HEIGHT * 16;
         public const int BITMAP_WIDTH = Level.BLOCK_WIDTH * 16;
@@ -37,9 +37,11 @@ namespace Spotlight.Renderers
         private TileSet _tileSet;
         private Palette _palette;
 
-        public void SetTerrain(List<TileTerrain> terrain)
+        public void Initialize(List<TileTerrain> terrain, Palette palette = null, TileSet tileSet = null)
         {
             _terrain = terrain;
+            _tileSet = tileSet;
+            _palette = palette;
         }
 
         public void Update(Palette palette = null, TileSet tileSet = null)

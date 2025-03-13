@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Spotlight.Renderers
 {
-    public class TileSetRenderer : Renderer
+    public class TileSetRenderer : Renderer, ITileSetRenderer
     {
         private byte[] _buffer;
 
@@ -26,7 +26,7 @@ namespace Spotlight.Renderers
             return GetRectangle(rect, _buffer);
         }
 
-        public void SetTilesAndTerrain(List<TileTerrain> terrain, List<MapTileInteraction> mapTileInteractions)
+        public void Initialize(List<TileTerrain> terrain, List<MapTileInteraction> mapTileInteractions)
         {
             _terrain = terrain;
             _mapTileInteractions = mapTileInteractions;

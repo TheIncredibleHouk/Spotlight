@@ -14,7 +14,7 @@ namespace Spotlight.Services
 
         }
 
-        public void Setup(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
+        public void Initialize(Tile[] topTable, Tile[] bottomTable, Tile[] globalTable, Tile[] overlayTable)
         {
             _relativeTable = new Tile[256];
             for (int i = 0; i < 128; i++)
@@ -27,7 +27,7 @@ namespace Spotlight.Services
             _overlayTable = overlayTable;
         }
 
-        public GraphicsManager(Tile[] globalTable, Tile[] extraTable)
+        public void Initialize(Tile[] globalTable, Tile[] extraTable)
         {
             _globalTable = globalTable;
             _overlayTable = extraTable;

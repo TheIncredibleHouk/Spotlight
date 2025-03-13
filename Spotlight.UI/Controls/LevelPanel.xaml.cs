@@ -36,10 +36,10 @@ namespace Spotlight
         private IHistoryService _historyService;
         private IClipboardService _clipBoardService;
         private IEventService _eventService;
+        private ILevelRenderer _levelRenderer;
 
         private Level _level;
         private LevelInfo _levelInfo;
-        private LevelRenderer _levelRenderer;
         private TileSet _tileSet;
         private WriteableBitmap _bitmap;
         private WriteableBitmap _cursorBitmap;
@@ -62,11 +62,14 @@ namespace Spotlight
                         IClipboardService clipBoardService,
                         IHistoryService historyService,
                         ICompressionService compressionService,
-                        IEventService eventService)
+                        IEventService eventService,
+                        IGraphicsManager graphicsManager,
+                        ILevelDataManager levelDataManager,
+                        ILevelRenderer levelRenderer)
         {
             InitializeComponent();
 
-            
+
             _textService = textService;
             _graphicsService = graphicsService;
             _gameObjectService = gameObjectService;
@@ -77,14 +80,69 @@ namespace Spotlight
             _compressionService = compressionService;
             _clipBoardService = clipBoardService;
             _eventService = eventService;
+            _graphicsManager = graphicsManager;
+            _levelDataManager = levelDataManager;
+            _levelRenderer = levelRenderer;
 
             _subscriptions = new List<Guid>();
-
+            InitializeUI();
+        }
+        
+        public void Initialize(LevelInfo levelInfo)
+        {
             _terrain = _tileService.GetTerrain();
-            _level = _levelService.LoadLevel(_levelInfo);
+            _level = _levelService.LoadLevel(levelInfo);
+            _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
+            _initializing = false;
+        }
 
-            _level.FirstObjectData.ForEach(o => o.GameObject = gameObjectService.GetObjectById(o.GameObjectId));
-            _level.SecondObjectData.ForEach(o => o.GameObject = gameObjectService.GetObjectById(o.GameObjectId));
+        private void InitializeUI()
+        {
+            Dpi dpi = this.GetDpi();
+            _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+
+            LevelRenderSource.Source = _bitmap;
+            CanvasContainer.Width = LevelRenderSource.Width = _bitmap.PixelWidth;
+            CanvasContainer.Height = LevelRenderSource.Height = _bitmap.PixelHeight;
+
+            LevelClip.Width = _level.ScreenLength * 16 * 16;
+
+            _cursorBitmap = new WriteableBitmap(16, 16, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
+            CursorImage.ImageSource = _cursorBitmap;
+
+            SelectedEditMode.SelectedIndex = SelectedDrawMode.SelectedIndex = 0;
+
+            PaletteIndex.ItemsSource = _palettesService.GetPalettes();
+            PaletteIndex.SelectedItem = _palettesService.GetPalette(_level.PaletteId);
+
+            NoStars.SelectedIndex = _level.NoStars ? 1 : 0;
+            ExtendedSpace.SelectedIndex = _levelInfo.SaveToExtendedSpace ? 1 : 0;
+
+            UpdateTextTables();
+        }
+
+        private void InitialRender()
+        {
+            _levelRenderer.Ready();
+            _levelRenderer.Update(tileSet: _tileSet, palette: _palettesService.GetPalette(_level.PaletteId));
+            Update();
+        }
+
+        private void InitializeGameObjectData()
+        {
+            _level.FirstObjectData.ForEach(o =>
+            {
+                o.GameObject = _gameObjectService.GetObjectById(o.GameObjectId);
+                o.CalcBoundBox();
+                o.CalcVisualBox(true);
+            });
+
+            _level.SecondObjectData.ForEach(o =>
+            {
+                o.GameObject = _gameObjectService.GetObjectById(o.GameObjectId);
+                o.CalcBoundBox();
+                o.CalcVisualBox(true);
+            });
 
             _level.FirstObjectData.Insert(0, new LevelObject()
             {
@@ -92,65 +150,42 @@ namespace Spotlight
                 X = _level.StartX,
                 Y = _level.StartY
             });
+        }
+
+        private void Initialize()
+        {
 
             Tile[] staticSet = _graphicsService.GetTileSection(_level.StaticTileTableIndex);
             Tile[] animationSet = _graphicsService.GetTileSection(_level.AnimationTileTableIndex);
-
-            _graphicsManager = new GraphicsManager(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
-            _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
-
-            _levelDataManager = new LevelDataManager(_level, _tileSet);
-
-            Dpi dpi = this.GetDpi();
-            _bitmap = new WriteableBitmap(LevelRenderer.BITMAP_WIDTH, LevelRenderer.BITMAP_HEIGHT, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-            _levelRenderer = new LevelRenderer(_graphicsManager, _levelDataManager, _palettesService, _gameObjectService, _tileService.GetTerrain());
-            _levelRenderer.Initializing();
-
             Palette palette = _palettesService.GetPalette(_level.PaletteId);
-            _levelRenderer.Update(tileSet: _tileSet, palette: palette);
 
-            LevelRenderSource.Source = _bitmap;
-            CanvasContainer.Width = LevelRenderSource.Width = _bitmap.PixelWidth;
-            CanvasContainer.Height = LevelRenderSource.Height = _bitmap.PixelHeight;
-            LevelClip.Width = _level.ScreenLength * 16 * 16;
-
-            _cursorBitmap = new WriteableBitmap(16, 16, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-            CursorImage.ImageSource = _cursorBitmap;
-
-            _level.FirstObjectData.ForEach(o =>
-            {
-                o.CalcBoundBox();
-                o.CalcVisualBox(true);
-            });
-
-            _level.SecondObjectData.ForEach(o =>
-            {
-                o.CalcBoundBox();
-                o.CalcVisualBox(true);
-            });
-
-            SelectedEditMode.SelectedIndex = SelectedDrawMode.SelectedIndex = 0;
+            _graphicsManager.Initialize(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _levelRenderer.Initialize(_tileService.GetTerrain());
+            _levelDataManager.Initialize(_level, _tileSet);
 
             TileSelector.Initialize(_graphicsManager, _tileService, _tileSet, palette);
             ObjectSelector.Initialize(_gameObjectService, _palettesService, _eventService, _graphicsManager, palette);
             PointerEditor.Initialize(_levelService, _levelInfo);
+        }
 
-            UpdateTextTables();
+        private void SubscribeToEvents()
+        {
+            _subscriptions.Add(_eventService.Subscribe<GameObject>(SpotlightEventType.GameObjectsUpdated, GameObjectsUpdated));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.GraphicsUpdated, GraphicsUpdated));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.ExtraGraphicsUpdated, GraphicsUpdated));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteAdded, PaletteAdded));
+            _subscriptions.Add(_eventService.Subscribe<Palette>(SpotlightEventType.PaletteUpdated, _level.PaletteId, PaletteUpdated));
+            _subscriptions.Add(_eventService.Subscribe<Palette>(SpotlightEventType.PaletteRemoved, PaletteRemoved));
+            _subscriptions.Add(_eventService.Subscribe<TileSet>(SpotlightEventType.TileSetUpdated, _level.TileSetIndex, TileSetUpdated));
+            _subscriptions.Add(_eventService.Subscribe<TileSet>(SpotlightEventType.LevelUpdated, _level.Id, TileSetUpdated));
+        }
 
-            gameObjectService.GameObjectUpdated += GameObjectService_GameObjectsUpdated;
-            ObjectSelector.GameObjectDoubleClicked += ObjectSelector_GameObjectDoubleClicked;
-            _graphicsService.GraphicsUpdated += _graphicsService_GraphicsUpdated;
-            _graphicsService.ExtraGraphicsUpdated += _graphicsService_GraphicsUpdated;
-            _palettesService.PalettesChanged += _palettesService_PalettesChanged;
-            _tileService.TileSetUpdated += _tileService_TileSetUpdated;
-            _levelService.LevelUpdated += _levelService_LevelUpdated;
-
-            NoStars.SelectedIndex = _level.NoStars ? 1 : 0;
-            ExtendedSpace.SelectedIndex = _levelInfo.SaveToExtendedSpace ? 1 : 0;
-
-            _initializing = false;
-            _levelRenderer.Ready();
-            Update();
+        private void UnsubscribeFromEvents()
+        {
+            foreach(Guid subscriptionId in _subscriptions)
+            {
+                _eventService.Unsubscribe(subscriptionId);
+            }
         }
 
         public void LoadLevel(LevelInfo levelInfo)
@@ -158,7 +193,7 @@ namespace Spotlight
             _levelInfo = levelInfo;
         }
 
-        private void _levelService_LevelUpdated(LevelInfo levelInfo)
+        private void LevelUpdated(LevelInfo levelInfo)
         {
             if (levelInfo.Id == _level.Id)
             {
@@ -166,7 +201,7 @@ namespace Spotlight
             }
         }
 
-        private void _tileService_TileSetUpdated(int index, TileSet tileSet)
+        private void TileSetUpdated(TileSet tileSet)
         {
             Update();
             TileSelector.Update(_tileSet);
@@ -183,21 +218,33 @@ namespace Spotlight
         //    ObjectSelector.DetachEvents();
         //}
 
-        private void _palettesService_PalettesChanged()
+        private void PaletteAdded()
         {
-            PaletteIndex.ItemsSource = _palettesService.GetPalettes();
-            if (PaletteIndex.SelectedItem == null)
-            {
-                PaletteIndex.SelectedIndex = 0;
-            }
 
-            _levelRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            //_levelRenderer.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            //TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
+            //ObjectSelector.Update((Palette)PaletteIndex.SelectedItem);
+            //Update();
+        }
+
+        private void PaletteRemoved(Palette palette)
+        {
+            if (palette.Id == _level.PaletteId)
+            {
+                Palette newPalette = _palettesService.GetPalettes().FirstOrDefault();
+                _level.PaletteId = newPalette.Id;
+                PaletteUpdated(newPalette);
+            }
+        }
+
+        private void PaletteUpdated(Palette palette)
+        {
             TileSelector.Update(palette: (Palette)PaletteIndex.SelectedItem);
             ObjectSelector.Update((Palette)PaletteIndex.SelectedItem);
             Update();
         }
 
-        private void _graphicsService_GraphicsUpdated()
+        private void GraphicsUpdated()
         {
             _graphicsManager.SetTopTable(_graphicsService.GetTileSection(_level.StaticTileTableIndex));
             _graphicsManager.SetBottomTable(_graphicsService.GetTileSection(_level.AnimationTileTableIndex));
@@ -206,12 +253,7 @@ namespace Spotlight
             Update();
         }
 
-        private void ObjectSelector_GameObjectDoubleClicked(GameObject gameObject)
-        {
-            GlobalPanels.EditGameObject(gameObject, (Palette)PaletteIndex.SelectedItem);
-        }
-
-        private void GameObjectService_GameObjectsUpdated(GameObject gameObject)
+        private void GameObjectsUpdated(GameObject gameObject)
         {
             List<LevelObject> affectedObjects = _level.ObjectData.Where(l => l.GameObjectId == gameObject.GameId).ToList();
             List<Rectangle> affectedRects = new List<Rectangle>();
@@ -1479,7 +1521,6 @@ namespace Spotlight
             _levelInfo.Size = _level.CompressedData.Length;
 
             _levelService.SaveLevel(_level);
-            _levelService.NotifyUpdate(_levelInfo);
 
             _level.ObjectData.Insert(0, startPointObject);
 
@@ -1510,7 +1551,7 @@ namespace Spotlight
 
             using (MemoryStream ms = new MemoryStream(_levelRenderer.GetRectangle(thumbnailReact)))
             {
-                _levelService.GenerateMetaData(_tileService, _levelInfo, ms);
+                _levelService.GenerateMetaData(_levelInfo, ms);
             }
 
             AlertWindow.Alert(_level.Name + " has been saved!");

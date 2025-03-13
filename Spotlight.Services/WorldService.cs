@@ -15,12 +15,14 @@ namespace Spotlight.Services
         private readonly ITileService _tileService;
         private readonly IErrorService _errorService;
         private readonly IProjectService _projectService;
+        private readonly IEventService _eventService;
 
-        public WorldService(IErrorService errorService, IProjectService projectService, ITileService tileService)
+        public WorldService(IErrorService errorService, IProjectService projectService, ITileService tileService, IEventService eventService)
         {
             _errorService = errorService;
             _projectService = projectService;
             _tileService = tileService;
+            _eventService = eventService;
         }
 
         public List<WorldInfo> AllWorlds()
@@ -69,16 +71,32 @@ namespace Spotlight.Services
             }
         }
 
-        public void RenameWorld(string previousName, string newName)
+        public WorldInfo RenameWorld(WorldInfo worldInfo, string newName)
         {
-            string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
+            string safePriorLevelName = worldInfo.Name.Replace("!", "").Replace("?", "");
             string priorFileName = string.Format(@"{0}\{1}.json", _projectService.GetProject().DirectoryPath + @"\worlds", safePriorLevelName);
 
             World world = JsonConvert.DeserializeObject<World>(File.ReadAllText(priorFileName));
             world.Name = newName;
             SaveWorld(world);
 
+            WorldInfo newWorldInfo = new WorldInfo()
+            {
+                Id = worldInfo.Id,
+                MetaData = worldInfo.MetaData,
+                LastModified = DateTime.Now,
+                LevelsInfo = worldInfo.LevelsInfo,
+                Name = newName,
+                Number = worldInfo.Number,
+                ParentInfo = worldInfo.ParentInfo,
+                Size = worldInfo.Size,
+                SublevelsInfo = worldInfo.SublevelsInfo
+            };
+
             File.Delete(priorFileName);
+            _eventService.Emit(SpotlightEventType.WorldRenamed, newWorldInfo.Id, newWorldInfo);
+
+            return newWorldInfo;
         }
 
         public void GenerateMetaData(WorldInfo worldInfo, MemoryStream thumbnailStream = null)

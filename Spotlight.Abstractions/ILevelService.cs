@@ -14,7 +14,9 @@ namespace Spotlight.Abstractions
         List<IInfo> GetAllWorldsAndLevels(LevelInfo currentLevel = null);
         List<LevelInfo> AllLevels();
         Level LoadLevel(LevelInfo levelInfo);
-        void RenameLevel(string previousName, string newName);
+        LevelInfo RenameLevel(LevelInfo levelInfo, string newName);
         void SaveLevel(Level level, string basePath = null, bool asTemp = false);
+        void GenerateMetaData(LevelInfo levelInfo, MemoryStream thumbnailStream = null);
+        List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos);
     }
 }

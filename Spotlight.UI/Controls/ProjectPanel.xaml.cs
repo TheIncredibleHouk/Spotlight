@@ -14,51 +14,22 @@ namespace Spotlight
     /// </summary>
     public partial class ProjectPanel : UserControl
     {
-        //public delegate void ProjectLoadEventHandler(IProjectService project);
-
-        //public event ProjectLoadEventHandler ProjectLoaded;
-
-        //public delegate void TileBlockEditorOpenEventHandler();
-
-        //public event TileBlockEditorOpenEventHandler TileBlockEditorOpened;
-
-        //public delegate void TextEditorOpenEventHandler();
-
-        //public event TextEditorOpenEventHandler TextEditorOpened;
-
-        //public delegate void RomSavedEventHandler();
-
-        //public event RomSavedEventHandler RomSaved;
-
-        //public delegate void ObjectEditorEventHandler(GameObject gameObject, Palette palette);
-
-        //public event ObjectEditorEventHandler ObjectEditorOpened;
-
-        //public delegate void NewLevelEventHandler();
-
-        //public event NewLevelEventHandler NewLevelClicked;
-
-        //public delegate void GraphicsEditorEventHandler();
-        //public event GraphicsEditorEventHandler GraphicsEditorClicked;
-
-        //public delegate void MusicEditorEventHandler();
-        //public event MusicEditorEventHandler MusicEditorClicked;
-
-        //public delegate void ExportPaletteEventHandler();
-        //public event ExportPaletteEventHandler ExportPaletteClicked;
-
-        //public delegate void GenerateMetaDataEventHandler();
-        //public event GenerateMetaDataEventHandler GenerateMetaDataClicked;
-
         private IEventService _eventService;
         private IProjectService _projectService;
-
-        public IProjectService ProjectService { get; set; }
-        public IRomService RomService { get; set; }
+        private IWorldService _worldService;
+        private ILevelService _levelService;
 
         public ProjectPanel()
         {
             InitializeComponent();
+        }
+
+        public void Initialize(IServiceProvider serviceProvider)
+        {
+            _eventService = serviceProvider.GetService<IEventService>();
+            _projectService = serviceProvider.GetService<IProjectService>();
+            _worldService = serviceProvider.GetService<IWorldService>();
+            _levelService = serviceProvider.GetService<ILevelService>();
         }
 
         public void Configure(IServiceProvider services)
@@ -94,10 +65,12 @@ namespace Spotlight
 
         private void NewLevelButton_Click(object sender, RoutedEventArgs e)
         {
-            if (NewLevelClicked != null)
+            NewLevelResult newLevelResult = NewLevelWindow.Show(_levelService, _worldService);
+            if (newLevelResult != null)
             {
-                NewLevelClicked();
+                _levelService.AddLevel(newLevelResult.Level, newLevelResult.WorldInfo);
             }
+            _projectService.SaveProject();
         }
 
         private void SaveRomButton_Click(object sender, RoutedEventArgs e)

@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Spotlight.Renderers
 {
-    public class GraphicsSetRender : Renderer
+    public class GraphicsSetRender : Renderer, IGraphicsSetRenderer
     {
         private byte[] _buffer;
         private Tile[,] _tileMap;
@@ -84,11 +84,5 @@ namespace Spotlight.Renderers
         {
             return _tileMap[col, row];
         }
-    }
-
-    public enum TileFormat
-    {
-        _8x8,
-        _8x16
     }
 }

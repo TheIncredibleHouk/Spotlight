@@ -49,7 +49,7 @@ namespace Spotlight.Services
                 project.MapTileInteractions[i] = mapTileInterations[i];
             }
 
-            _eventService.Emit(SpotlightEventType.TileSetUpdated, tileSet);
+            _eventService.Emit(SpotlightEventType.TileSetUpdated, index, tileSet);
         }
 
         public byte[] GetTilePropertyData()

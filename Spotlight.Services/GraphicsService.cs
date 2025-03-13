@@ -35,13 +35,13 @@ namespace Spotlight.Services
             if (File.GetLastWriteTime(fileName) > _lastGraphicsUpdate)
             {
                 LoadGraphics();
-                _eventService.Emit(SpotlightEventType.GraphicsUpdate);
+                _eventService.Emit(SpotlightEventType.GraphicsUpdated);
             }
 
             if (File.GetLastWriteTime(extraFileName) > _lastExtraGraphicsUpdated)
             {
                 LoadExtraGraphics();
-                _eventService.Emit(SpotlightEventType.ExtraGraphicsUpdate);
+                _eventService.Emit(SpotlightEventType.ExtraGraphicsUpdated);
             }
         }
 

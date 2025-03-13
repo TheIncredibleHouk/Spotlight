@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Spotlight.Renderers
 {
-    public class WorldRenderer : Renderer
+    public class WorldRenderer : Renderer, IWorldRenderer
     {
         public const int BITMAP_HEIGHT = World.BLOCK_HEIGHT * 16;
         public const int BITMAP_WIDTH = World.BLOCK_WIDTH * 16;
@@ -28,7 +28,7 @@ namespace Spotlight.Renderers
             BYTE_STRIDE = BYTES_PER_PIXEL * PIXELS_PER_BLOCK_ROW * BLOCKS_PER_SCREEN * 4;
         }
 
-        public void SetTerrain(List<MapTileInteraction> terrain)
+        public void Initialize(List<MapTileInteraction> terrain)
         {
             _terrain = terrain;
         }

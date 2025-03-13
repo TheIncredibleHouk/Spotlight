@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 
 namespace Spotlight.Renderers
 {
-    public class BlockRenderer : Renderer
+    public class BlockRenderer : Renderer, IBlockRenderer
     {
         private byte[] _buffer;
         private Tile[,] _localTiles;

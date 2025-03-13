@@ -17,7 +17,7 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for TileBlockEditor.xaml
     /// </summary>
-    public partial class TileBlockEditor : UserControl, IDetachEvents
+    public partial class TileBlockEditor : UserControl
     {
         private ProjectService _projectService;
         private GraphicsService _graphicsService;
@@ -25,7 +25,7 @@ namespace Spotlight
         private TextService _textService;
         private GraphicsManager _graphicsAccessor;
         private WorldService _worldService;
-        private LevelService _levelService;
+        private ILevelService _levelService;
         private PaletteService _palettesService;
         private TileSetRenderer _tileSetRenderer;
         private GraphicsSetRender _graphicsSetRenderer;
@@ -35,7 +35,7 @@ namespace Spotlight
         private List<LevelInfo> _levelInfos;
         private List<WorldInfo> _worldInfos;
 
-        public TileBlockEditor(ProjectService projectService, WorldService worldService, LevelService levelService, GraphicsService graphicsService, PaletteService palettesService, TileService tileService, TextService textService)
+        public TileBlockEditor(ProjectService projectService, WorldService worldService, ILevelService levelService, GraphicsService graphicsService, PaletteService palettesService, TileService tileService, TextService textService)
         {
             _ignoreChanges = true;
             InitializeComponent();

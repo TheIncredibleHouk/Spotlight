@@ -12,5 +12,7 @@ namespace Spotlight.Abstractions
         GameObject GetObjectById(int gameObjectId);
         GameObject GetStartPointObject();
         void RefreshGameObjectTable();
+        void UpdateGameTable(GameObject gameObject);
+        void CommitGameObject(GameObject gameObject);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Spotlight.Models;
+﻿using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
@@ -17,23 +18,26 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for WorldPanel.xaml
     /// </summary>
-    public partial class WorldPanel : UserControl, IDetachEvents, IKeyDownHandler
+    public partial class WorldPanel : UserControl, IKeyDownHandler
     {
+        
+        private IWorldService _worldService;
+        private IPaletteService _palettesService;
+        private IWorldRenderer _worldRenderer;
+        
+        private ITextService _textService;
+        private IGraphicsService _graphicsService;
+        private ICompressionService _compressionService;
+        private IGameObjectService _gameObjectService;
+        private IGraphicsManager _graphicsAccessor;
+        private IWorldDataManager _worldDataAccessor;
+        private IHistoryService _historyService;
+
         private World _world;
         private WorldInfo _worldInfo;
-        private WorldService _worldService;
-        private PaletteService _palettesService;
-        private WorldRenderer _worldRenderer;
         private TileSet _tileSet;
-        private TextService _textService;
-        private GraphicsService _graphicsService;
-        private CompressionService _compressionService;
-        private GameObjectService _gameObjectService;
         private TileService _tileService;
-        private GraphicsManager _graphicsAccessor;
-        private WorldDataManager _worldDataAccessor;
         private WriteableBitmap _bitmap;
-        private HistoryService _historyService;
         private List<MapTileInteraction> _interactions;
 
         public delegate void WorldEditorExitSelectedHandled(int x, int y);
@@ -42,7 +46,7 @@ namespace Spotlight
 
         private bool _initializing = true;
 
-        public WorldPanel(GraphicsService graphicsService, PaletteService palettesService, TextService textService, TileService tileService, WorldService worldService, LevelService levelService, GameObjectService gameObjectService, WorldInfo worldInfo)
+        public WorldPanel(IGraphicsService graphicsService, PaletteService palettesService, TextService textService, TileService tileService, WorldService worldService, ILevelService levelService, GameObjectService gameObjectService, WorldInfo worldInfo)
         {
             InitializeComponent();
 

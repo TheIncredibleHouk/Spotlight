@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Spotlight.Abstractions;
+using Spotlight.Abstractions.Renderers;
+using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
 using System.Globalization;
@@ -13,14 +15,13 @@ namespace Spotlight
     /// </summary>
     public partial class App : Application
     {
-        IServiceProvider services;
+        public static IServiceProvider Services { get; private set; }
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            services = ConfigureServices();
         }
 
-        private IServiceProvider ConfigureServices()
+        private void ConfigureServices()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddSingleton<IEventService, EventService>();
@@ -40,7 +41,10 @@ namespace Spotlight
             services.AddSingleton<ITextService, TextService>();
             services.AddSingleton<ITileService, TileService>();
             services.AddSingleton<IWorldService, WorldService>();
-            return services.BuildServiceProvider();
+            services.AddScoped<ILevelRenderer, LevelRenderer>();
+            services.AddScoped<IWorldRenderer, WorldRenderer>();
+            services.AddScoped<IPaletteRenderer, PaletteRenderer>();
+            Services = services.BuildServiceProvider();
         }
     }
 

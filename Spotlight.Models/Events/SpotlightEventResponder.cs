@@ -8,9 +8,9 @@ namespace Spotlight.Models.Events
 {
     public class SpotlightEventResponder
     {
-        public SpotlightEventKey EventKey { get; private set; }
-        public Action<object> Responder { get; private set; }
-        public Guid Id { get; set; }
+        public SpotlightEventKey EventKey { get; protected set; }
+        public Action<object> Responder { get; protected set; }
+        public Guid Id { get; protected set; }
 
         public SpotlightEventResponder(SpotlightEventKey eventKey, Action<object> responder)
         {

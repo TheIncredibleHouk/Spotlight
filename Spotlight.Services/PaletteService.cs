@@ -36,7 +36,7 @@ namespace Spotlight.Services
 
                 CacheRgbPalettes(commitPalette);
 
-                _eventService.Emit(SpotlightEventType.PaletteUpdate, palette.Id, palette);
+                _eventService.Emit(SpotlightEventType.PaletteUpdated, palette.Id, palette);
             }
         }
 

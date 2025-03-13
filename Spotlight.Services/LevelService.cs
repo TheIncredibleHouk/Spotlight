@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Serialization;
@@ -16,22 +17,18 @@ namespace Spotlight.Services
     public class LevelService : ILevelService
     {
         private readonly IErrorService _errorService;
-        private readonly Abstractions.IProjectService _projectService;
-        private IGameObjectService _gameObjectService;
+        private readonly IProjectService _projectService;
+        private readonly IGameObjectService _gameObjectService;
+        private readonly IEventService _eventService;
+        private readonly ITileService _tileService;
 
-        public delegate void LevelUpdatedEventHandler(LevelInfo levelInfo);
-        public event LevelUpdatedEventHandler LevelUpdated;
-
-        public delegate void LevelsUpdatedHandler(LevelInfo newLevel);
-        public event LevelsUpdatedHandler LevelsUpdated;
-
-        
-
-        public LevelService(IErrorService errorService, Abstractions.IProjectService projectService, IGameObjectService gameObjectService)
+        public LevelService(IErrorService errorService, Abstractions.IProjectService projectService, IGameObjectService gameObjectService, IEventService eventService, ITileService tileService)
         {
             _errorService = errorService;
             _projectService = projectService;
             _gameObjectService = gameObjectService;
+            _eventService = eventService;
+            _tileService = tileService;
         }
 
         public void AddLevel(Level level, WorldInfo worldInfo)
@@ -45,8 +42,7 @@ namespace Spotlight.Services
             levelInfo.ParentInfo = worldInfo;
 
             worldInfo.LevelsInfo.Add(levelInfo);
-
-            LevelsUpdated(levelInfo);
+            _eventService.Emit(SpotlightEventType.LevelAdded, level.Id, levelInfo);
         }
 
         public void RemoveLevel(LevelInfo info)
@@ -60,11 +56,7 @@ namespace Spotlight.Services
             {
                 File.Delete(fileName);
             }
-
-            if (LevelsUpdated != null)
-            {
-                LevelsUpdated(null);
-            }
+            _eventService.Emit(SpotlightEventType.LevelRemoved, info.Id);
         }
 
         public List<IInfo> GetAllWorldsAndLevels(LevelInfo currentLevel = null)
@@ -108,13 +100,7 @@ namespace Spotlight.Services
             }
         }
 
-        private void NotifyUpdate(LevelInfo levelInfo)
-        {
-            if (LevelUpdated != null)
-            {
-                LevelUpdated(levelInfo);
-            }
-        }
+
 
         public List<LevelInfo> AllLevels()
         {
@@ -131,7 +117,7 @@ namespace Spotlight.Services
             return levelInfos;
         }
 
-        private List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos)
+        public List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos)
         {
             List<LevelInfo> returnLevelInfos = new List<LevelInfo>();
             foreach (var levelInfo in levelInfos)
@@ -167,9 +153,9 @@ namespace Spotlight.Services
         }
 
 
-        public void RenameLevel(string previousName, string newName)
+        public LevelInfo RenameLevel(LevelInfo levelInfo, string newName)
         {
-            string safePriorLevelName = previousName.Replace("!", "").Replace("?", "");
+            string safePriorLevelName = levelInfo.Name.Replace("!", "").Replace("?", "");
             string priorFileName = string.Format(@"{0}\{1}.json", _projectService.GetProject().DirectoryPath + @"\levels", safePriorLevelName);
 
             Level level = JsonConvert.DeserializeObject<Level>(File.ReadAllText(priorFileName));
@@ -177,6 +163,20 @@ namespace Spotlight.Services
             SaveLevel(level);
 
             File.Delete(priorFileName);
+            LevelInfo newLevelInfo = new LevelInfo()
+            {
+                LevelMetaData = levelInfo.LevelMetaData,
+                GameId = levelInfo.GameId,
+                Id = levelInfo.Id,
+                ParentInfo = levelInfo.ParentInfo,
+                Name = newName,
+                LastModified = DateTime.Now,
+                SaveToExtendedSpace = levelInfo.SaveToExtendedSpace,
+                SublevelsInfo = levelInfo.SublevelsInfo
+            };
+
+            _eventService.Emit(SpotlightEventType.LevelRenamed, levelInfo.Id, newLevelInfo);
+            return newLevelInfo;
         }
 
         private string SafeFileName(Level level)
@@ -213,6 +213,7 @@ namespace Spotlight.Services
                 }
 
                 File.WriteAllText(string.Format(@"{0}\{1}.json", levelDirectory, safeFileName), JsonConvert.SerializeObject(level, Newtonsoft.Json.Formatting.Indented));
+                _eventService.Emit(SpotlightEventType.LevelUpdated, level.Id, level.Name);
             }
             catch (Exception e)
             {
@@ -230,7 +231,7 @@ namespace Spotlight.Services
                 }
 
                 string imageDirectory = basePath + @"\images";
-                
+
                 if (!Directory.Exists(imageDirectory))
                 {
                     Directory.CreateDirectory(imageDirectory);
@@ -296,11 +297,11 @@ namespace Spotlight.Services
             File.Move(tempFile.FullName, originalFile);
         }
 
-        public void GenerateMetaData(TileService tileService, LevelInfo levelInfo, MemoryStream thumbnailStream = null)
+        public void GenerateMetaData(LevelInfo levelInfo, MemoryStream thumbnailStream = null)
         {
             Level level = LoadLevel(levelInfo);
-            TileSet tileSet = tileService.GetTileSet(level.TileSetIndex);
-            List<TileTerrain> tileTerrain = tileService.GetTerrain();
+            TileSet tileSet = _tileService.GetTileSet(level.TileSetIndex);
+            List<TileTerrain> tileTerrain = _tileService.GetTerrain();
             LevelMetaData levelMeta = new LevelMetaData();
 
             List<int> gameObjectIds = level.ObjectData.Select(obj => obj.GameObjectId).Distinct().ToList();
@@ -312,7 +313,7 @@ namespace Spotlight.Services
             List<int> itemBlockValues = new List<int>();
             Dictionary<int, string> itemBlockDescriptions = new Dictionary<int, string>();
 
-            foreach (TileTerrain terrain in tileService.GetTerrain())
+            foreach (TileTerrain terrain in _tileService.GetTerrain())
             {
                 foreach (TileInteraction interaction in terrain.Interactions)
                 {

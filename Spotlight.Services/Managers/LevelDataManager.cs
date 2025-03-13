@@ -22,7 +22,7 @@ namespace Spotlight.Services
             _pointers = _level.LevelPointers;
         }
 
-        public void Setup(Level level, TileSet tileSet = null)
+        public void Initialize(Level level, TileSet tileSet = null)
         {
             _level = level;
             _tileSet = tileSet;
