@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Spotlight.Abstractions;
-using Spotlight.Abstractions.Renderers;
 using Spotlight.Renderers;
 using Spotlight.Services;
 using System;
@@ -16,9 +15,13 @@ namespace Spotlight
     public partial class App : Application
     {
         public static IServiceProvider Services { get; private set; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            ConfigureServices();
+            MainWindow = new MainWindow();
+            MainWindow.Show();
         }
 
         private void ConfigureServices()
@@ -44,6 +47,8 @@ namespace Spotlight
             services.AddScoped<ILevelRenderer, LevelRenderer>();
             services.AddScoped<IWorldRenderer, WorldRenderer>();
             services.AddScoped<IPaletteRenderer, PaletteRenderer>();
+            services.AddSingleton<IConfigurationService, ConfigurationService>();
+
             Services = services.BuildServiceProvider();
         }
     }

@@ -8,6 +8,6 @@ namespace Spotlight.UI
 {
     public interface IUnsubscribe
     {
-        void Unsubscribe();
+        public void Unsubscribe();
     }
 }

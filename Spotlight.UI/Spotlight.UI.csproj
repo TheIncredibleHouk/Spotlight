@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <PublishUrl>Publish\</PublishUrl>
     <Install>true</Install>
@@ -19,7 +19,7 @@
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>True</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
@@ -40,6 +40,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Mushroom Mayhem\**" />
@@ -118,90 +119,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="WriteableBitmapEx" Version="1.6.8" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Remove="Controls\MusicEditor.xaml.cs" />
-    <Compile Remove="Spotlight.Models\Compression\BitList.cs" />
-    <Compile Remove="Spotlight.Models\Compression\CompressionCommand.cs" />
-    <Compile Remove="Spotlight.Models\Compression\CompressionCommandType.cs" />
-    <Compile Remove="Spotlight.Models\Compression\CompressionPoint.cs" />
-    <Compile Remove="Spotlight.Models\Configuration.cs" />
-    <Compile Remove="Spotlight.Models\GameObjects\GameObject.cs" />
-    <Compile Remove="Spotlight.Models\GameObjects\GameObjectTable.cs" />
-    <Compile Remove="Spotlight.Models\GameObjects\Sprite.cs" />
-    <Compile Remove="Spotlight.Models\Levels\Level.cs" />
-    <Compile Remove="Spotlight.Models\Levels\LevelMetaData.cs" />
-    <Compile Remove="Spotlight.Models\Levels\LevelObject.cs" />
-    <Compile Remove="Spotlight.Models\Levels\LevelObjectChange.cs" />
-    <Compile Remove="Spotlight.Models\Levels\LevelPointer.cs" />
-    <Compile Remove="Spotlight.Models\Music\NoteMode.cs" />
-    <Compile Remove="Spotlight.Models\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Models\obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Models\Palette\Palette.cs" />
-    <Compile Remove="Spotlight.Models\Project\IInfo.cs" />
-    <Compile Remove="Spotlight.Models\Project\LevelInfo.cs" />
-    <Compile Remove="Spotlight.Models\Project\Project.cs" />
-    <Compile Remove="Spotlight.Models\Project\WorldInfo.cs" />
-    <Compile Remove="Spotlight.Models\Properties\AssemblyInfo.cs" />
-    <Compile Remove="Spotlight.Models\Rom\Rom.cs" />
-    <Compile Remove="Spotlight.Models\Rom\RomInfo.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\MapTileInteraction.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\PSwitchAlteration.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\Tile.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\TileBlock.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\TileBlockOverlay.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\TileChange.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\TileInteraction.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\TileSet.cs" />
-    <Compile Remove="Spotlight.Models\Tiles\TileTerrain.cs" />
-    <Compile Remove="Spotlight.Models\Worlds\World.cs" />
-    <Compile Remove="Spotlight.Models\Worlds\WorldMetaData.cs" />
-    <Compile Remove="Spotlight.Models\Worlds\WorldObject.cs" />
-    <Compile Remove="Spotlight.Models\Worlds\WorldObjectChange.cs" />
-    <Compile Remove="Spotlight.Models\Worlds\WorldPointer.cs" />
-    <Compile Remove="Spotlight.Renders\BlockRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\GameObjectRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\GraphicsRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\GraphicsSetRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\LevelRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Renders\obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Renders\PaletteRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\Properties\AssemblyInfo.cs" />
-    <Compile Remove="Spotlight.Renders\Renderer.cs" />
-    <Compile Remove="Spotlight.Renders\TileSetRenderer.cs" />
-    <Compile Remove="Spotlight.Renders\WorldRenderer.cs" />
-    <Compile Remove="Spotlight.Services\Accessors\GraphicsAccessor.cs" />
-    <Compile Remove="Spotlight.Services\Accessors\LevelDataAccessor.cs" />
-    <Compile Remove="Spotlight.Services\Accessors\WorldDataAccessor.cs" />
-    <Compile Remove="Spotlight.Services\ClipBoardService.cs" />
-    <Compile Remove="Spotlight.Services\CompressionService.cs" />
-    <Compile Remove="Spotlight.Services\ErrorService.cs" />
-    <Compile Remove="Spotlight.Services\GameObjectService.cs" />
-    <Compile Remove="Spotlight.Services\GraphicsService.cs" />
-    <Compile Remove="Spotlight.Services\HistoryService.cs" />
-    <Compile Remove="Spotlight.Services\LevelService.cs" />
-    <Compile Remove="Spotlight.Services\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Services\obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Services\PalettesService.cs" />
-    <Compile Remove="Spotlight.Services\ProjectService.cs" />
-    <Compile Remove="Spotlight.Services\Properties\AssemblyInfo.cs" />
-    <Compile Remove="Spotlight.Services\RomService.cs" />
-    <Compile Remove="Spotlight.Services\TextService.cs" />
-    <Compile Remove="Spotlight.Services\TileService.cs" />
-    <Compile Remove="Spotlight.Services\WorldService.cs" />
-    <Compile Remove="Spotlight.Tests\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Tests\obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Remove="Spotlight.Tests\Properties\AssemblyInfo.cs" />
-    <Compile Remove="Spotlight.Tests\UnitTest1.cs" />
-    <Page Remove="Controls\MusicEditor.xaml" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\Spotlight.Abstractions\Spotlight.Abstractions.csproj" />
     <ProjectReference Include="..\Spotlight.Models\Spotlight.Models.csproj" />
     <ProjectReference Include="..\Spotlight.Renders\Spotlight.Renderers.csproj" />
     <ProjectReference Include="..\Spotlight.Services\Spotlight.Services.csproj" />

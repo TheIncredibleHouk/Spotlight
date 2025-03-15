@@ -1,9 +1,12 @@
-﻿using Spotlight.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,49 +27,70 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for GameObjectSelector.xaml
     /// </summary>
-    public partial class GameObjectSelector : UserControl
+    public partial class GameObjectSelector : UserControl, IUnsubscribe
     {
-        public delegate void GameObjectSelectorEventHandler(GameObject gameObject);
+        //public delegate void GameObjectSelectorEventHandler(GameObject gameObject);
 
-        public event GameObjectSelectorEventHandler GameObjectChanged;
+        //public event GameObjectSelectorEventHandler GameObjectChanged;
 
-        public event GameObjectSelectorEventHandler GameObjectDoubleClicked;
+        //public event GameObjectSelectorEventHandler GameObjectDoubleClicked;
 
         public GameObjectGroup ObjectGroup { get; set; }
-
-        public GameObjectSelector()
-        {
-            InitializeComponent();
-        }
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
         private IGameObjectService _gameObjectService;
         private IGraphicsManager _graphicsAccessor;
         private IPaletteService _palettesService;
         private IEventService _eventService;
+        private IGameObjectRenderer _renderer;
+
+        public GameObjectSelector()
+        {
+            InitializeComponent();
+            InitializeServices();
+            InitializeUI();
+
+            _objectTypes = new List<GameObjectType>();
+            _selectedGroup = new Dictionary<GameObjectType, string>();
+
+        }
+
         private Palette _palette;
-        private GameObjectRenderer _renderer;
         private WriteableBitmap _bitmap;
         private List<GameObjectType> _objectTypes;
 
         private Guid _gameObjectsServiceSubId;
 
-        public void Initialize(IGameObjectService gameObjectService, IPaletteService palettesService, IEventService eventService, IGraphicsManager graphicsManager, Palette palette)
+        public void Initialize(Palette palette)
         {
-            _gameObjectService = gameObjectService;
-            _eventService = eventService;
-            _graphicsAccessor = graphicsManager;
+
             _palette = palette;
-            _palettesService = palettesService;
+            _renderer.Update(_palette);
+        }
 
-            _objectTypes = new List<GameObjectType>();
-            _selectedGroup = new Dictionary<GameObjectType, string>();
+        private void InitializeServices()
+        {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
 
-            _renderer = new GameObjectRenderer(gameObjectService, _palettesService, graphicsManager);
+            _gameObjectService = App.Services.GetService<IGameObjectService>();
+            _eventService = App.Services.GetService<IEventService>();
+            _graphicsAccessor = App.Services.GetService<IGraphicsManager>();
+            _palettesService = App.Services.GetService<IPaletteService>();
+            _renderer = App.Services.GetService<IGameObjectRenderer>();
+        }
+
+        private void InitializeUI()
+        {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
+
+            GameObjectImage.Source = _bitmap;
+            GameObjectTypes.ItemsSource = _objectTypes;
+
+            CanvasArea.Background = new SolidColorBrush(_palette.RgbColors[0][0].ToMediaColor());
+            GameObjectTypes.SelectedIndex = 0;
 
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-
-            
 
             switch (ObjectGroup)
             {
@@ -74,7 +98,7 @@ namespace Spotlight
                     _objectTypes.Add(GameObjectType.Global);
                     _objectTypes.Add(GameObjectType.TypeA);
                     _objectTypes.Add(GameObjectType.TypeB);
-                    
+
                     break;
 
                 case GameObjectGroup.World:
@@ -89,35 +113,21 @@ namespace Spotlight
                     break;
             }
 
-            foreach(var objectType in _objectTypes)
+            foreach (var objectType in _objectTypes)
             {
                 _selectedGroup[objectType] = null;
             }
-            
 
             _selectedObject = null;
-            _gameObjectsServiceSubId = _eventService.Subscribe(SpotlightEventType.GameObjectsUpdated, GameObjectsUpdated);
+            _gameObjectsServiceSubId = _eventService.Subscribe(SpotlightEventType.GameObjectUpdated, GameObjectUpdated);
         }
 
-        private void InitializeUI()
-        {
-
-            GameObjectImage.Source = _bitmap;
-            GameObjectTypes.ItemsSource = _objectTypes;
-
-            CanvasArea.Background = new SolidColorBrush(_palette.RgbColors[0][0].ToMediaColor());
-            GameObjectTypes.SelectedIndex = 0;
-
-            _renderer.Update(_palette);
-
-        }
-
-        public void DetachEvents()
+        public void Unsubscribe()
         {
             _eventService.Unsubscribe(_gameObjectsServiceSubId);
         }
 
-        private void GameObjectsUpdated()
+        private void GameObjectUpdated()
         {
             UpdateSelectedObject();
             Update();
@@ -173,7 +183,7 @@ namespace Spotlight
         private void GameObjectType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateGameObjectUI();
-            
+
         }
 
         private void UpdateGameObjectUI()
@@ -226,21 +236,23 @@ namespace Spotlight
             if (GameObjectTypes.SelectedItem != null && GameObjectGroups.SelectedItem != null)
             {
                 var position = e.GetPosition(GameObjectImage);
-                LevelObject newObject = _gameObjectService.GetObjectsByGroup((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.BoundRectangle.Contains((int) position.X, (int) position.Y)).FirstOrDefault();
+                LevelObject newObject = _gameObjectService.GetObjectsByGroup((GameObjectType)GameObjectTypes.SelectedItem, (string)GameObjectGroups.SelectedItem).Where(o => o.BoundRectangle.Contains((int)position.X, (int)position.Y)).FirstOrDefault();
 
                 if (newObject != null)
                 {
                     _selectedObject = newObject;
                     UpdateSelectedObject();
-                    if (GameObjectChanged != null)
-                    {
-                        GameObjectChanged(_selectedObject.GameObject);
-                    }
+                    _eventService.Emit(SpotlightEventType.UIGameObjectSelected, Id, _selectedObject.GameObject);
                 }
 
                 if (e.ClickCount > 1)
                 {
-                    GlobalPanels.EditGameObject(_selectedObject.GameObject, _palette);
+                    _eventService.Emit(SpotlightEventType.UIOpenGameObjectEditor, new OpenGameObjectEditorEvent()
+                    {
+                        SelectedGameObject = _selectedObject.GameObject,
+                        SelectedPalette = _palette
+                    });
+
                     //if (GameObjectDoubleClicked != null && _selectedObject != null)
                     //{
                     //    GameObjectDoubleClicked(_selectedObject.GameObject);

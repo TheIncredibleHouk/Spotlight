@@ -10,12 +10,17 @@ namespace Spotlight.Services
 {
     public class GameObjectService : IGameObjectService
     {
-        public delegate void GameObjectEventHandler(GameObject gameObject);
-
-        public event GameObjectEventHandler GameObjectUpdated;
 
         private readonly IErrorService _errorService;
         private readonly IProjectService _projectService;
+        private readonly IEventService _eventService;
+
+        public GameObjectService(IErrorService errorService, IProjectService projectService, IEventService eventService)
+        {
+            _errorService = errorService;
+            _projectService = projectService;
+            _eventService = eventService;
+        }
 
         private static Dictionary<char, int> hexToSprite = new Dictionary<char, int>()
         {
@@ -228,7 +233,7 @@ namespace Spotlight.Services
         public void UpdateGameTable(GameObject gameObject)
         {
             GameObjectTable.UpdateGameObject(gameObject);
-            GameObjectUpdated(gameObject);
+            _eventService.Emit(SpotlightEventType.GameObjectUpdated, gameObject);
         }
 
         public void CommitGameObject(GameObject gameObject)
@@ -241,10 +246,7 @@ namespace Spotlight.Services
             globalGameObject.Sprites = gameObject.Sprites;
             RefreshGameObjectTable();
 
-            if (GameObjectUpdated != null)
-            {
-                GameObjectUpdated(globalGameObject);
-            }
+            _eventService.Emit(SpotlightEventType.GameObjectUpdated, globalGameObject);
         }
 
         //public IEnumerable<LevelInfo> FindInLevels(GameObject gameObject)

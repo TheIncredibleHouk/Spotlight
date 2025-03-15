@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Spotlight.Abstractions
 {
-    public interface IWorldRenderer
+    public interface IWorldRenderer : IRenderer
     {
         public void Initialize(List<MapTileInteraction> terrain);
 

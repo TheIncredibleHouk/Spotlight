@@ -3,6 +3,7 @@ using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Services;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,14 +24,16 @@ namespace Spotlight
 
         public FilePanel()
         {
-            InitializeServices();
             InitializeComponent();
+            InitializeServices();
             InitializeUI();
         }
 
 
         private void InitializeServices()
         {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
+
             _levelService = App.Services.GetService<ILevelService>();
             _worldService = App.Services.GetService<IWorldService>();
 
@@ -44,6 +47,8 @@ namespace Spotlight
 
         public void InitializeUI()
         {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
+
             Dpi dpi = this.GetDpi();
             _thumbnailBitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
             ThumbnailPreview.Source = _thumbnailBitmap;

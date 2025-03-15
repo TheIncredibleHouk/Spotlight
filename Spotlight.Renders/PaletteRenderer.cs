@@ -1,5 +1,4 @@
 ﻿using Spotlight.Abstractions;
-using Spotlight.Abstractions.Renderers;
 using Spotlight.Models;
 using Spotlight.Services;
 using System.Drawing;

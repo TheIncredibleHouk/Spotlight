@@ -16,7 +16,7 @@ namespace Spotlight.Models
         RgbColorsUpdated,
         ProjectUpdated,
         ProjectLoaded,
-        GameObjectsUpdated,
+        GameObjectUpdated,
         TileSetUpdated,
         LevelAdded,
         LevelUpdated,
@@ -24,6 +24,17 @@ namespace Spotlight.Models
         LevelRemoved,
         LevelOpened,
         WorldOpened,
-        WorldRenamed
+        WorldRenamed,
+        RomSaved,
+        GenerateMetaData,
+        UIGameObjectSelected,
+        UIOpenTextEditor,
+        UIOpenPaletteEditor,
+        UIOpenBlockEditor,
+        UIOpenGraphicsEditor,
+        UIOpenGameObjectEditor,
+        UIOpenLevelEditor,
+        UIExportPalette,
+        UIBlockSelected
     }
 }

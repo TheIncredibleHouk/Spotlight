@@ -1,6 +1,9 @@
-﻿using Spotlight.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,32 +23,48 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for GraphicsWindow.xaml
     /// </summary>
-    public partial class GraphicsWindow : Window
+    public partial class GraphicsWindow : Window, IUnsubscribe
     {
-        private readonly GraphicsService _graphicsService;
-        private readonly TileService _tileService;
-        private readonly PaletteService _paletteService;
-
-        private GraphicsManager _graphicsAccessor;
-        private GraphicsSetRender _graphicsRenderer;
-        private BlockRenderer _blockRenderer;
+        private IGraphicsService _graphicsService;
+        private ITileService _tileService;
+        private IPaletteService _paletteService;
+        private IEventService _eventService;
+        private IGraphicsManager _graphicsManager;
+        private IGraphicsSetRenderer _graphicsSetRenderer;
+        private IBlockRenderer _blockRenderer;
 
         private WriteableBitmap _graphicsBitmap;
         private WriteableBitmap _editorBitmap;
+        private List<Guid> _subscriptions;
 
-        public GraphicsWindow(GraphicsService graphicsService, TileService tileService, PaletteService palettesService)
+        public GraphicsWindow()
         {
             InitializeComponent();
+            InitializeServices();
+            InitializeUI();
 
-            _graphicsService = graphicsService;
-            _tileService = tileService;
-            _paletteService = palettesService;
+            _subscriptions = new List<Guid>();
 
-            _graphicsAccessor = new GraphicsManager(_graphicsService.GetTilesAtAddress(0));
-            _graphicsRenderer = new GraphicsSetRender(_graphicsAccessor);
-            _blockRenderer = new BlockRenderer();
+            _graphicsManager.Initialize(_graphicsService.GetTilesAtAddress(0));
 
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteAdded, LoadPalettes));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteUpdated, LoadPalettes));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteRemoved, LoadPalettes));
+        }
 
+        private void InitializeServices()
+        {
+            _graphicsService = App.Services.GetService<IGraphicsService>();
+            _tileService = App.Services.GetService<ITileService>();
+            _paletteService = App.Services.GetService<IPaletteService>();
+            _eventService = App.Services.GetService<IEventService>();
+            _graphicsManager = App.Services.GetService<IGraphicsManager>();
+            _graphicsSetRenderer = App.Services.GetService<IGraphicsSetRenderer>();
+            _blockRenderer = App.Services.GetService<IBlockRenderer>();
+        }
+
+        private void InitializeUI()
+        {
             Dpi dpi = this.GetDpi();
 
             _graphicsBitmap = new WriteableBitmap(128, 128, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
@@ -53,11 +72,15 @@ namespace Spotlight
 
             PatternTable.Source = _graphicsBitmap;
             EditorImage.Source = _editorBitmap;
-
-            LoadPalettes();
+            
             GraphicsType.SelectedIndex = LayoutOrder.SelectedIndex = 0;
 
-            _paletteService.PalettesChanged += _paletteService_PalettesChanged;
+            LoadPalettes();
+        }
+
+        public void Unsubscribe()
+        {
+            _eventService.Unsubscribe(_subscriptions);
         }
 
         private void _paletteService_PalettesChanged()
@@ -137,14 +160,14 @@ namespace Spotlight
 
             if (showOverlays)
             {
-                _graphicsAccessor.SetFullTable(_graphicsService.GetExtraTilesAtAddress(address));
+                _graphicsManager.SetFullTable(_graphicsService.GetExtraTilesAtAddress(address));
             }
             else
             {
-                _graphicsAccessor.SetFullTable(_graphicsService.GetTilesAtAddress(address));
+                _graphicsManager.SetFullTable(_graphicsService.GetTilesAtAddress(address));
             }
 
-            _graphicsRenderer.Update();
+            _graphicsSetRenderer.Update();
             CopyTilesToEditor();
             UpdateGraphics();
             UpdateEditor();
@@ -190,10 +213,10 @@ namespace Spotlight
                 int tileCol = (int)(Canvas.GetLeft(SelectionRectangle) / 16);
                 int tileRow = (int)(Canvas.GetTop(SelectionRectangle) / 16);
 
-                sourceTiles[0, 0] = _graphicsRenderer.GetMappedTile(tileCol, tileRow);
-                sourceTiles[1, 0] = _graphicsRenderer.GetMappedTile(tileCol + 1, tileRow);
-                sourceTiles[0, 1] = _graphicsRenderer.GetMappedTile(tileCol, tileRow + 1);
-                sourceTiles[1, 1] = _graphicsRenderer.GetMappedTile(tileCol + 1, tileRow + 1);
+                sourceTiles[0, 0] = _graphicsSetRenderer.GetMappedTile(tileCol, tileRow);
+                sourceTiles[1, 0] = _graphicsSetRenderer.GetMappedTile(tileCol + 1, tileRow);
+                sourceTiles[0, 1] = _graphicsSetRenderer.GetMappedTile(tileCol, tileRow + 1);
+                sourceTiles[1, 1] = _graphicsSetRenderer.GetMappedTile(tileCol + 1, tileRow + 1);
             }
 
             _blockRenderer.Update(sourceTiles);
@@ -206,7 +229,7 @@ namespace Spotlight
             Int32Rect sourceRect = new Int32Rect(0, 0, 128, 128);
             Int32Rect destRect = new Int32Rect(0, 0, 128, 128);
 
-            _graphicsBitmap.WritePixels(destRect, _graphicsRenderer.GetRectangle(sourceRect.AsRectangle()), sourceRect.Width * 4, 0, 0);
+            _graphicsBitmap.WritePixels(destRect, _graphicsSetRenderer.GetRectangle(sourceRect.AsRectangle()), sourceRect.Width * 4, 0, 0);
             _graphicsBitmap.AddDirtyRect(sourceRect);
             _graphicsBitmap.Unlock();
         }
@@ -225,7 +248,7 @@ namespace Spotlight
 
         private void PalettesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _graphicsRenderer.Update((Palette)PalettesList.SelectedItem);
+            _graphicsSetRenderer.Update((Palette)PalettesList.SelectedItem);
             _blockRenderer.Update(palette: (Palette)PalettesList.SelectedItem);
 
             LoadColors();
@@ -235,7 +258,7 @@ namespace Spotlight
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            _paletteService.PalettesChanged -= _paletteService_PalettesChanged;
+            Unsubscribe();
         }
 
         private void LayoutOrder_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -243,11 +266,11 @@ namespace Spotlight
             switch (LayoutOrder.SelectedIndex)
             {
                 case 0:
-                    _graphicsRenderer.Update(tileFormat: TileFormat._8x8);
+                    _graphicsSetRenderer.Update(tileFormat: TileFormat._8x8);
                     break;
 
                 case 1:
-                    _graphicsRenderer.Update(tileFormat: TileFormat._8x16);
+                    _graphicsSetRenderer.Update(tileFormat: TileFormat._8x16);
                     break;
             }
 
@@ -267,9 +290,9 @@ namespace Spotlight
 
         private void ColorChoices_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_graphicsRenderer != null)
+            if (_graphicsSetRenderer != null)
             {
-                _graphicsRenderer.Update(paletteIndex: ColorChoices.SelectedIndex);
+                _graphicsSetRenderer.Update(paletteIndex: ColorChoices.SelectedIndex);
                 _blockRenderer.Update(paletteIndex: ColorChoices.SelectedIndex);
 
                 Palette selectedPalette = (Palette)PalettesList.SelectedItem;

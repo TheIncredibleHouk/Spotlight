@@ -1,4 +1,7 @@
-﻿using Spotlight.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
+using Spotlight.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -11,20 +14,28 @@ namespace Spotlight
     /// </summary>
     public partial class TextPanel : UserControl
     {
-        private TextService _textService;
-        private ProjectService _projectService;
+        private ITextService _textService;
+        private IProjectService _projectService;
+
+        public Guid Id { get; private set; }
+
         public TextPanel()
         {
             InitializeComponent();
+            InitializeServices();
+            InitializeUI();
+
+            Id = Guid.NewGuid();
         }
 
-        public TextPanel(ProjectService projectService, TextService textService)
+        private void InitializeServices()
         {
-            InitializeComponent();
+            _projectService = App.Services.GetService<IProjectService>();
+            _textService = App.Services.GetService<ITextService>();
+        }
 
-            _projectService = projectService;
-            _textService = textService;
-
+        private void InitializeUI()
+        {
             TextTables.ItemsSource = _textService.TableNames();
             NewKeyValueButton.IsEnabled = false;
         }

@@ -39,13 +39,11 @@ namespace Spotlight.Models.Events
                 return false;
             }
 
-            if (obj is SpotlightEventKey)
+            if (obj is SpotlightEventKey eventKey)
             {
-                SpotlightEventKey eventKey = (SpotlightEventKey)obj;
-
-                return ((SpotlightEventKey)obj).GuidIdentifier == GuidIdentifier &&
-                       ((SpotlightEventKey)obj).IntIdentifier == IntIdentifier &&
-                       ((SpotlightEventKey)obj).Type == Type;
+                return eventKey.GuidIdentifier == GuidIdentifier &&
+                       eventKey.IntIdentifier == IntIdentifier &&
+                       eventKey.Type == Type;
             }
 
             return false;

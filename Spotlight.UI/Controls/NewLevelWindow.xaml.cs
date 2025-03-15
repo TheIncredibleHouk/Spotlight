@@ -1,4 +1,5 @@
-﻿using Spotlight.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Services;
 using System;
@@ -14,18 +15,26 @@ namespace Spotlight
     /// </summary>
     public partial class NewLevelWindow : Window
     {
-        ILevelService _levelService;
-        IWorldService _worldService;
+        private ILevelService _levelService;
+        private IWorldService _worldService;
 
-        public NewLevelWindow(ILevelService levelService, IWorldService worldService)
+        public NewLevelWindow()
         {
             InitializeComponent();
+            InitializeServices();
+        }
 
-            _levelService = levelService;
-            _worldService = worldService;
-
+        private void InitializeUI()
+        {
             WorldList.ItemsSource = _worldService.AllWorlds();
         }
+
+        private void InitializeServices()
+        {
+            _levelService = App.Services.GetService<ILevelService>();
+            _worldService = App.Services.GetService<IWorldService>();
+        }
+
         public string LevelName
         {
             get
@@ -68,12 +77,12 @@ namespace Spotlight
             LevelList.ItemsSource = _levelService.FlattenLevelInfos(HostWorld.LevelsInfo).OrderBy(l => l.Name).ToList();
         }
 
-        public static NewLevelResult Show(ILevelService levelService, IWorldService worldService)
+        public static NewLevelResult Show()
         {
             Level newLevel = null;
             NewLevelResult newLevelResult = null;
 
-            NewLevelWindow window = new NewLevelWindow(levelService, worldService);
+            NewLevelWindow window = new NewLevelWindow();
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
 

@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Spotlight.Abstractions;
 using Spotlight.Controls;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI;
+using Spotlight.UI.Events;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -24,38 +25,55 @@ namespace Spotlight
     public partial class MainWindow : Window
     {
 
-        private Configuration _config;
         private IEventService _eventService;
+        private ILevelService _levelService;
+        private IProjectService _projectService;
+        private IConfigurationService _configurationService;
+        private IRomService _romService;
+        private IGraphicsService _graphicsService;
         //private ILevelService _levelService;
         //private IWorldService _worldService;
 
         public MainWindow()
         {
-
-            _config = new Configuration();
-            _eventService = App.Services.GetService<IEventService>();
-
-            LoadConfiguration();
             InitializeComponent();
+            InitializeUI();
+            InitializeServices();
 
             _eventService.Subscribe<Project>(SpotlightEventType.ProjectLoaded, ProjectLoaded);
+            _eventService.Subscribe(SpotlightEventType.UIOpenTextEditor, OpenTextEditor);
+            _eventService.Subscribe<OpenGameObjectEditorEvent>(SpotlightEventType.UIOpenGameObjectEditor, OpenGameObjectEditor);
+            _eventService.Subscribe(SpotlightEventType.UIOpenBlockEditor, OpenTileBlockEditor);
+            _eventService.Subscribe(SpotlightEventType.UIOpenGraphicsEditor, OpenGraphicsEditor);
 
-            _ProjectPanel.TextEditorOpened += _ProjectPanel_TextEditorOpened;
-            _ProjectPanel.ObjectEditorOpened += OpenGameObjectEditor;
-            _ProjectPanel.TileBlockEditorOpened += OpenTileBlockEditor;
-            _ProjectPanel.RomSaved += _ProjectPanel_RomSaved;
-            _ProjectPanel.GraphicsEditorClicked += _ProjectPanel_GraphicsEditorClicked;
-            //_ProjectPanel.MusicEditorClicked += _ProjectPanel_MusicEditorClicked;
-            _ProjectPanel.ExportPaletteClicked += _ProjectPanel_ExportPaletteClicked;
-            _ProjectPanel.GenerateMetaDataClicked += _ProjectPanel_GenerateMetaDataClicked;
+            //GlobalPanels.MainWindow = this;
+
+
+        }
+
+        private void InitializeServices()
+        {
+            _levelService = App.Services.GetService<ILevelService>();
+            _eventService = App.Services.GetService<IEventService>();
+            _projectService = App.Services.GetService<IProjectService>();
+            _configurationService = App.Services.GetService<IConfigurationService>();
+            _romService = App.Services.GetService<IRomService>();
+            _graphicsService = App.Services.GetService<IGraphicsService>();
+        }
+
+        private void InitializeUI()
+        {
             TabsOpen.SelectionChanged += TabsOpen_SelectionChanged;
             Activated += MainWindow_Activated;
+        }
 
-            GlobalPanels.MainWindow = this;
+        private void Initialize()
+        {
+            Configuration config = _configurationService.GetConfiguration();
 
-            if (_config.LastProjectPath != null && File.Exists(_config.LastProjectPath))
+            if (config.LastProjectPath != null && File.Exists(config.LastProjectPath))
             {
-                _ProjectPanel.LoadProject(_config.LastProjectPath);
+                _projectService.LoadProject(config.LastProjectPath);
             }
         }
 
@@ -78,102 +96,89 @@ namespace Spotlight
         //    _musicEditor = null;
         //}
 
-        private void _ProjectPanel_GenerateMetaDataClicked()
-        {
-            foreach (LevelInfo levelInfo in _levelService.AllLevels())
-            {
-                Level level = _levelService.LoadLevel(levelInfo);
-                if (level.ObjectData.Count == 0)
-                {
-                    continue;
-                }
+        //private void _ProjectPanel_GenerateMetaDataClicked()
+        //{
+        //    foreach (LevelInfo levelInfo in _levelService.AllLevels())
+        //    {
+        //        Level level = _levelService.LoadLevel(levelInfo);
+        //        if (level.ObjectData.Count == 0)
+        //        {
+        //            continue;
+        //        }
 
-                level.FirstObjectData.ForEach(o => o.GameObject = _gameObjectService.GetObject(o.GameObjectId));
-                level.SecondObjectData.ForEach(o => o.GameObject = _gameObjectService.GetObject(o.GameObjectId));
+        //        level.FirstObjectData.ForEach(o => o.GameObject = _gameObjectService.GetObject(o.GameObjectId));
+        //        level.SecondObjectData.ForEach(o => o.GameObject = _gameObjectService.GetObject(o.GameObjectId));
 
-                Tile[] staticSet = _graphicsService.GetTileSection(level.StaticTileTableIndex);
-                Tile[] animationSet = _graphicsService.GetTileSection(level.AnimationTileTableIndex);
-                LevelRenderer levelRenderer = new LevelRenderer(
-                    new GraphicsManager(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles()),
-                    new LevelDataManager(level),
-                    _palettesService,
-                    _gameObjectService,
-                    _tileService.GetTerrain());
+        //        Tile[] staticSet = _graphicsService.GetTileSection(level.StaticTileTableIndex);
+        //        Tile[] animationSet = _graphicsService.GetTileSection(level.AnimationTileTableIndex);
+        //        LevelRenderer levelRenderer = new LevelRenderer(
+        //            new GraphicsManager(staticSet, animationSet, _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles()),
+        //            new LevelDataManager(level),
+        //            _palettesService,
+        //            _gameObjectService,
+        //            _tileService.GetTerrain());
 
-                levelRenderer.Update(palette: _palettesService.GetPalette(level.PaletteId), tileSet: _tileService.GetTileSet(level.TileSetIndex));
+        //        levelRenderer.Update(palette: _palettesService.GetPalette(level.PaletteId), tileSet: _tileService.GetTileSet(level.TileSetIndex));
 
-                var startPointObject = level.ObjectData[0];
+        //        var startPointObject = level.ObjectData[0];
 
-                int thumbnailX = startPointObject.X * 16 - 120;
-                int thumbnailY = startPointObject.Y * 16 - 120;
+        //        int thumbnailX = startPointObject.X * 16 - 120;
+        //        int thumbnailY = startPointObject.Y * 16 - 120;
 
-                if (thumbnailX < 0)
-                {
-                    thumbnailX = 0;
-                }
+        //        if (thumbnailX < 0)
+        //        {
+        //            thumbnailX = 0;
+        //        }
 
-                if (thumbnailY < 0)
-                {
-                    thumbnailY = 0;
-                }
+        //        if (thumbnailY < 0)
+        //        {
+        //            thumbnailY = 0;
+        //        }
 
-                if (thumbnailX + 256 > 256 * level.ScreenLength)
-                {
-                    thumbnailX = 256 * level.ScreenLength - 256;
-                }
+        //        if (thumbnailX + 256 > 256 * level.ScreenLength)
+        //        {
+        //            thumbnailX = 256 * level.ScreenLength - 256;
+        //        }
 
-                if (thumbnailY + 256 > LevelRenderer.BITMAP_HEIGHT)
-                {
-                    thumbnailY = LevelRenderer.BITMAP_HEIGHT - 256;
-                }
+        //        if (thumbnailY + 256 > LevelRenderer.BITMAP_HEIGHT)
+        //        {
+        //            thumbnailY = LevelRenderer.BITMAP_HEIGHT - 256;
+        //        }
 
-                Rectangle thumbnailReact = new Rectangle(thumbnailX, thumbnailY, 256, 256);
-                levelRenderer.Update();
+        //        Rectangle thumbnailReact = new Rectangle(thumbnailX, thumbnailY, 256, 256);
+        //        levelRenderer.Update();
 
-                using (MemoryStream ms = new MemoryStream(levelRenderer.GetRectangle(thumbnailReact)))
-                {
-                    _levelService.GenerateMetaData(_tileService, levelInfo, ms);
-                }
-            }
+        //        using (MemoryStream ms = new MemoryStream(levelRenderer.GetRectangle(thumbnailReact)))
+        //        {
+        //            _levelService.GenerateMetaData(_tileService, levelInfo, ms);
+        //        }
+        //    }
 
-            AlertWindow.Alert("Meta data generated for all levels.");
-        }
-
-        private void _ProjectPanel_ExportPaletteClicked()
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.DefaultExt = ".pal";
-            saveFileDialog.FileName = $"{_project.Name}.pal";
-            saveFileDialog.InitialDirectory = _config.LastProjectPath;
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                _palettesService.ExportRgbPalette(saveFileDialog.FileName);
-            }
-        }
+        //    AlertWindow.Alert("Meta data generated for all levels.");
+        //}
 
         private GraphicsWindow _graphicsWindow;
-        private void _ProjectPanel_GraphicsEditorClicked()
+        private void OpenGraphicsEditor()
         {
             if (_graphicsWindow == null)
             {
-                _graphicsWindow = new GraphicsWindow(_graphicsService, _tileService, _palettesService);
-                _graphicsWindow.Closed += _graphicsWindow_Closed;
+                _graphicsWindow = new GraphicsWindow();
+                _graphicsWindow.Closed += GraphicsWindow_Closed;
                 _graphicsWindow.Show();
             }
 
             _graphicsWindow.Focus();
         }
 
-        private void _graphicsWindow_Closed(object sender, EventArgs e)
+        private void GraphicsWindow_Closed(object sender, EventArgs e)
         {
-            _graphicsWindow.Closed -= _graphicsWindow_Closed;
+            _graphicsWindow.Closed -= GraphicsWindow_Closed;
             _graphicsWindow = null;
         }
 
-        private void _worldService_WorldUpdated(WorldInfo worldInfo)
+        private void WorldRenamed(WorldInfo worldInfo)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == worldInfo).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(worldInfo.Id)).FirstOrDefault();
 
             if (existingTab != null)
             {
@@ -181,9 +186,9 @@ namespace Spotlight
             }
         }
 
-        private void _levelService_LevelUpdated(LevelInfo levelInfo)
+        private void LevelRenamed(LevelInfo levelInfo)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == levelInfo).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(levelInfo.Id)).FirstOrDefault();
 
             if (existingTab != null)
             {
@@ -191,26 +196,28 @@ namespace Spotlight
             }
         }
 
-        private void _ProjectPanel_RomSaved()
+        private void SaveRom()
         {
-            if (_config.LastRomPath == null || !File.Exists(_config.LastRomPath) || (Keyboard.Modifiers == ModifierKeys.Control))
+            Configuration config = _configurationService.GetConfiguration();
+
+            if (config.LastRomPath == null || !File.Exists(config.LastRomPath) || (Keyboard.Modifiers == ModifierKeys.Control))
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog()
+                System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog()
                 {
                     Filter = "NES ROM|*.nes"
                 };
 
-                if (saveFileDialog.ShowDialog() == true)
+                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    _config.LastRomPath = saveFileDialog.FileName;
+                    config.LastRomPath = saveFileDialog.FileName;
                 }
             }
 
-            if (_config.LastRomPath != null)
+            if (config.LastRomPath != null)
             {
                 try
                 {
-                    RomInfo romInfo = _romService.CompileRom(_config.LastRomPath);
+                    RomInfo romInfo = _romService.CompileRom(config.LastRomPath);
 
                     //if (_errorService.CurrentLog.Count > 0)
                     //{
@@ -221,7 +228,7 @@ namespace Spotlight
                     //    AlertWindow.Alert($"Rom compiled!\nLevels used: {romInfo.LevelsUsed}\nRemaining space: {romInfo.SpaceRemaining} bytes\nRemaining extended space: {romInfo.ExtendedSpaceRemaining} bytes");
                     //}
 
-                    SaveConfiguration();
+                    _configurationService.UpdateConfiguration(config);
                 }
                 catch (Exception e)
                 {
@@ -250,18 +257,22 @@ namespace Spotlight
 
         public void OpenTileBlockEditor()
         {
-            OpenTileBlockEditor(Guid.Empty, -1);
+            OpenTileBlockEditor(null);
         }
 
-        public void OpenTileBlockEditor(Guid levelId, int tileBlockValue)
+        private Guid _tileBlockEditorId;
+        public void OpenTileBlockEditor(OpenTileBlockEditorEvent openTileBlockEditorEvent)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == _tileService).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(_tileBlockEditorId)).FirstOrDefault();
 
             if (existingTab != null)
             {
-                if (levelId != Guid.Empty && tileBlockValue > -1)
+                if (openTileBlockEditorEvent != null)
                 {
-                    ((TileBlockEditor)existingTab.Content).SelectTileBlock(levelId, tileBlockValue);
+                    if (openTileBlockEditorEvent.LevelId != Guid.Empty && openTileBlockEditorEvent.BlockId > -1)
+                    {
+                        ((TileBlockEditor)existingTab.Content).SelectTileBlock(openTileBlockEditorEvent.LevelId, openTileBlockEditorEvent.BlockId);
+                    }
                 }
 
                 TabsOpen.SelectedItem = SelectedTabItem = existingTab;
@@ -269,52 +280,59 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            TileBlockEditor tileSetEditor = new TileBlockEditor(_projectService, _worldService, _levelService, _graphicsService, _palettesService, _tileService, _textService);
+            TileBlockEditor tileSetEditor = new TileBlockEditor();
 
             tabItem.Header = "Tile Set Editor";
             tabItem.Content = tileSetEditor;
-            tabItem.DataContext = _tileService;
+            tabItem.DataContext = _tileBlockEditorId = tileSetEditor.Id;
 
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
 
-            if (levelId != Guid.Empty && tileBlockValue > -1)
+            if (openTileBlockEditorEvent != null)
             {
-                tileSetEditor.SelectTileBlock(levelId, tileBlockValue);
+                if (openTileBlockEditorEvent.LevelId != Guid.Empty && openTileBlockEditorEvent.BlockId > -1)
+                {
+                    tileSetEditor.SelectTileBlock(openTileBlockEditorEvent.LevelId, openTileBlockEditorEvent.BlockId);
+                }
             }
         }
 
-        public void OpenGameObjectEditor(GameObject gameObject, Palette palette = null)
+        private Guid _gameObjectEditorId;
+
+        public void OpenGameObjectEditor(OpenGameObjectEditorEvent openGameObjectEditorEvent)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == _gameObjectService).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(_gameObjectEditorId)).FirstOrDefault();
 
             if (existingTab != null)
             {
-                ((GameObjectEditor)existingTab.Content).SelectObject(gameObject, palette);
+                ((GameObjectEditor)existingTab.Content).SelectObject(openGameObjectEditorEvent.SelectedGameObject, openGameObjectEditorEvent.SelectedPalette);
                 TabsOpen.SelectedItem = SelectedTabItem = existingTab;
                 return;
             }
 
             TabItem tabItem = new TabItem();
-            GameObjectEditor objectEditor = new GameObjectEditor(_projectService, _palettesService, _graphicsService, _gameObjectService);
+            GameObjectEditor objectEditor = new GameObjectEditor();
 
             tabItem.Header = "Object Editor";
             tabItem.Content = objectEditor;
-            tabItem.DataContext = _gameObjectService;
+            tabItem.DataContext = _gameObjectEditorId = objectEditor.Id;
 
-            objectEditor.SelectObject(gameObject, palette);
+            objectEditor.SelectObject(openGameObjectEditorEvent.SelectedGameObject, openGameObjectEditorEvent.SelectedPalette);
 
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
+
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
-        private void _ProjectPanel_TextEditorOpened()
+        private Guid _textEditorId;
+        private void OpenTextEditor()
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == _textService).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(_textEditorId)).FirstOrDefault();
 
             if (existingTab != null)
             {
@@ -323,51 +341,39 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            TextPanel textPanel = new TextPanel(_projectService, _textService);
+            TextPanel textPanel = new TextPanel();
 
             tabItem.Header = "Text Editor";
             tabItem.Content = textPanel;
-            tabItem.DataContext = _textService;
+            tabItem.DataContext = _textEditorId = textPanel.Id;
 
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
+
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
         private void ProjectLoaded(Project project)
         {
-            //_project = project;
-            //_projectService = new ProjectService(new ErrorService(), project);
-            //_graphicsService = new GraphicsService(_errorService, project);
-            //_gameObjectService = new GameObjectService(_errorService, project);
-            //_levelService = new LevelService(_errorService, project, _gameObjectService);
-            //_palettesService = new PalettesService(_errorService, project);
-            //_worldService = new WorldService(_errorService, project);
-            //_tileService = new TileService(_errorService, project);
-            //_textService = new TextService(_errorService, project);
-            //_clipBoardService = new ClipboardService();
-            //_romService = new RomService(_errorService, _graphicsService, _palettesService, _tileService, _levelService, _worldService, _textService);
-
-            //_levelService.LevelUpdated += _levelService_LevelUpdated;
-            //_worldService.WorldUpdated += _worldService_WorldUpdated;
 
 
             List<WorldInfo> worldInfos = new List<WorldInfo>();
             worldInfos.AddRange(project.WorldInfo);
             worldInfos.Add(project.EmptyWorld);
 
-            FilePanel.Initialize(_serviceProvider.GetService<ILevelService>(), _serviceProvider.GetService<IWorldService>(), _serviceProvider.GetService<IEventService>());
-
             SplashText.Visibility = Visibility.Collapsed;
-            _config.LastProjectPath = project.DirectoryPath + "\\" + project.Name + ".json";
+
+            Configuration config = _configurationService.GetConfiguration();
+            config.LastProjectPath = project.DirectoryPath + "\\" + project.Name + ".json";
+            _configurationService.UpdateConfiguration(config);
         }
 
         public List<TabItem> OpenedTabs = new List<TabItem>();
 
         public void OpenLevelEditor(LevelInfo levelInfo)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == levelInfo).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(levelInfo.Id)).FirstOrDefault();
 
             if (existingTab != null)
             {
@@ -376,37 +382,24 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            LevelPanel levelPanel = new LevelPanel(
-                App.Services.GetService<IProjectService>(),
-                App.Services.GetService<IGraphicsService>(),
-                App.Services.GetService<IPaletteService>(),
-                App.Services.GetService<ITextService>(),
-                App.Services.GetService<ITileService>(),
-                App.Services.GetService<IGameObjectService>(),
-                App.Services.GetService<ILevelService>(),
-                App.Services.GetService<IClipboardService>(),
-                App.Services.GetService<IHistoryService>(),
-                App.Services.GetService<ICompressionService>(),
-                App.Services.GetService<IEventService>(),
-                App.Services.GetService<IGraphicsManager>(),
-                App.Services.GetService<ILevelDataManager>(),
-                App.Services.GetService<ILevelRenderer>());
+            LevelPanel levelPanel = new LevelPanel();
 
             levelPanel.Initialize(levelInfo);
 
             tabItem.Header = levelInfo.Name;
             tabItem.Content = levelPanel;
-            tabItem.DataContext = levelInfo;
+            tabItem.DataContext = levelInfo.Id;
 
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
+
             TabsOpen.Visibility = Visibility.Visible;
             TabsOpen.SelectedItem = SelectedTabItem = tabItem;
         }
 
         public WorldPanel OpenWorldEditor(WorldInfo worldInfo)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == worldInfo).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(worldInfo.Id)).FirstOrDefault();
 
             if (existingTab != null)
             {
@@ -415,11 +408,13 @@ namespace Spotlight
             }
 
             TabItem tabItem = new TabItem();
-            WorldPanel worldPanel = new WorldPanel(_graphicsService, _palettesService, _textService, _tileService, _worldService, _levelService, _gameObjectService, worldInfo);
+            WorldPanel worldPanel = new WorldPanel();
+
+            worldPanel.Initialize(worldInfo);
 
             tabItem.Header = worldInfo.Name;
             tabItem.Content = worldPanel;
-            tabItem.DataContext = worldInfo;
+            tabItem.DataContext = worldInfo.Id;
 
             TabsOpen.Items.Add(tabItem);
             OpenedTabs.Add(tabItem);
@@ -428,9 +423,10 @@ namespace Spotlight
             return worldPanel;
         }
 
+        private Guid _paletteEditorId;
         public void OpenPaletteEditor(Palette palette = null)
         {
-            var existingTab = OpenedTabs.Where(t => t.DataContext == _palettesService).FirstOrDefault();
+            var existingTab = OpenedTabs.Where(t => t.DataContext.Equals(_paletteEditorId)).FirstOrDefault();
 
             if (existingTab != null)
             {
@@ -439,11 +435,11 @@ namespace Spotlight
             else
             {
                 TabItem tabItem = new TabItem();
-                PaletteEditor paletteEditor = new PaletteEditor(_projectService, _palettesService);
+                PaletteEditor paletteEditor = new PaletteEditor();
 
                 tabItem.Header = "Palette Editor";
                 tabItem.Content = paletteEditor;
-                tabItem.DataContext = _palettesService;
+                tabItem.DataContext = _paletteEditorId = Guid.NewGuid();
                 TabsOpen.Items.Add(tabItem);
                 OpenedTabs.Add(tabItem);
                 existingTab = tabItem;
@@ -451,7 +447,7 @@ namespace Spotlight
 
             if (palette != null)
             {
-                ((PaletteEditor)existingTab.Content).SetPalette(palette);
+                ((PaletteEditor)existingTab.Content).Initialize(palette);
             }
 
             TabsOpen.Visibility = Visibility.Visible;
@@ -462,9 +458,9 @@ namespace Spotlight
         {
             TabsOpen.Items.Remove(tabItem);
             OpenedTabs.Remove(tabItem);
-            if (tabItem.Content is IDetachEvents)
+            if (tabItem.Content is IUnsubscribe)
             {
-                ((IDetachEvents)tabItem.Content).DetachEvents();
+                ((IUnsubscribe)tabItem.Content).Unsubscribe();
             }
 
             if (SelectedTabItem == tabItem)
@@ -534,83 +530,42 @@ namespace Spotlight
             {
                 if (e.Key == Key.S)
                 {
-                    _ProjectPanel_RomSaved();
+                    _projectService.SaveProject();
                 }
             }
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            _config.WindowLocation = new System.Drawing.Rectangle((int)this.Left, (int)this.Top, (int)this.Width, (int)this.Height);
+            Configuration configuration = _configurationService.GetConfiguration();
+            configuration.WindowLocation = new System.Drawing.Rectangle((int)this.Left, (int)this.Top, (int)this.Width, (int)this.Height);
+            _configurationService.UpdateConfiguration(configuration);
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _config.WindowLocation = new System.Drawing.Rectangle((int)this.Left, (int)this.Top, (int)this.Width, (int)this.Height);
-        }
-        private string GetConfigFilePath()
-        {
-            string directory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/Spotlight";
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            return directory + "/ config.json";
+            Configuration config = _configurationService.GetConfiguration();
+            config.WindowLocation = new System.Drawing.Rectangle((int)this.Left, (int)this.Top, (int)this.Width, (int)this.Height);
+            _configurationService.UpdateConfiguration(config);
         }
 
-        private void LoadConfiguration()
-        {
-            string configFilePath = GetConfigFilePath();
-            if (File.Exists(configFilePath))
-            {
-                try
-                {
-                    _config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(configFilePath)) ?? new Configuration();
-                }
-                catch
-                {
-                    _config = new Configuration();
-                }
-
-                this.Left = _config.WindowLocation.X;
-                this.Top = _config.WindowLocation.Y;
-                this.Width = _config.WindowLocation.Width;
-                this.Height = _config.WindowLocation.Height;
-
-            }
-        }
-
-        private void SaveConfiguration()
-        {
-            File.WriteAllText(GetConfigFilePath(), JsonConvert.SerializeObject(_config, Newtonsoft.Json.Formatting.Indented));
-        }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            SaveConfiguration();
             _projectService.SaveProject();
-            _levelService.CleanUpTemps();
         }
 
-        private void FilePanel_NameUpdated(NameUpdate nameUpdate)
-        {
-            if (nameUpdate.Info is LevelInfo)
-            {
-                _levelService.NotifyUpdate((LevelInfo)nameUpdate.Info);
-            }
-            else if (nameUpdate.Info is WorldInfo)
-            {
-                _worldService.NotifyUpdate((WorldInfo)nameUpdate.Info);
-            }
+        //private void FilePanel_NameUpdated(NameUpdate nameUpdate)
+        //{
 
-            _projectService.SaveProject();
 
-        }
+        //    _projectService.SaveProject();
+
+        //}
 
         private void _ProjectPanel_NewLevelClicked()
         {
-            NewLevelResult newLevelResult = NewLevelWindow.Show(_levelService, _worldService);
+            NewLevelResult newLevelResult = NewLevelWindow.Show();
             if (newLevelResult != null)
             {
                 _levelService.AddLevel(newLevelResult.Level, newLevelResult.WorldInfo);
@@ -630,15 +585,15 @@ namespace Spotlight
                 return;
             }
 
-            IEnumerable<FileInfo> residualTempFiles = _levelService.FindTemps();
-            foreach (FileInfo fileInfo in residualTempFiles)
-            {
+            //IEnumerable<FileInfo> residualTempFiles = _levelService.FindTemps();
+            //foreach (FileInfo fileInfo in residualTempFiles)
+            //{
 
-                //if (ConfirmationWindow.Confirm($"Unsaved level data {fileInfo.Name}, would you like to swap this out?") == System.Windows.Forms.DialogResult.Yes)
-                //{
-                //    _levelService.SwapTemp(fileInfo);
-                //}
-            }
+            //    //if (ConfirmationWindow.Confirm($"Unsaved level data {fileInfo.Name}, would you like to swap this out?") == System.Windows.Forms.DialogResult.Yes)
+            //    //{
+            //    //    _levelService.SwapTemp(fileInfo);
+            //    //}
+            //}
 
             _levelService.CleanUpTemps();
         }

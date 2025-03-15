@@ -12,7 +12,7 @@ namespace Spotlight
         {
             AlertWindow window = new AlertWindow();
             window.DisplayText.Text = text;
-            window.Owner = GlobalPanels.MainWindow;
+            //window.Owner = GlobalPanels.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
         }

@@ -1,8 +1,11 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,18 +20,45 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for PalettePanel.xaml
     /// </summary>
-    public partial class PaletteEditor : UserControl
+    public partial class PaletteEditor : UserControl, IUnsubscribe
     {
         private System.Drawing.Color[] _rgbPalette;
         private List<PaletteRgbEditor> _rgbEditors;
+        
+        private WriteableBitmap _bitmapSection;
+        private WriteableBitmap _bitmapFull;
 
-        public PaletteEditor(ProjectService projectService, PaletteService palettesService)
+        private IPaletteRenderer _rendererSection;
+        private IPaletteRenderer _rendererFull;
+                
+        private IPaletteService _palettesService;
+        private IProjectService _projectService;
+        private IEventService _eventService;
+
+        private List<Guid> _subscriptions;
+
+        public PaletteEditor()
         {
             InitializeComponent();
+            InitializeServices();
+            InitializeUI();
 
-            _projectService = projectService;
-            _palettesService = palettesService;
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteAdded, PalettesChanged));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteUpdated, PalettesChanged));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteRemoved, PalettesChanged));
+        }
 
+        private void InitializeServices()
+        {
+            _projectService = App.Services.GetService<IProjectService>();
+            _palettesService = App.Services.GetService<IPaletteService>();
+            _rendererSection = App.Services.GetService<IPaletteRenderer>();
+            _rendererFull = App.Services.GetService<IPaletteRenderer>();
+            _eventService = App.Services.GetService<IEventService>();
+        }
+
+        private void InitializeUI()
+        {
             Dpi dpi = this.GetDpi();
             _bitmapSection = new WriteableBitmap(256, 32, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
             _bitmapFull = new WriteableBitmap(256, 64, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
@@ -36,15 +66,9 @@ namespace Spotlight
             ImageSection.Source = _bitmapSection;
             ImageFull.Source = _bitmapFull;
 
-            _rendererSection = new PaletteRenderer(_palettesService, PaletteType.Section);
-            _rendererFull = new PaletteRenderer(_palettesService, PaletteType.Full);
-
             PaletteList.ItemsSource = _palettesService.GetPalettes();
             PaletteList.SelectedIndex = 0;
 
-            UpdateFull();
-
-            _palettesService.PalettesChanged += _palettesService_PalettesChanged;
             _rgbPalette = _palettesService.RgbPalette;
             _rgbEditors = new List<PaletteRgbEditor>();
 
@@ -59,24 +83,23 @@ namespace Spotlight
             }
         }
 
-        public void SetPalette(Palette palette)
+        public void Initialize(Palette palette)
         {
             PaletteList.SelectedItem = palette;
+
+            UpdateFull();
         }
 
-        private void _palettesService_PalettesChanged()
+        public void Unsubscribe()
+        {
+            _eventService.Unsubscribe(_subscriptions);
+        }
+
+        private void PalettesChanged()
         {
             PaletteList.ItemsSource = _palettesService.GetPalettes();
         }
 
-        private WriteableBitmap _bitmapSection;
-        private WriteableBitmap _bitmapFull;
-
-        private PaletteRenderer _rendererSection;
-        private PaletteRenderer _rendererFull;
-
-        private PaletteService _palettesService;
-        private ProjectService _projectService;
 
         private void Update()
         {

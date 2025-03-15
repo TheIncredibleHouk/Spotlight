@@ -7,6 +7,8 @@ using Spotlight.Services;
 using Spotlight.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,9 +35,22 @@ namespace Spotlight
         private WriteableBitmap _bitmap;
 
         private List<Guid> _subscriptionIds = new List<Guid>();
+
+        public Guid Id { get; private set; }
         public GameObjectEditor()
         {
             InitializeComponent();
+            InitializeServices();
+            InitializeUI();
+
+            _subscriptionIds.Add(_eventService.Subscribe(SpotlightEventType.GraphicsUpdated, GraphicsUpdated));
+            _subscriptionIds.Add(_eventService.Subscribe(SpotlightEventType.ExtraGraphicsUpdated, GraphicsUpdated));
+            Id = Guid.NewGuid();
+        }
+
+        private void InitializeServices()
+        {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
 
             _projectService = App.Services.GetService<IProjectService>();
             _gameObjectService = App.Services.GetService<IGameObjectService>();
@@ -43,11 +58,6 @@ namespace Spotlight
             _palettesService = App.Services.GetService<IPaletteService>();
             _graphicsManager = App.Services.GetService<IGraphicsManager>();
             _eventService = App.Services.GetService<IEventService>();
-            
-            GameObjectRenderer.Source = _bitmap;
-
-            _subscriptionIds.Add(_eventService.Subscribe(SpotlightEventType.GraphicsUpdated, GraphicsUpdated));
-            _subscriptionIds.Add(_eventService.Subscribe(SpotlightEventType.ExtraGraphicsUpdated, GraphicsUpdated));
         }
 
         private void Initialize()
@@ -63,7 +73,10 @@ namespace Spotlight
         {
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
-            ObjectSelector.Initialize(_gameObjectService, _palettesService, App.Services.GetService<IEventService>(), _graphicsManager, _palettesService.GetPalettes()[0]);
+            
+            GameObjectRenderer.Source = _bitmap;
+
+            ObjectSelector.Initialize(_palettesService.GetPalettes()[0]);
 
             PaletteSelector.ItemsSource = _palettesService.GetPalettes();
             PaletteSelector.SelectedIndex = 0;

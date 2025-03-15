@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using System.Windows.Forms;
 
 namespace Spotlight
 {
@@ -8,11 +9,11 @@ namespace Spotlight
     /// </summary>
     public partial class ConfirmationWindow : Window
     {
-        public static System.Windows.Forms.DialogResult Confirm(string text)
+        public static DialogResult Confirm(string text)
         {
             ConfirmationWindow window = new ConfirmationWindow();
             window.DisplayText.Text = text;
-            window.Owner = GlobalPanels.MainWindow;
+            //window.Owner = GlobalPanels.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
             return window.Result;
@@ -37,7 +38,7 @@ namespace Spotlight
             this.Close();
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {

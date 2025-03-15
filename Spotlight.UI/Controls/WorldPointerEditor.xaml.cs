@@ -1,4 +1,6 @@
-﻿using Spotlight.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
+using Spotlight.Models;
 using Spotlight.Services;
 using System;
 using System.Windows;
@@ -11,20 +13,31 @@ namespace Spotlight
     /// </summary>
     public partial class WorldPointerEditor : UserControl
     {
+        private ILevelService _levelService;
+        private IEventService _eventService;
+        private WorldInfo _worldInfo;
+        
         public WorldPointerEditor()
         {
             InitializeComponent();
+            InitializeServices();
+            InitializeUI();
         }
 
-        private ILevelService _levelService;
-        private WorldInfo _worldInfo;
-
-        public void Initialize(ILevelService levelService, WorldInfo worldInfo)
+        private void InitializeServices()
         {
-            _levelService = levelService;
-            _worldInfo = worldInfo;
+            _levelService = App.Services.GetService<ILevelService>();
+            _eventService = App.Services.GetService<IEventService>();
+        }
 
+        private void InitializeUI()
+        {
             LevelList.ItemsSource = _levelService.AllLevels();
+        }
+
+        public void Initialize(WorldInfo worldInfo)
+        {
+            _worldInfo = worldInfo;
         }
 
         private WorldPointer _pointer;
@@ -49,29 +62,25 @@ namespace Spotlight
             {
                 if (LevelList.SelectedItem is LevelInfo)
                 {
-                    GlobalPanels.EditLevel((LevelInfo)LevelList.SelectedItem);
+                    _eventService.Emit(SpotlightEventType.UIOpenLevelEditor, (LevelInfo)LevelList.SelectedItem);
+                    //GlobalPanels.EditLevel((LevelInfo)LevelList.SelectedItem);
                 }
             }
         }
 
-        private LevelPanel _levelPanel;
+        //private void Button_Click_1(object sender, RoutedEventArgs e)
+        //{
+        //    if (LevelList.SelectedItem != null)
+        //    {
+        //        if (LevelList.SelectedItem is LevelInfo)
+        //        {
+        //            _eventService.Emit(SpotlightEventType.UIOpenLevelEditor, (LevelInfo)LevelList.SelectedItem);
+        //            //_levelPanel = MainWindow.OpenLevelEditor(levelInfo) GlobalPanels.EditLevel((LevelInfo)LevelList.SelectedItem);
+        //            //_levelPanel.LevelEditorExitSelected += LevelPanel_LevelEditorExitSelected;
+        //        }
+        //    }
+        //}
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            if (LevelList.SelectedItem != null)
-            {
-                if (LevelList.SelectedItem is LevelInfo)
-                {
-                    _levelPanel = GlobalPanels.EditLevel((LevelInfo)LevelList.SelectedItem);
-                    _levelPanel.LevelEditorExitSelected += LevelPanel_LevelEditorExitSelected;
-                }
-            }
-        }
-
-        private void LevelPanel_LevelEditorExitSelected(int x, int y)
-        {
-            _levelPanel.LevelEditorExitSelected -= LevelPanel_LevelEditorExitSelected;
-            _levelPanel = null;
-        }
+    
     }
 }

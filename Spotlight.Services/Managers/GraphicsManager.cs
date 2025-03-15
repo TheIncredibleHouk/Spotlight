@@ -33,6 +33,16 @@ namespace Spotlight.Services
             _overlayTable = extraTable;
         }
 
+        public void Initialize(Tile[] graphicsTable)
+        {
+            _relativeTable = new Tile[256];
+
+            for (int i = 0; i < 256; i++)
+            {
+                _relativeTable[i] = graphicsTable[i];
+            }
+        }
+
         public GraphicsManager(Tile[] fullTable)
         {
             _relativeTable = new Tile[256];

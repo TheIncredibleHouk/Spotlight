@@ -80,12 +80,12 @@
                         <TextBlock>Edit Graphics</TextBlock>
                     </StackPanel>
                 </Button>-->
-                <Button x:Name="MusicEditButton" Click="MusicsEditButton_Click"  IsEnabled="False">
+                <!--<Button x:Name="MusicEditButton" Click="MusicsEditButton_Click"  IsEnabled="False">
                     <StackPanel Orientation="Vertical">
                         <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Icons\Text.png" Height="16" />
                         <TextBlock>Edit Music</TextBlock>
                     </StackPanel>
-                </Button>
+                </Button>-->
             </StackPanel>
         </Border>
     </StackPanel>

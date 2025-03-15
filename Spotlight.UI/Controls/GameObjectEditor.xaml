@@ -9,7 +9,7 @@
     <DockPanel>
         <Border Padding="0, 10, 0, 0" DockPanel.Dock="Right" BorderThickness="1, 0, 0, 0" BorderBrush="#FF3E3E3E">
             <StackPanel>
-                <local:GameObjectSelector ObjectGroup="All" x:Name="ObjectSelector" GameObjectChanged="ObjectSelector_GameObjectChanged" />
+                <local:GameObjectSelector ObjectGroup="All" x:Name="ObjectSelector" />
             </StackPanel>
         </Border>
         <DockPanel VerticalAlignment="Stretch" LastChildFill="True" Margin="10">
@@ -28,7 +28,6 @@
                     <CheckBox VerticalAlignment="Center" Background="Black" Checked="ShowOverlays_Checked" Unchecked="ShowOverlays_Checked" x:Name="ShowOverlays" />
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Right" DockPanel.Dock="Right" Orientation="Horizontal">
-                    <Button x:Name="FindButton" Click="FindButton_Click">Find</Button>
                     <Button x:Name="ResetButton" Click="ResetButton_Click">Reset</Button>
                     <Button x:Name="SaveButton" Click="SaveButton_Click">Save</Button>
                 </StackPanel>

@@ -13,7 +13,7 @@ namespace Spotlight
             InputWindow window = new InputWindow();
             window.DisplayText.Text = message;
             window.InputText = defaultText;
-            window.Owner = GlobalPanels.MainWindow;
+            //window.Owner = GlobalPanels.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
             return window.InputText;

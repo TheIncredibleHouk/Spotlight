@@ -2,7 +2,7 @@
 using System.Drawing;
 
 
-namespace Spotlight.Abstractions.Renderers
+namespace Spotlight.Abstractions
 {
     public interface IPaletteRenderer
     {

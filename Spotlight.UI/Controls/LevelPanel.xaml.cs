@@ -1,7 +1,9 @@
-﻿using Spotlight.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,48 +54,40 @@ namespace Spotlight
         private bool _initializing = true;
         private List<Guid> _subscriptions;
 
-        public LevelPanel(IProjectService projectService,
-                        IGraphicsService graphicsService,
-                        IPaletteService palettesService,
-                        ITextService textService,
-                        ITileService tileService,
-                        IGameObjectService gameObjectService,
-                        ILevelService levelService,
-                        IClipboardService clipBoardService,
-                        IHistoryService historyService,
-                        ICompressionService compressionService,
-                        IEventService eventService,
-                        IGraphicsManager graphicsManager,
-                        ILevelDataManager levelDataManager,
-                        ILevelRenderer levelRenderer)
+        public LevelPanel()
         {
-            InitializeComponent();
-
-
-            _textService = textService;
-            _graphicsService = graphicsService;
-            _gameObjectService = gameObjectService;
-            _tileService = tileService;
-            _palettesService = palettesService;
-            _levelService = levelService;
-            _historyService = historyService;
-            _compressionService = compressionService;
-            _clipBoardService = clipBoardService;
-            _eventService = eventService;
-            _graphicsManager = graphicsManager;
-            _levelDataManager = levelDataManager;
-            _levelRenderer = levelRenderer;
-
             _subscriptions = new List<Guid>();
+
+            InitializeComponent();
+            InitializeServices();
             InitializeUI();
+            InitializeGameObjectData();
+            InitialRender();
         }
-        
+
         public void Initialize(LevelInfo levelInfo)
         {
             _terrain = _tileService.GetTerrain();
             _level = _levelService.LoadLevel(levelInfo);
             _tileSet = _tileService.GetTileSet(_level.TileSetIndex);
             _initializing = false;
+        }
+
+        private void InitializeServices()
+        {
+            _textService = App.Services.GetService<ITextService>();
+            _graphicsService = App.Services.GetService<IGraphicsService>();
+            _gameObjectService = App.Services.GetService<IGameObjectService>();
+            _tileService = App.Services.GetService<ITileService>();
+            _palettesService = App.Services.GetService<IPaletteService>();
+            _levelService = App.Services.GetService<ILevelService>();
+            _historyService = App.Services.GetService<IHistoryService>();
+            _compressionService = App.Services.GetService<ICompressionService>();
+            _clipBoardService = App.Services.GetService<IClipboardService>();
+            _eventService = App.Services.GetService<IEventService>();
+            _graphicsManager = App.Services.GetService<IGraphicsManager>();
+            _levelDataManager = App.Services.GetService<ILevelDataManager>();
+            _levelRenderer = App.Services.GetService<ILevelRenderer>();
         }
 
         private void InitializeUI()
@@ -163,14 +157,14 @@ namespace Spotlight
             _levelRenderer.Initialize(_tileService.GetTerrain());
             _levelDataManager.Initialize(_level, _tileSet);
 
-            TileSelector.Initialize(_graphicsManager, _tileService, _tileSet, palette);
-            ObjectSelector.Initialize(_gameObjectService, _palettesService, _eventService, _graphicsManager, palette);
-            PointerEditor.Initialize(_levelService, _levelInfo);
+            TileSelector.Initialize(_tileSet, palette);
+            ObjectSelector.Initialize(palette);
+            PointerEditor.Initialize(_levelInfo);
         }
 
         private void SubscribeToEvents()
         {
-            _subscriptions.Add(_eventService.Subscribe<GameObject>(SpotlightEventType.GameObjectsUpdated, GameObjectsUpdated));
+            _subscriptions.Add(_eventService.Subscribe<GameObject>(SpotlightEventType.GameObjectUpdated, GameObjectsUpdated));
             _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.GraphicsUpdated, GraphicsUpdated));
             _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.ExtraGraphicsUpdated, GraphicsUpdated));
             _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.PaletteAdded, PaletteAdded));
@@ -182,10 +176,7 @@ namespace Spotlight
 
         private void UnsubscribeFromEvents()
         {
-            foreach(Guid subscriptionId in _subscriptions)
-            {
-                _eventService.Unsubscribe(subscriptionId);
-            }
+            _eventService.Unsubscribe(_subscriptions);
         }
 
         public void LoadLevel(LevelInfo levelInfo)
@@ -207,16 +198,6 @@ namespace Spotlight
             TileSelector.Update(_tileSet);
         }
 
-        //public void DetachEvents()
-        //{
-        //    _gameObjectService.GameObjectUpdated -= GameObjectService_GameObjectsUpdated;
-        //    ObjectSelector.GameObjectDoubleClicked -= ObjectSelector_GameObjectDoubleClicked;
-        //    _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
-        //    _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
-        //    _palettesService.PalettesChanged -= _palettesService_PalettesChanged;
-        //    _levelService.LevelUpdated -= _levelService_LevelUpdated;
-        //    ObjectSelector.DetachEvents();
-        //}
 
         private void PaletteAdded()
         {
@@ -1592,7 +1573,11 @@ namespace Spotlight
 
             if (e.ClickCount >= 2)
             {
-                GlobalPanels.EditTileBlock(_level.Id, TileSelector.SelectedBlockValue);
+                _eventService.Emit(SpotlightEventType.UIOpenBlockEditor, new OpenTileBlockEditorEvent()
+                {
+                    LevelId = _level.Id,
+                    BlockId = TileSelector.SelectedBlockValue
+                });
             }
         }
 
@@ -1759,7 +1744,7 @@ namespace Spotlight
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            GlobalPanels.OpenPaletteEditor((Palette)PaletteIndex.SelectedItem);
+            _eventService.Emit(SpotlightEventType.UIOpenPaletteEditor, (Palette)PaletteIndex.SelectedItem);
         }
 
         private void TileSelector_TileBlockSelected(TileBlock tileBlock, int tileBlockValue)

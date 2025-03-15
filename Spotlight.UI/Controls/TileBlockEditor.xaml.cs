@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
+using Spotlight.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,52 +20,58 @@ namespace Spotlight
     /// <summary>
     /// Interaction logic for TileBlockEditor.xaml
     /// </summary>
-    public partial class TileBlockEditor : UserControl
+    public partial class TileBlockEditor : UserControl, IUnsubscribe
     {
-        private ProjectService _projectService;
-        private GraphicsService _graphicsService;
-        private TileService _tileService;
-        private TextService _textService;
-        private GraphicsManager _graphicsAccessor;
-        private WorldService _worldService;
+        private IProjectService _projectService;
+        private IGraphicsService _graphicsService;
+        private ITileService _tileService;
+        private ITextService _textService;
+        private IGraphicsManager _graphicsManager;
+        private IWorldService _worldService;
         private ILevelService _levelService;
-        private PaletteService _palettesService;
-        private TileSetRenderer _tileSetRenderer;
-        private GraphicsSetRender _graphicsSetRenderer;
+        private IPaletteService _palettesService;
+        private ITileSetRenderer _tileSetRenderer;
+        private IGraphicsSetRenderer _graphicsSetRenderer;
+        private IEventService _eventService;
+
         private WriteableBitmap _graphicsSetBitmap;
         private WriteableBitmap _tileBlockBitmap;
 
         private List<LevelInfo> _levelInfos;
         private List<WorldInfo> _worldInfos;
 
-        public TileBlockEditor(ProjectService projectService, WorldService worldService, ILevelService levelService, GraphicsService graphicsService, PaletteService palettesService, TileService tileService, TextService textService)
+        private List<Guid> _subscriptions;
+
+        public Guid Id { get; private set; }
+
+        public TileBlockEditor()
         {
             _ignoreChanges = true;
             InitializeComponent();
+            InitializeServices();
+            Initialize();
 
-            _projectService = projectService;
-            _palettesService = palettesService;
-            _graphicsService = graphicsService;
-            _worldService = worldService;
-            _levelService = levelService;
-            _tileService = tileService;
-            _textService = textService;
+            Id = Guid.NewGuid();
+        }
 
-            List<KeyValuePair<string, string>> tileSetText = _textService.GetTable("tile_sets");
+        private void InitializeServices()
+        {
+            _projectService = App.Services.GetService<IProjectService>();
+            _palettesService = App.Services.GetService<IPaletteService>();
+            _graphicsService = App.Services.GetService<IGraphicsService>();
+            _worldService = App.Services.GetService<IWorldService>();
+            _levelService = App.Services.GetService<ILevelService>();
+            _tileService = App.Services.GetService<ITileService>();
+            _textService = App.Services.GetService<ITextService>();
+            _eventService = App.Services.GetService<IEventService>();
+        }
 
-            tileSetText.Insert(0, new KeyValuePair<string, string>("0", "Map"));
-
+        private void InitializeUI()
+        {
             TerrainList.ItemsSource = _localTileTerrain = _tileService.GetTerrainCopy();
-            LevelList.ItemsSource = _levelService.AllWorldsLevels();
+            LevelList.ItemsSource = _levelService.GetAllWorldsAndLevels();
             MapInteractionList.ItemsSource = _localMapTileInteraction = _tileService.GetMapTileInteractionCopy();
 
-            _levelInfos = _levelService.AllLevels();
-            _worldInfos = _worldService.AllWorlds();
-
-            _graphicsAccessor = new GraphicsManager(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
-
-            _graphicsSetRenderer = new GraphicsSetRender(_graphicsAccessor);
-            _tileSetRenderer = new TileSetRenderer(_graphicsAccessor, _localTileTerrain, _localMapTileInteraction);
 
             Dpi dpi = this.GetDpi();
 
@@ -70,44 +79,51 @@ namespace Spotlight
             _tileBlockBitmap = new WriteableBitmap(16, 16, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
             GraphicsSetImage.Source = _graphicsSetBitmap;
-
             TileBlockImage.Source = _tileBlockBitmap;
 
-            BlockSelector.Initialize(_graphicsAccessor, _tileService, _tileService.GetTileSet(0), _graphicsService.GetPalette(0), _tileSetRenderer);
-            BlockSelector.TileBlockSelected += BlockSelector_TileBlockSelected;
+            BlockSelector.Initialize(_tileService.GetTileSet(0), _graphicsService.GetPalette(0));
 
             LevelList.SelectedIndex = 1;
             BlockSelector.SelectedBlockValue = 0;
-            _ignoreChanges = false;
-
-            _graphicsService.GraphicsUpdated += _graphicsService_GraphicsUpdated;
-            _graphicsService.ExtraGraphicsUpdated += _graphicsService_GraphicsUpdated;
         }
 
-        public void DetachEvents()
+        private void Initialize()
         {
-            _graphicsService.GraphicsUpdated -= _graphicsService_GraphicsUpdated;
-            _graphicsService.ExtraGraphicsUpdated -= _graphicsService_GraphicsUpdated;
-            BlockSelector.TileBlockSelected -= BlockSelector_TileBlockSelected;
+            _levelInfos = _levelService.AllLevels();
+            _worldInfos = _worldService.AllWorlds();
+
+            _graphicsManager.Initialize(_graphicsService.GetTileSection(0), _graphicsService.GetTileSection(0), _graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _tileSetRenderer.Initialize(_localTileTerrain, _localMapTileInteraction);
+
+            _subscriptions.Add(_eventService.Subscribe<TileBlockSelection>(SpotlightEventType.UIBlockSelected, BlockSelector.Id, TileBlockSelected));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.GraphicsUpdated, GraphicsUpdated));
+            _subscriptions.Add(_eventService.Subscribe(SpotlightEventType.ExtraGraphicsUpdated, GraphicsUpdated));
+
+            _ignoreChanges = false;
         }
 
-        private void _graphicsService_GraphicsUpdated()
+        public void Unsubscribe()
+        {
+            _eventService.Unsubscribe(_subscriptions);
+        }
+
+        private void GraphicsUpdated()
         {
             if (_currentLevel != null)
             {
-                _graphicsAccessor.SetBottomTable(_graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex));
-                _graphicsAccessor.SetTopTable(_graphicsService.GetTileSection(_currentLevel.StaticTileTableIndex));
+                _graphicsManager.SetBottomTable(_graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex));
+                _graphicsManager.SetTopTable(_graphicsService.GetTileSection(_currentLevel.StaticTileTableIndex));
             }
             else if (_currentWorld != null)
             {
                 Tile[] staticTiles = _graphicsService.GetTileSection(_currentWorld.TileTableIndex);
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex);
 
-                _graphicsAccessor.SetBottomTable(staticTiles);
-                _graphicsAccessor.SetTopTable(animatedTiles);
+                _graphicsManager.SetBottomTable(staticTiles);
+                _graphicsManager.SetTopTable(animatedTiles);
             }
 
-            _graphicsAccessor.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
+            _graphicsManager.SetGlobalTiles(_graphicsService.GetGlobalTiles(), _graphicsService.GetExtraTiles());
             UpdateTileBlock();
             UpdateGraphics();
             BlockSelector.Update();
@@ -119,8 +135,11 @@ namespace Spotlight
             BlockSelector.SelectedBlockValue = tileBlockValue;
         }
 
-        private void BlockSelector_TileBlockSelected(TileBlock tileBlock, int tileValue)
+        private void TileBlockSelected(TileBlockSelection tileBlockSelection)
         {
+            TileBlock tileBlock = tileBlockSelection.Block;
+            int tileValue = tileBlockSelection.BlockId;
+
             _ignoreChanges = true;
 
             if (_currentLevel != null)
@@ -216,8 +235,8 @@ namespace Spotlight
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentLevel.AnimationTileTableIndex);
                 Palette palette = _palettesService.GetPalette(_currentLevel.PaletteId);
 
-                _graphicsAccessor.SetBottomTable(animatedTiles);
-                _graphicsAccessor.SetTopTable(staticTiles);
+                _graphicsManager.SetBottomTable(animatedTiles);
+                _graphicsManager.SetTopTable(staticTiles);
 
                 _localTileSet = JsonConvert.DeserializeObject<TileSet>(JsonConvert.SerializeObject(_tileService.GetTileSet(_currentLevel.TileSetIndex)));
 
@@ -247,8 +266,8 @@ namespace Spotlight
                 Tile[] animatedTiles = _graphicsService.GetTileSection(_currentWorld.AnimationTileTableIndex);
                 Palette palette = _palettesService.GetPalette(_currentWorld.PaletteId);
 
-                _graphicsAccessor.SetBottomTable(staticTiles);
-                _graphicsAccessor.SetTopTable(animatedTiles);
+                _graphicsManager.SetBottomTable(staticTiles);
+                _graphicsManager.SetTopTable(animatedTiles);
 
                 _localTileSet = JsonConvert.DeserializeObject<TileSet>(JsonConvert.SerializeObject(_tileService.GetTileSet(0)));
                 _graphicsSetRenderer.Update(palette);
@@ -588,15 +607,16 @@ namespace Spotlight
 
         private void SetUnsaved()
         {
-            if (!_ignoreChanges)
-            {
-                GlobalPanels.MainWindow.SetUnsavedTab("Tile Set Editor");
-            }
+            //if (!_ignoreChanges)
+            //{
+            //    GlobalPanels.MainWindow.SetUnsavedTab("Tile Set Editor");
+            //}
         }
 
         private void SetSaved()
         {
-            GlobalPanels.MainWindow.SetSavedTab("Tile Set Editor");
+            
+            //GlobalPanels.MainWindow.SetSavedTab("Tile Set Editor");
         }
 
         private void MapInteractionList_SelectionChanged(object sender, SelectionChangedEventArgs e)

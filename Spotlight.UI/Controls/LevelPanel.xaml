@@ -13,7 +13,7 @@
         <DockPanel Width="300" DockPanel.Dock="Left" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
             <Border Style="{StaticResource Section}">
                 <StackPanel DockPanel.Dock="Top">
-                    <local:TileBlockSelector TileBlockSelected="TileSelector_TileBlockSelected" Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
+                    <local:TileBlockSelector Margin="10" x:Name="TileSelector" MouseDown="TileSelector_MouseDown" />
                     <local:GameObjectSelector ObjectGroup="Level" HorizontalAlignment="Center" x:Name="ObjectSelector" MouseDown="ObjectSelector_MouseDown" />
                 </StackPanel>
             </Border>

@@ -18,5 +18,6 @@ namespace Spotlight.Abstractions
         void SaveLevel(Level level, string basePath = null, bool asTemp = false);
         void GenerateMetaData(LevelInfo levelInfo, MemoryStream thumbnailStream = null);
         List<LevelInfo> FlattenLevelInfos(List<LevelInfo> levelInfos);
+        void CleanUpTemps();
     }
 }

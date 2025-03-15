@@ -14,19 +14,15 @@ namespace Spotlight
     /// </summary>
     public partial class MoveLevelWindow : Window
     {
-        private readonly ILevelService _levelService;
-        private readonly IWorldService _worldService;
-        public MoveLevelWindow(ILevelService levelService, IWorldService worldService) : base()
-        {
-            _levelService = levelService;
-            _worldService = worldService;
-        }
+        private ILevelService _levelService;
+        private IWorldService _worldService;
+        private LevelInfo _defaultParentLevel;
 
         public static MoveLevelResult Show(WorldInfo hostWorld, LevelInfo parentLevel)
         {
             MoveLevelResult moveLevelResult = null;
 
-            MoveLevelWindow window = new MoveLevelWindow(App.Services.GetService<ILevelService>(), App.Services.GetService<IWorldService>());
+            MoveLevelWindow window = new MoveLevelWindow();
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
 
@@ -50,18 +46,28 @@ namespace Spotlight
 
         }
 
-
-        LevelInfo _defaultParentLevel;
-
-        public MoveLevelWindow(ILevelService levelService, WorldService worldService, WorldInfo hostWorld, LevelInfo parentLevel)
+        public MoveLevelWindow()
         {
             InitializeComponent();
+            InitializeServices();
+            InitializeUI();
+        }
 
-            _levelService = levelService;
-            _worldService = worldService;
-            _defaultParentLevel = parentLevel;
+        private void InitializeServices()
+        {
+            _levelService = App.Services.GetService<ILevelService>();
+            _worldService = App.Services.GetService<IWorldService>();
+        }
+
+        private void InitializeUI()
+        {
 
             WorldList.ItemsSource = _worldService.AllWorlds();
+        }
+
+        public void Initialize(WorldInfo hostWorld, LevelInfo parentLevel)
+        {
+            _defaultParentLevel = parentLevel;
 
             if (parentLevel == null)
             {

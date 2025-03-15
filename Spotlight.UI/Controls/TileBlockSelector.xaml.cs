@@ -1,4 +1,5 @@
-﻿using Spotlight.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spotlight.Abstractions;
 using Spotlight.Models;
 using Spotlight.Renderers;
 using Spotlight.Services;
@@ -18,40 +19,64 @@ namespace Spotlight
     /// </summary>
     public partial class TileBlockSelector : UserControl
     {
-        public delegate void TileBlockSelectorEventHandler(TileBlock tileBlock, int tileBlockValue);
 
-        public event TileBlockSelectorEventHandler TileBlockSelected;
+        public Guid Id { get; set; }
 
         public TileBlock SelectedTileBlock { get; private set; }
 
-        public TileBlockSelector()
-        {
-            InitializeComponent();
-        }
-
         private IGraphicsManager _graphicsManager;
-        private TileSetRenderer _tileSetRenderer;
+        private ITileSetRenderer _tileSetRenderer;
+        private ITileService _tileService;
+        private IEventService _eventService;
+
         private WriteableBitmap _bitmap;
         private TileSet _tileSet;
         private List<TileTerrain> _terrain;
         private List<MapTileInteraction> _mapTileInteractions;
 
-        public void Initialize(IGraphicsManager graphicsManager, ITileService tileService, TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
+        public TileBlockSelector()
         {
-            _graphicsManager = graphicsManager;
-            _tileSet = tileSet;
-            _terrain = tileService.GetTerrain();
-            _mapTileInteractions = tileService.GetMapTileInteractions();
-            _tileSetRenderer = tileSetRenderer ?? new TileSetRenderer(_graphicsManager, _terrain, _mapTileInteractions);
+            Id = Guid.NewGuid();
 
+            InitializeComponent();
+            InitializeServices();
+            InitializeUI();
+        }
+
+
+        public void Initialize(TileSet tileSet, Palette palette, TileSetRenderer tileSetRenderer = null)
+        {
+            _terrain = _tileService.GetTerrain();
+            _mapTileInteractions = _tileService.GetMapTileInteractions();
+            if (tileSetRenderer != null)
+            {
+                _tileSetRenderer = tileSetRenderer;
+            }
+
+            _tileSet = tileSet;
+
+            Update(tileSet, palette);
+        }
+
+        private void InitializeServices()
+        {
+            _graphicsManager = App.Services.GetService<IGraphicsManager>();
+            _tileSetRenderer = App.Services.GetService<ITileSetRenderer>();
+            _tileService = App.Services.GetService<ITileService>();
+            _eventService = App.Services.GetService<IEventService>();
+        }
+
+        private void InitializeUI()
+        {
             Dpi dpi = this.GetDpi();
             _bitmap = new WriteableBitmap(256, 256, dpi.X, dpi.Y, PixelFormats.Bgra32, null);
 
             TileRenderSource.Source = _bitmap;
-
-            Update(tileSet, palette);
             SelectedBlockValue = 0;
+
+            _tileSetRenderer.Initialize(_terrain, _mapTileInteractions);
         }
+
 
         public void Update(TileSet tileSet = null, Palette palette = null, int? tileIndex = null, bool? withTerrainOverlay = null, bool? withInteractionOverlay = null, bool? withMapInteractionOverlay = null, bool? withProjectileInteractions = null)
         {
@@ -110,10 +135,12 @@ namespace Spotlight
                 SelectedTileBlock = _tileSet.TileBlocks[value];
 
                 UpdateSelectionRectangle();
-                if (TileBlockSelected != null)
+
+                _eventService.Emit(SpotlightEventType.UIBlockSelected, Id, new TileBlockSelection()
                 {
-                    TileBlockSelected(_tileSet.TileBlocks[value], value);
-                }
+                    BlockId = _selectedBlockValue,
+                    Block = SelectedTileBlock
+                });
             }
         }
 
@@ -138,5 +165,11 @@ namespace Spotlight
             Rectangle selectedArea = new Rectangle(((int)(_selectedBlockValue % 16)) * 16, ((int)(_selectedBlockValue / 16)) * 16, 16, 16);
             return _tileSetRenderer.GetRectangle(selectedArea);
         }
+    }
+
+    public class TileBlockSelection
+    {
+        public int BlockId { get; set; }
+        public TileBlock Block { get; set; }
     }
 }
